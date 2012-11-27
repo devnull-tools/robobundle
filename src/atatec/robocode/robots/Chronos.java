@@ -12,9 +12,9 @@ import static atatec.robocode.conditions.Conditions.enemyIsMoving;
 public class Chronos extends AbstractBot {
 
   protected void configure() {
-    setBodyColor(Color.GRAY);
-    setGunColor(Color.LIGHT_GRAY);
-    setRadarColor(Color.BLUE);
+    setBodyColor(new Color(39, 40, 34));
+    setGunColor(new Color(54, 151, 255));
+    setRadarColor(new Color(39, 40, 34));
 
     moveAllPartsSeparated();
 
@@ -42,7 +42,12 @@ public class Chronos extends AbstractBot {
       .inOtherCases();
 
     behaveAs(dodger());
-    behaveAs(bulletPainter());
+    behaveAs(
+      bulletPainter()
+        .use(new Color(255, 84, 84)).forStrong()
+        .use(new Color(253, 151, 31)).forMedium()
+        .use(new Color(54, 151, 255)).forWeak()
+    );
   }
 
   protected void battle() {

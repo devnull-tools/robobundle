@@ -44,13 +44,8 @@ public class DefaultEventRegistry implements EventRegistry {
   }
 
   @Override
-  public void send(String eventName) {
-    getMapping(eventName).send();
-  }
-
-  @Override
-  public void send(String eventName, Object eventObject) {
-    getMapping(eventName).send(eventObject);
+  public void send(String eventName, Object... args) {
+    getMapping(eventName).send(args);
   }
 
   private class Mapping {
@@ -65,28 +60,15 @@ public class DefaultEventRegistry implements EventRegistry {
       listeners.add(new ListenerMapping(listener, method));
     }
 
-    public void send(Object event) {
+    public void send(Object... args) {
       for (ListenerMapping mapping : listeners) {
         Object listener = mapping.listener;
         if (listener instanceof SystemPart) {
           if (bot.isActivated(listener)) {
-            mapping.send(event);
+            mapping.send(args);
           }
         } else {
-          mapping.send(event);
-        }
-      }
-    }
-
-    public void send() {
-      for (ListenerMapping mapping : listeners) {
-        Object listener = mapping.listener;
-        if (listener instanceof SystemPart) {
-          if (bot.isActivated(listener)) {
-            mapping.send();
-          }
-        } else {
-          mapping.send();
+          mapping.send(args);
         }
       }
     }
@@ -103,23 +85,21 @@ public class DefaultEventRegistry implements EventRegistry {
       this.listener = listener;
     }
 
-    public void send() {
-      try {
-        method.invoke(listener);
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
-        e.printStackTrace();
-      }
-    }
-
-    public void send(Object event) {
-      try {
-        method.invoke(listener, event);
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
-        e.printStackTrace();
+    public void send(Object... args) {
+      Class<?>[] parameterTypes = method.getParameterTypes();
+      if (args.length == parameterTypes.length) {
+        for (int i = 0; i < parameterTypes.length; i++) {
+          if (!parameterTypes[i].isAssignableFrom(args[i].getClass())) {
+            return;
+          }
+        }
+        try {
+          method.invoke(listener, args);
+        } catch (IllegalAccessException e) {
+          e.printStackTrace();
+        } catch (InvocationTargetException e) {
+          e.printStackTrace();
+        }
       }
     }
 

@@ -5,8 +5,6 @@ public interface EventRegistry {
 
   void register(Object listener);
 
-  void send(String eventName);
-
-  void send(String eventName, Object eventObject);
+  void send(String eventName, Object... args);
 
 }

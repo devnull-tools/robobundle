@@ -33,7 +33,8 @@ public class DefaultGun extends BasePart implements Gun {
   }
 
   public double power() {
-    return firingSystem.activated().power();
+    FiringSystem system = firingSystem.activated();
+    return system != null ? system.power() : 0;
   }
 
   @Override

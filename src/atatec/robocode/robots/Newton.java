@@ -12,10 +12,9 @@ public class Newton extends AbstractBot {
 
   @Override
   public void configure() {
-    setBodyColor(Color.GRAY);
-    setGunColor(Color.LIGHT_GRAY);
-    setRadarColor(Color.RED);
-    setBulletColor(Color.ORANGE);
+    setBodyColor(new Color(39, 40, 34));
+    setGunColor(new Color(230, 219, 116));
+    setRadarColor(new Color(39, 40, 34));
 
     moveAllPartsSeparated();
 
@@ -29,6 +28,12 @@ public class Newton extends AbstractBot {
       .use(enemyLockScanning().lockClosestEnemy());
 
     behaveAs(dodger());
+    behaveAs(
+      bulletPainter()
+        .use(new Color(255, 84, 84)).forStrong()
+        .use(new Color(253, 151, 31)).forMedium()
+        .use(new Color(54, 151, 255)).forWeak()
+    );
   }
 
   @When(Events.ENEMY_FIRE)

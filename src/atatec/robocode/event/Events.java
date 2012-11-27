@@ -19,7 +19,6 @@ public final class Events {
   public static final String DEATH = "DEATH";
   public static final String CHANGE_TARGET = "CHANGE_TARGET";
   public static final String ADD_GRAVITY_POINT = "ADD_GRAVITY_POINT";
-  public static final String ADD_TEMPORARY_GRAVITY_POINT = "ADD_TEMPORARY_GRAVITY_POINT";
 
   private Events() {
   }
