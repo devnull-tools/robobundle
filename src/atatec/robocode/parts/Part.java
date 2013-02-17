@@ -2,6 +2,8 @@ package atatec.robocode.parts;
 
 import atatec.robocode.calc.Angle;
 
+import java.awt.Color;
+
 /** @author Marcelo Varella Barca Guimarães */
 public interface Part extends OnOffSystem {
 
@@ -10,5 +12,7 @@ public interface Part extends OnOffSystem {
   Angle turnRemaining();
 
   Angle heading();
+
+  void setColor(Color color);
 
 }

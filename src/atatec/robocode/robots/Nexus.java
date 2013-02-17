@@ -4,9 +4,15 @@ import atatec.robocode.AbstractBot;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
+import atatec.robocode.behaviour.BulletPainter;
+import atatec.robocode.behaviour.Dodger;
 import atatec.robocode.calc.Point;
 import atatec.robocode.event.EnemyFireEvent;
 import atatec.robocode.event.Events;
+import atatec.robocode.parts.aiming.PredictionAimingSystem;
+import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
+import atatec.robocode.parts.movement.GravityMovingSystem;
+import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 import atatec.robocode.util.GravityPointBuilder;
 import robocode.HitRobotEvent;
 import robocode.HitWallEvent;
@@ -21,42 +27,36 @@ import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 public class Nexus extends AbstractBot {
 
   protected void configure() {
-    setBodyColor(new Color(39, 40, 34));
-    setGunColor(new Color(166, 226, 46));
-    setRadarColor(new Color(39, 40, 34));
+    body().setColor(new Color(39, 40, 34));
+    gun().setColor(new Color(166, 226, 46));
+    radar().setColor(new Color(39, 40, 34));
 
     moveAllPartsSeparated();
 
     gun().aimingBehaviour()
-      .use(predictionAiming());
+      .use(new PredictionAimingSystem(this));
 
     gun().firingBehaviour()
-      .use(
-        energyBasedFiring()
-          .fireMaxAt(80)
-          .fireMinAt(30)
-      );
+      .use(new EnergyBasedFiringSystem(this)
+        .fireMaxAt(80)
+        .fireMinAt(30));
 
     radar().scanningBehaviour()
-      .use(enemyLockScanning())
-      .when(headToHeadBattle())
+      .use(new EnemyLockScanningSystem(this))
+      .when(headToHeadBattle());
 
-      .use(
-        enemyLockScanning()
-          .scanBattleField()
-      ).inOtherCases();
+    radar().scanningBehaviour()
+      .use(new EnemyLockScanningSystem(this).scanBattleField())
+      .inOtherCases();
 
     body().movingBehaviour()
-      .use(gravityMoving());
+      .use(new GravityMovingSystem(this));
 
-
-    behaveAs(dodger());
-    behaveAs(
-      bulletPainter()
-        .use(new Color(255, 84, 84)).forStrong()
-        .use(new Color(253, 151, 31)).forMedium()
-        .use(new Color(54, 151, 255)).forWeak()
-    );
+    behaveAs(new Dodger(this));
+    behaveAs(new BulletPainter(this)
+      .use(new Color(255, 84, 84)).forStrong()
+      .use(new Color(253, 151, 31)).forMedium()
+      .use(new Color(54, 151, 255)).forWeak());
   }
 
   @When(Events.HIT_BY_BULLET)

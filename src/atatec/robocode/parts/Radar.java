@@ -2,6 +2,7 @@ package atatec.robocode.parts;
 
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
+import atatec.robocode.behaviour.Behaviour;
 
 import java.util.Collection;
 
@@ -9,6 +10,8 @@ import java.util.Collection;
 public interface Radar extends Part, ScanningSystem {
 
   Enemy lockedTarget();
+
+  boolean hasLockedTarget();
 
   Collection<Enemy> knownEnemies();
 

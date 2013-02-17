@@ -1,14 +1,12 @@
 package atatec.robocode;
 
-import atatec.robocode.behaviour.BulletPainter;
-import atatec.robocode.behaviour.Dodger;
+import atatec.robocode.behaviour.Behaviour;
 import atatec.robocode.calc.Point;
 import atatec.robocode.event.BulletFiredEvent;
 import atatec.robocode.event.DefaultEventRegistry;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.EventRegistry;
 import atatec.robocode.parts.AimingSystem;
-import atatec.robocode.parts.Behaviour;
 import atatec.robocode.parts.Body;
 import atatec.robocode.parts.FiringSystem;
 import atatec.robocode.parts.Gun;
@@ -16,17 +14,9 @@ import atatec.robocode.parts.MovingSystem;
 import atatec.robocode.parts.Radar;
 import atatec.robocode.parts.ScanningSystem;
 import atatec.robocode.parts.Statistics;
-import atatec.robocode.parts.aiming.DirectAimingSystem;
-import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.body.DefaultBody;
-import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
 import atatec.robocode.parts.gun.DefaultGun;
-import atatec.robocode.parts.movement.EnemyCircleMovingSystem;
-import atatec.robocode.parts.movement.FleeEnemyMovingSystem;
-import atatec.robocode.parts.movement.FollowEnemyMovingSystem;
-import atatec.robocode.parts.movement.GravityMovingSystem;
 import atatec.robocode.parts.radar.DefaultRadar;
-import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 import robocode.AdvancedRobot;
 import robocode.Bullet;
 import robocode.BulletHitBulletEvent;
@@ -45,7 +35,19 @@ import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Map;
 
-import static atatec.robocode.event.Events.*;
+import static atatec.robocode.event.Events.BULLET_FIRED;
+import static atatec.robocode.event.Events.BULLET_HIT;
+import static atatec.robocode.event.Events.BULLET_HIT_BULLET;
+import static atatec.robocode.event.Events.BULLET_MISSED;
+import static atatec.robocode.event.Events.DEATH;
+import static atatec.robocode.event.Events.ENEMY_SCANNED;
+import static atatec.robocode.event.Events.HIT_BY_BULLET;
+import static atatec.robocode.event.Events.HIT_ROBOT;
+import static atatec.robocode.event.Events.HIT_WALL;
+import static atatec.robocode.event.Events.PAINT;
+import static atatec.robocode.event.Events.ROBOT_DEATH;
+import static atatec.robocode.event.Events.ROUND_ENDED;
+import static atatec.robocode.event.Events.WIN;
 
 /** @author Marcelo Varella Barca Guimarães */
 public abstract class AbstractBot extends AdvancedRobot implements Bot {
@@ -203,8 +205,9 @@ public abstract class AbstractBot extends AdvancedRobot implements Bot {
   }
 
   @Override
-  public void behaveAs(Object behaviour) {
+  public Bot behaveAs(Object behaviour) {
     eventRegistry.register(behaviour);
+    return this;
   }
 
   @Override
@@ -260,44 +263,5 @@ public abstract class AbstractBot extends AdvancedRobot implements Bot {
     }
   }
 
-  protected final AimingSystem predictionAiming() {
-    return new PredictionAimingSystem(this);
-  }
-
-  protected final AimingSystem directAiming() {
-    return new DirectAimingSystem(this);
-  }
-
-  protected final Dodger dodger() {
-    return new Dodger(this);
-  }
-
-  protected final BulletPainter bulletPainter() {
-    return new BulletPainter(this);
-  }
-
-  protected final EnergyBasedFiringSystem energyBasedFiring() {
-    return new EnergyBasedFiringSystem(this);
-  }
-
-  protected final GravityMovingSystem gravityMoving() {
-    return new GravityMovingSystem(this);
-  }
-
-  protected final EnemyCircleMovingSystem circleEnemyMoving() {
-    return new EnemyCircleMovingSystem(this);
-  }
-
-  protected final FollowEnemyMovingSystem followEnemyMoving() {
-    return new FollowEnemyMovingSystem(this);
-  }
-
-  protected final FleeEnemyMovingSystem fleeEnemyMoving() {
-    return new FleeEnemyMovingSystem(this);
-  }
-
-  protected final EnemyLockScanningSystem enemyLockScanning() {
-    return new EnemyLockScanningSystem(this);
-  }
 
 }

@@ -1,9 +1,9 @@
 package atatec.robocode.behaviour;
 
+import atatec.robocode.Bot;
 import atatec.robocode.annotation.When;
 import atatec.robocode.event.BulletFiredEvent;
 import atatec.robocode.event.Events;
-import robocode.Robot;
 import robocode.Rules;
 
 import java.awt.Color;
@@ -16,7 +16,7 @@ public class BulletPainter {
 
   private static final double MEDIUM_BULLET_POWER = (MAX_BULLET_POWER + MIN_BULLET_POWER) / 2;
 
-  private final Robot bot;
+  private final Bot bot;
 
   private Color strongColor = Color.RED;
   private Color mediumColor = Color.BLUE;
@@ -24,7 +24,7 @@ public class BulletPainter {
 
   private Color selected;
 
-  public BulletPainter(Robot bot) {
+  public BulletPainter(Bot bot) {
     this.bot = bot;
   }
 
@@ -51,11 +51,11 @@ public class BulletPainter {
   public void onBulletFired(BulletFiredEvent event) {
     double power = event.bullet().getPower();
     if (power >= Rules.MAX_BULLET_POWER) {
-      bot.setBulletColor(strongColor);
+      bot.gun().setBulletColor(strongColor);
     } else if (power >= MEDIUM_BULLET_POWER) {
-      bot.setBulletColor(mediumColor);
+      bot.gun().setBulletColor(mediumColor);
     } else {
-      bot.setBulletColor(weakColor);
+      bot.gun().setBulletColor(weakColor);
     }
   }
 

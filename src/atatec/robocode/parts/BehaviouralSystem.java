@@ -3,12 +3,14 @@ package atatec.robocode.parts;
 import atatec.robocode.Bot;
 import atatec.robocode.BotCommand;
 import atatec.robocode.Condition;
+import atatec.robocode.behaviour.Behaviour;
+import atatec.robocode.behaviour.BehaviourSelector;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class BehaviouralSystem<E> implements Behaviour<E> {
+public class BehaviouralSystem<E> implements Behaviour<E>, BehaviourSelector<E> {
 
   private final Map<Condition, E> components = new LinkedHashMap<Condition, E>();
 
@@ -28,7 +30,8 @@ public class BehaviouralSystem<E> implements Behaviour<E> {
     this.bot = bot;
   }
 
-  public Behaviour<E> use(E component) {
+  @Override
+  public BehaviourSelector<E> use(E component) {
     this.current = component;
     this.bot.behaveAs(component);
     return this;

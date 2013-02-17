@@ -7,10 +7,12 @@ import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.parts.Behaviour;
+import atatec.robocode.behaviour.Behaviour;
 import atatec.robocode.parts.BehaviouralSystem;
 import atatec.robocode.parts.Body;
 import atatec.robocode.parts.MovingSystem;
+
+import java.awt.Color;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class DefaultBody extends BasePart implements Body {
@@ -22,6 +24,11 @@ public class DefaultBody extends BasePart implements Body {
   public DefaultBody(AbstractBot bot) {
     this.bot = bot;
     this.movingSystem = new BehaviouralSystem<MovingSystem>(bot, this, new MovingBotCommand());
+  }
+
+  @Override
+  public void setColor(Color color) {
+    bot.setBodyColor(color);
   }
 
   @Override

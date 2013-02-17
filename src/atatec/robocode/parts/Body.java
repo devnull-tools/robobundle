@@ -1,5 +1,6 @@
 package atatec.robocode.parts;
 
+import atatec.robocode.behaviour.Behaviour;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 

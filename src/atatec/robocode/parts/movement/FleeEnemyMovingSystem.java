@@ -17,18 +17,17 @@ public class FleeEnemyMovingSystem implements MovingSystem {
 
   private final Bot bot;
 
-  private double distance;
-  private Angle angle;
-
   public FleeEnemyMovingSystem(Bot bot) {
     this.bot = bot;
   }
 
   public void move() {
     Enemy target = bot.radar().lockedTarget();
-    distance = MOVEMENT_LENGTH * random();
-    angle = target.bearing().plus(Angle.inDegrees(22.5));
-    bot.body().moveAndTurn(distance, angle);
+    if (target != null) {
+      double distance = MOVEMENT_LENGTH * random();
+      Angle angle = target.bearing().plus(Angle.inDegrees(22.5));
+      bot.body().moveAndTurn(distance, angle);
+    }
   }
 
   @When(Events.HIT_ROBOT)

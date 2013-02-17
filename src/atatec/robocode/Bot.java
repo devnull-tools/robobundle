@@ -50,17 +50,12 @@ public interface Bot {
    */
   void log(Object message, Object... params);
 
-  /** Clears out any pending events in the robot's event queue immediately. */
-  void clearEvents();
-
-  void behaveAs(Object behaviour);
+  Bot behaveAs(Object behaviour);
 
   Statistics statistics();
 
   boolean isActivated(Object component);
 
   EventRegistry events();
-
-  void execute();
 
 }

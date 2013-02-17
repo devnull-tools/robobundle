@@ -11,10 +11,7 @@ public class BattleField implements Field {
 
   private final double width;
 
-  private Robot reference;
-
   public BattleField(Robot robot) {
-    this.reference = robot;
     height = robot.getBattleFieldHeight();
     width = robot.getBattleFieldWidth();
   }

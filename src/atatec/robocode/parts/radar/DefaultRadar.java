@@ -11,12 +11,13 @@ import atatec.robocode.calc.Angle;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.parts.Behaviour;
+import atatec.robocode.behaviour.Behaviour;
 import atatec.robocode.parts.BehaviouralSystem;
 import atatec.robocode.parts.Radar;
 import atatec.robocode.parts.ScanningSystem;
 import atatec.robocode.parts.scanner.DefaultScanningSystem;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,15 +35,16 @@ public class DefaultRadar extends BasePart implements Radar {
   private Map<String, Enemy> enemies = new HashMap<String, Enemy>();
 
   public DefaultRadar(AbstractBot bot) {
-    this(bot, new DefaultScanningSystem());
-  }
-
-  public DefaultRadar(AbstractBot bot, ScanningSystem scanningSystem) {
     this.bot = bot;
     this.behaviour = new BehaviouralSystem<ScanningSystem>(
       bot, this, new RadarCommand()
     );
-    this.behaviour.use(scanningSystem);
+    this.behaviour.use(new DefaultScanningSystem());
+  }
+
+  @Override
+  public void setColor(Color color) {
+    bot.setRadarColor(color);
   }
 
   public Behaviour<ScanningSystem> scanningBehaviour() {
@@ -72,7 +74,10 @@ public class DefaultRadar extends BasePart implements Radar {
     return target;
   }
 
-  @Override
+  public boolean hasLockedTarget() {
+    return target != null;
+  }
+
   public Collection<Enemy> knownEnemies() {
     return new ArrayList<Enemy>(enemies.values());
   }

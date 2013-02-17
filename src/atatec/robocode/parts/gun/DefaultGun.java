@@ -8,10 +8,12 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.parts.Behaviour;
+import atatec.robocode.behaviour.Behaviour;
 import atatec.robocode.parts.BehaviouralSystem;
 import atatec.robocode.parts.FiringSystem;
 import atatec.robocode.parts.Gun;
+
+import java.awt.Color;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class DefaultGun extends BasePart implements Gun {
@@ -26,6 +28,16 @@ public class DefaultGun extends BasePart implements Gun {
     this.bot = bot;
     this.aimingSystem = new BehaviouralSystem<AimingSystem>(bot, this, new AimingBotCommand());
     this.firingSystem = new BehaviouralSystem<FiringSystem>(bot, this, new FiringBotCommand());
+  }
+
+  @Override
+  public void setColor(Color color) {
+    bot.setGunColor(color);
+  }
+
+  @Override
+  public void setBulletColor(Color color) {
+    bot.setBulletColor(color);
   }
 
   public void aim() {
