@@ -3,20 +3,19 @@ package atatec.robocode.parts;
 import atatec.robocode.Bot;
 import atatec.robocode.BotCommand;
 import atatec.robocode.Condition;
-import atatec.robocode.behaviour.Behaviour;
-import atatec.robocode.behaviour.BehaviourSelector;
+import atatec.robocode.behaviour.Behaviours;
+import atatec.robocode.condition.ConditionSelector;
+import atatec.robocode.condition.Conditions;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class BehaviouralSystem<E> implements Behaviour<E>, BehaviourSelector<E> {
+public class BehaviouralSystem<E> implements Behaviours<E> {
 
   private final Map<Condition, E> components = new LinkedHashMap<Condition, E>();
 
   private E current;
-
-  private E usedForOtherCases;
 
   private final Part part;
 
@@ -31,21 +30,22 @@ public class BehaviouralSystem<E> implements Behaviour<E>, BehaviourSelector<E> 
   }
 
   @Override
-  public BehaviourSelector<E> use(E component) {
+  public ConditionSelector<Behaviours<E>> use(E component) {
     this.current = component;
     this.bot.behaveAs(component);
-    return this;
-  }
+    return new ConditionSelector<Behaviours<E>>() {
 
-  public Behaviour<E> when(Condition condition) {
-    this.components.put(condition, current);
-    current = null;
-    return this;
-  }
+      public Behaviours<E> when(Condition condition) {
+        components.put(condition, current);
+        current = null;
+        return BehaviouralSystem.this;
+      }
 
-  public Behaviour<E> inOtherCases() {
-    this.usedForOtherCases = current;
-    return this;
+      public void inOtherCases() {
+        when(Conditions.ALWAYS);
+      }
+
+    };
   }
 
   public void behave() {
@@ -62,9 +62,6 @@ public class BehaviouralSystem<E> implements Behaviour<E>, BehaviourSelector<E> 
         if (entry.getKey().evaluate(bot)) {
           return entry.getValue();
         }
-      }
-      if (usedForOtherCases != null) {
-        return usedForOtherCases;
       }
     }
     return null;

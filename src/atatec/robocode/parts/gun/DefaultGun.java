@@ -3,12 +3,12 @@ package atatec.robocode.parts.gun;
 import atatec.robocode.AbstractBot;
 import atatec.robocode.Bot;
 import atatec.robocode.BotCommand;
+import atatec.robocode.behaviour.Behaviours;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.behaviour.Behaviour;
 import atatec.robocode.parts.BehaviouralSystem;
 import atatec.robocode.parts.FiringSystem;
 import atatec.robocode.parts.Gun;
@@ -101,11 +101,11 @@ public class DefaultGun extends BasePart implements Gun {
   }
 
 
-  public Behaviour<AimingSystem> aimingBehaviour() {
+  public Behaviours<AimingSystem> aimingBehaviour() {
     return aimingSystem;
   }
 
-  public Behaviour<FiringSystem> firingBehaviour() {
+  public Behaviours<FiringSystem> firingBehaviour() {
     return firingSystem;
   }
 

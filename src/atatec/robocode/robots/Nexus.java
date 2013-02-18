@@ -19,7 +19,8 @@ import robocode.HitWallEvent;
 
 import java.awt.Color;
 
-import static atatec.robocode.conditions.Conditions.headToHeadBattle;
+import static atatec.robocode.event.Events.*;
+import static atatec.robocode.condition.Conditions.headToHeadBattle;
 import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 
@@ -59,7 +60,7 @@ public class Nexus extends AbstractBot {
       .use(new Color(54, 151, 255)).forWeak());
   }
 
-  @When(Events.HIT_BY_BULLET)
+  @When(HIT_BY_BULLET)
   public void hitByBullet() {
     events().send(Events.ADD_GRAVITY_POINT,
       GravityPointBuilder
@@ -70,7 +71,7 @@ public class Nexus extends AbstractBot {
     );
   }
 
-  @When(Events.ENEMY_FIRE)
+  @When(ENEMY_FIRE)
   public void enemyFire(EnemyFireEvent event) {
     Enemy enemy = event.enemy();
     log("Enemy %s probably fired a bullet at %s. Adding anti-gravity point.",
@@ -89,7 +90,7 @@ public class Nexus extends AbstractBot {
     );
   }
 
-  @When(Events.HIT_ROBOT)
+  @When(HIT_ROBOT)
   public void hitHobot(HitRobotEvent event) {
     log("Adding anti-gravity points to avoid %s", event.getName());
     events().send(Events.ADD_GRAVITY_POINT,
@@ -100,7 +101,7 @@ public class Nexus extends AbstractBot {
     );
   }
 
-  @When(Events.HIT_WALL)
+  @When(HIT_WALL)
   public void onHitWall(HitWallEvent event) {
     log("Adding gravity point to avoid wall");
     Field battleField = radar().battleField();

@@ -2,7 +2,7 @@ package atatec.robocode.parts;
 
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
-import atatec.robocode.behaviour.Behaviour;
+import atatec.robocode.behaviour.Behaviours;
 
 import java.util.Collection;
 
@@ -17,7 +17,7 @@ public interface Radar extends Part, ScanningSystem {
 
   void lockTarget(Enemy enemy);
 
-  Behaviour<ScanningSystem> scanningBehaviour();
+  Behaviours<ScanningSystem> scanningBehaviour();
 
   int enemiesCount();
 

@@ -1,6 +1,6 @@
 package atatec.robocode.parts;
 
-import atatec.robocode.behaviour.Behaviour;
+import atatec.robocode.behaviour.Behaviours;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 
@@ -21,7 +21,7 @@ public interface Body extends Part, MovingSystem {
 
   double velocity();
 
-  Behaviour<MovingSystem> movingBehaviour();
+  Behaviours<MovingSystem> movingBehaviour();
 
   void moveTo(Point point, double distance);
 }

@@ -11,7 +11,7 @@ import atatec.robocode.calc.Angle;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.behaviour.Behaviour;
+import atatec.robocode.behaviour.Behaviours;
 import atatec.robocode.parts.BehaviouralSystem;
 import atatec.robocode.parts.Radar;
 import atatec.robocode.parts.ScanningSystem;
@@ -47,7 +47,7 @@ public class DefaultRadar extends BasePart implements Radar {
     bot.setRadarColor(color);
   }
 
-  public Behaviour<ScanningSystem> scanningBehaviour() {
+  public Behaviours<ScanningSystem> scanningBehaviour() {
     return behaviour;
   }
 

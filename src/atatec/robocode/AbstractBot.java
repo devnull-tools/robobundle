@@ -1,6 +1,6 @@
 package atatec.robocode;
 
-import atatec.robocode.behaviour.Behaviour;
+import atatec.robocode.behaviour.Behaviours;
 import atatec.robocode.calc.Point;
 import atatec.robocode.event.BulletFiredEvent;
 import atatec.robocode.event.DefaultEventRegistry;
@@ -47,6 +47,7 @@ import static atatec.robocode.event.Events.HIT_WALL;
 import static atatec.robocode.event.Events.PAINT;
 import static atatec.robocode.event.Events.ROBOT_DEATH;
 import static atatec.robocode.event.Events.ROUND_ENDED;
+import static atatec.robocode.event.Events.ROUND_STARTED;
 import static atatec.robocode.event.Events.WIN;
 
 /** @author Marcelo Varella Barca Guimarães */
@@ -62,14 +63,14 @@ public abstract class AbstractBot extends AdvancedRobot implements Bot {
 
   private BotStatistics statistics = new BotStatistics();
 
-  private Map<Class, Behaviour> behavioursMap;
+  private Map<Class, Behaviours> behavioursMap;
 
   protected final void initialize(Gun gun, Body body, Radar radar) {
     this.gun = gun;
     this.body = body;
     this.radar = radar;
 
-    this.behavioursMap = new HashMap<Class, Behaviour>();
+    this.behavioursMap = new HashMap<Class, Behaviours>();
     behavioursMap.put(AimingSystem.class, gun.aimingBehaviour());
     behavioursMap.put(FiringSystem.class, gun.firingBehaviour());
     behavioursMap.put(ScanningSystem.class, radar.scanningBehaviour());
@@ -90,13 +91,14 @@ public abstract class AbstractBot extends AdvancedRobot implements Bot {
 
   protected abstract void battle();
 
-  public void run() {
+  public final void run() {
     initialize();
     configure();
     events().register(body);
     events().register(gun);
     events().register(radar);
     events().register(this);
+    events().send(ROUND_STARTED);
     battle();
   }
 
@@ -217,7 +219,7 @@ public abstract class AbstractBot extends AdvancedRobot implements Bot {
 
   @Override
   public boolean isActivated(Object component) {
-    for (Map.Entry<Class, Behaviour> entry : behavioursMap.entrySet()) {
+    for (Map.Entry<Class, Behaviours> entry : behavioursMap.entrySet()) {
       if (entry.getKey().isAssignableFrom(component.getClass())
         && entry.getValue().activated().equals(component)) {
         return true;

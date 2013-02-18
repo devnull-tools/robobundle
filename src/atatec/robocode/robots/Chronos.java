@@ -13,9 +13,9 @@ import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 
 import java.awt.Color;
 
-import static atatec.robocode.conditions.Conditions.enemyIsAtMost;
-import static atatec.robocode.conditions.Conditions.enemyIsAtRange;
-import static atatec.robocode.conditions.Conditions.enemyIsMoving;
+import static atatec.robocode.condition.Conditions.enemyIsAtMost;
+import static atatec.robocode.condition.Conditions.enemyIsAtRange;
+import static atatec.robocode.condition.Conditions.enemyIsMoving;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class Chronos extends AbstractBot {

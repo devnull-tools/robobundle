@@ -15,6 +15,7 @@ public final class Events {
   public static final String BULLET_FIRED = "BULLET_FIRED";
   public static final String WIN = "WIN";
   public static final String ENEMY_FIRE = "ENEMY_FIRE";
+  public static final String ROUND_STARTED = "ROUND_STARTED";
   public static final String ROUND_ENDED = "ROUND_ENDED";
   public static final String DEATH = "DEATH";
   public static final String CHANGE_TARGET = "CHANGE_TARGET";

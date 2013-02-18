@@ -3,11 +3,11 @@ package atatec.robocode.parts.body;
 import atatec.robocode.AbstractBot;
 import atatec.robocode.Bot;
 import atatec.robocode.BotCommand;
+import atatec.robocode.behaviour.Behaviours;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.behaviour.Behaviour;
 import atatec.robocode.parts.BehaviouralSystem;
 import atatec.robocode.parts.Body;
 import atatec.robocode.parts.MovingSystem;
@@ -44,7 +44,7 @@ public class DefaultBody extends BasePart implements Body {
     movingSystem.behave();
   }
 
-  public Behaviour<MovingSystem> movingBehaviour() {
+  public Behaviours<MovingSystem> movingBehaviour() {
     return movingSystem;
   }
 
