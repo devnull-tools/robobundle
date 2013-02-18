@@ -12,6 +12,10 @@ public class TemporaryGravityPoint {
   }
 
   public GravityPoint point() {
+    return point;
+  }
+
+  public GravityPoint pull() {
     duration--;
     if (duration < 0) {
       return null;

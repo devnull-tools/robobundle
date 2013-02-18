@@ -3,7 +3,7 @@ package atatec.robocode.calc;
 import atatec.robocode.util.GravityPointBuilder;
 
 import static atatec.robocode.calc.BotMath.areEquals;
-import static atatec.robocode.calc.BotMath.convert;
+import static atatec.robocode.calc.BotMath.toBigecimal;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class Point {
@@ -25,6 +25,10 @@ public class Point {
     return y;
   }
 
+  public java.awt.Point toAwtPoint() {
+    return new java.awt.Point((int) x, (int) y);
+  }
+
   public Point plus(Point other) {
     return new Point(x + other.x, y + other.y);
   }
@@ -35,26 +39,6 @@ public class Point {
 
   public Position bearingTo(Point other) {
     return new Position(this, other);
-  }
-
-  public Position absoluteBearingTo(Point other) {
-    Position position = bearingTo(other);
-    double xo = other.x - x;
-    double yo = other.y - y;
-    double distance = position.distance();
-    if (xo > 0 && yo > 0) {
-      return new Position(Angle.inRadians(Math.asin(xo / distance)), distance);
-    }
-    if (xo > 0 && yo < 0) {
-      return new Position(Angle.inRadians(Math.PI - Math.asin(xo / distance)), distance);
-    }
-    if (xo < 0 && yo < 0) {
-      return new Position(Angle.inRadians(Math.PI + Math.asin(-xo / distance)), distance);
-    }
-    if (xo < 0 && yo > 0) {
-      return new Position(Angle.inRadians(2.0 * Math.PI - Math.asin(-xo / distance)), distance);
-    }
-    return new Position(Angle.ZERO, distance);
   }
 
   public GravityPointBuilder gravitational() {
@@ -78,8 +62,8 @@ public class Point {
   @Override
   public int hashCode() {
     int result = 17;
-    result = 37 * result + convert(x).hashCode();
-    result = 37 * result + convert(y).hashCode();
+    result = 37 * result + toBigecimal(x).hashCode();
+    result = 37 * result + toBigecimal(y).hashCode();
     return result;
   }
 

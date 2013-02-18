@@ -1,6 +1,5 @@
 package atatec.robocode;
 
-import atatec.robocode.behaviour.Behaviours;
 import atatec.robocode.calc.Point;
 import atatec.robocode.event.BulletFiredEvent;
 import atatec.robocode.event.DefaultEventRegistry;
@@ -63,14 +62,14 @@ public abstract class AbstractBot extends AdvancedRobot implements Bot {
 
   private BotStatistics statistics = new BotStatistics();
 
-  private Map<Class, Behaviours> behavioursMap;
+  private Map<Class, Conditional> behavioursMap;
 
   protected final void initialize(Gun gun, Body body, Radar radar) {
     this.gun = gun;
     this.body = body;
     this.radar = radar;
 
-    this.behavioursMap = new HashMap<Class, Behaviours>();
+    this.behavioursMap = new HashMap<Class, Conditional>();
     behavioursMap.put(AimingSystem.class, gun.aimingBehaviour());
     behavioursMap.put(FiringSystem.class, gun.firingBehaviour());
     behavioursMap.put(ScanningSystem.class, radar.scanningBehaviour());
@@ -81,7 +80,7 @@ public abstract class AbstractBot extends AdvancedRobot implements Bot {
     initialize(new DefaultGun(this), new DefaultBody(this), new DefaultRadar(this));
   }
 
-  protected void moveAllPartsSeparated() {
+  protected void independentMovement() {
     setAdjustGunForRobotTurn(true);
     setAdjustRadarForGunTurn(true);
     setAdjustRadarForRobotTurn(true);
@@ -207,9 +206,8 @@ public abstract class AbstractBot extends AdvancedRobot implements Bot {
   }
 
   @Override
-  public Bot behaveAs(Object behaviour) {
+  public void plug(Object behaviour) {
     eventRegistry.register(behaviour);
-    return this;
   }
 
   @Override
@@ -219,7 +217,7 @@ public abstract class AbstractBot extends AdvancedRobot implements Bot {
 
   @Override
   public boolean isActivated(Object component) {
-    for (Map.Entry<Class, Behaviours> entry : behavioursMap.entrySet()) {
+    for (Map.Entry<Class, Conditional> entry : behavioursMap.entrySet()) {
       if (entry.getKey().isAssignableFrom(component.getClass())
         && entry.getValue().activated().equals(component)) {
         return true;

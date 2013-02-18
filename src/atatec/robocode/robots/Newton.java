@@ -2,13 +2,14 @@ package atatec.robocode.robots;
 
 import atatec.robocode.AbstractBot;
 import atatec.robocode.annotation.When;
-import atatec.robocode.behaviour.BulletPainter;
-import atatec.robocode.behaviour.Dodger;
+import atatec.robocode.plugin.BulletPaint;
+import atatec.robocode.plugin.Dodger;
 import atatec.robocode.event.EnemyFireEvent;
 import atatec.robocode.event.Events;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
+import atatec.robocode.plugin.EnemyPaint;
 
 import java.awt.Color;
 
@@ -21,7 +22,7 @@ public class Newton extends AbstractBot {
     gun().setColor(new Color(230, 219, 116));
     radar().setColor(new Color(39, 40, 34));
 
-    moveAllPartsSeparated();
+    independentMovement();
 
     gun().aimingBehaviour()
       .use(new PredictionAimingSystem(this));
@@ -32,8 +33,9 @@ public class Newton extends AbstractBot {
     radar().scanningBehaviour()
       .use(new EnemyLockScanningSystem(this).lockClosestEnemy());
 
-    behaveAs(new Dodger(this));
-    behaveAs(new BulletPainter(this)
+    plug(new Dodger(this));
+    plug(new EnemyPaint(this));
+    plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()
       .use(new Color(253, 151, 31)).forMedium()
       .use(new Color(54, 151, 255)).forWeak());

@@ -1,8 +1,8 @@
 package atatec.robocode.parts;
 
+import atatec.robocode.Conditional;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
-import atatec.robocode.behaviour.Behaviours;
 
 import java.util.Collection;
 
@@ -17,12 +17,13 @@ public interface Radar extends Part, ScanningSystem {
 
   void lockTarget(Enemy enemy);
 
-  Behaviours<ScanningSystem> scanningBehaviour();
+  void unlockTarget();
+
+  Conditional<ScanningSystem> scanningBehaviour();
 
   int enemiesCount();
 
   Field battleField();
 
   long time();
-
 }

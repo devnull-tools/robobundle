@@ -4,23 +4,28 @@ import atatec.robocode.AbstractBot;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
-import atatec.robocode.behaviour.BulletPainter;
-import atatec.robocode.behaviour.Dodger;
+import atatec.robocode.plugin.BulletPaint;
+import atatec.robocode.plugin.Dodger;
 import atatec.robocode.calc.Point;
 import atatec.robocode.event.EnemyFireEvent;
-import atatec.robocode.event.Events;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
 import atatec.robocode.parts.movement.GravityMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
+import atatec.robocode.plugin.EnemyPaint;
 import atatec.robocode.util.GravityPointBuilder;
 import robocode.HitRobotEvent;
 import robocode.HitWallEvent;
 
 import java.awt.Color;
 
-import static atatec.robocode.event.Events.*;
 import static atatec.robocode.condition.Conditions.headToHeadBattle;
+import static atatec.robocode.event.Events.ADD_GRAVITY_POINT;
+import static atatec.robocode.event.Events.ENEMY_FIRE;
+import static atatec.robocode.event.Events.HIT_BY_BULLET;
+import static atatec.robocode.event.Events.HIT_ROBOT;
+import static atatec.robocode.event.Events.HIT_WALL;
+import static atatec.robocode.event.Events.ROUND_STARTED;
 import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 
@@ -32,7 +37,7 @@ public class Nexus extends AbstractBot {
     gun().setColor(new Color(166, 226, 46));
     radar().setColor(new Color(39, 40, 34));
 
-    moveAllPartsSeparated();
+    independentMovement();
 
     gun().aimingBehaviour()
       .use(new PredictionAimingSystem(this));
@@ -44,17 +49,17 @@ public class Nexus extends AbstractBot {
 
     radar().scanningBehaviour()
       .use(new EnemyLockScanningSystem(this))
-      .when(headToHeadBattle());
+      .when(headToHeadBattle())
 
-    radar().scanningBehaviour()
       .use(new EnemyLockScanningSystem(this).scanBattleField())
       .inOtherCases();
 
     body().movingBehaviour()
       .use(new GravityMovingSystem(this));
 
-    behaveAs(new Dodger(this));
-    behaveAs(new BulletPainter(this)
+    plug(new Dodger(this));
+    plug(new EnemyPaint(this));
+    plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()
       .use(new Color(253, 151, 31)).forMedium()
       .use(new Color(54, 151, 255)).forWeak());
@@ -62,7 +67,7 @@ public class Nexus extends AbstractBot {
 
   @When(HIT_BY_BULLET)
   public void hitByBullet() {
-    events().send(Events.ADD_GRAVITY_POINT,
+    events().send(ADD_GRAVITY_POINT,
       GravityPointBuilder
         .antiGravityPoint()
         .at(location())
@@ -74,15 +79,15 @@ public class Nexus extends AbstractBot {
   @When(ENEMY_FIRE)
   public void enemyFire(EnemyFireEvent event) {
     Enemy enemy = event.enemy();
-    log("Enemy %s probably fired a bullet at %s. Adding anti-gravity point.",
+    log("Enemy %s probably fired a bullet at %s. Adding anti-gravity pull.",
       enemy.name(), enemy.position());
-    events().send(Events.ADD_GRAVITY_POINT,
+    events().send(ADD_GRAVITY_POINT,
       antiGravityPoint()
         .at(enemy.location())
         .withValue(65)
         .during(20)
     );
-    events().send(Events.ADD_GRAVITY_POINT,
+    events().send(ADD_GRAVITY_POINT,
       antiGravityPoint()
         .at(location())
         .withValue(20)
@@ -93,7 +98,7 @@ public class Nexus extends AbstractBot {
   @When(HIT_ROBOT)
   public void hitHobot(HitRobotEvent event) {
     log("Adding anti-gravity points to avoid %s", event.getName());
-    events().send(Events.ADD_GRAVITY_POINT,
+    events().send(ADD_GRAVITY_POINT,
       antiGravityPoint()
         .at(location())
         .withValue(30)
@@ -103,9 +108,9 @@ public class Nexus extends AbstractBot {
 
   @When(HIT_WALL)
   public void onHitWall(HitWallEvent event) {
-    log("Adding gravity point to avoid wall");
+    log("Adding gravity pull to avoid wall");
     Field battleField = radar().battleField();
-    events().send(Events.ADD_GRAVITY_POINT,
+    events().send(ADD_GRAVITY_POINT,
       gravityPoint()
         .at(battleField.center())
         .withValue(100)
@@ -113,23 +118,9 @@ public class Nexus extends AbstractBot {
     );
   }
 
-  protected void battle() {
-    addWallGravityPoints();
-    while (true) {
-      log("***********************************");
-      addEnemyPoints();
-      addRandomPoints();
-      radar().scan();
-      body().move();
-      gun().aim();
-      if (radar().lockedTarget() != null) {
-        gun().fire();
-      }
-      execute();
-    }
-  }
-
-  private void addWallGravityPoints() {
+  @When(ROUND_STARTED)
+  public void addWallGravityPoints() {
+    log("Adding gravity points to avoid walls");
     Field battleField = radar().battleField();
     Point location = location();
     Point[] wallPoints = new Point[]{
@@ -144,9 +135,24 @@ public class Nexus extends AbstractBot {
       battleField.upLeft(),
     };
     for (Point wallPoint : wallPoints) {
-      events().send(Events.ADD_GRAVITY_POINT,
+      events().send(ADD_GRAVITY_POINT,
         wallPoint.antiGravitational().withValue(35)
       );
+    }
+  }
+
+  protected void battle() {
+    while (true) {
+      log("***********************************");
+      addEnemyPoints();
+      addRandomPoints();
+      radar().scan();
+      body().move();
+      gun().aim();
+      if (radar().hasLockedTarget()) {
+        gun().fire();
+      }
+      execute();
     }
   }
 
@@ -155,7 +161,7 @@ public class Nexus extends AbstractBot {
 
   private void addEnemyPoints() {
     for (Enemy enemy : radar().knownEnemies()) {
-      events().send(Events.ADD_GRAVITY_POINT,
+      events().send(ADD_GRAVITY_POINT,
         enemy.location()
           .antiGravitational()
           .withValue(40)
@@ -174,7 +180,7 @@ public class Nexus extends AbstractBot {
       (Math.random() * 30) - 15,
       (Math.random() * 30) - 15
     );
-    events().send(Events.ADD_GRAVITY_POINT,
+    events().send(ADD_GRAVITY_POINT,
       battleField.center().plus(mod)
         .gravitational()
         .withValue(midpointPower)

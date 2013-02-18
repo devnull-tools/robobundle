@@ -1,14 +1,14 @@
 package atatec.robocode.parts.body;
 
 import atatec.robocode.AbstractBot;
+import atatec.robocode.Conditional;
 import atatec.robocode.Bot;
 import atatec.robocode.BotCommand;
-import atatec.robocode.behaviour.Behaviours;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.parts.BehaviouralSystem;
+import atatec.robocode.parts.ConditionalSystem;
 import atatec.robocode.parts.Body;
 import atatec.robocode.parts.MovingSystem;
 
@@ -17,13 +17,13 @@ import java.awt.Color;
 /** @author Marcelo Varella Barca Guimarães */
 public class DefaultBody extends BasePart implements Body {
 
-  private final BehaviouralSystem<MovingSystem> movingSystem;
+  private final ConditionalSystem<MovingSystem> movingSystem;
 
   private final AbstractBot bot;
 
   public DefaultBody(AbstractBot bot) {
     this.bot = bot;
-    this.movingSystem = new BehaviouralSystem<MovingSystem>(bot, this, new MovingBotCommand());
+    this.movingSystem = new ConditionalSystem<MovingSystem>(bot, this, new MovingBotCommand());
   }
 
   @Override
@@ -44,7 +44,7 @@ public class DefaultBody extends BasePart implements Body {
     movingSystem.behave();
   }
 
-  public Behaviours<MovingSystem> movingBehaviour() {
+  public Conditional<MovingSystem> movingBehaviour() {
     return movingSystem;
   }
 
@@ -130,7 +130,7 @@ public class DefaultBody extends BasePart implements Body {
     return bot.getVelocity();
   }
 
-  private class MovingBotCommand implements BotCommand<MovingSystem> {
+  private static class MovingBotCommand implements BotCommand<MovingSystem> {
 
     public void execute(Bot bot, MovingSystem movingSystem) {
       movingSystem.move();

@@ -5,9 +5,12 @@ import atatec.robocode.Enemy;
 import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.event.EnemyScannedEvent;
-import atatec.robocode.event.Events;
 import atatec.robocode.parts.ScanningSystem;
 import robocode.RobotDeathEvent;
+
+import static atatec.robocode.event.Events.CHANGE_TARGET;
+import static atatec.robocode.event.Events.ENEMY_SCANNED;
+import static atatec.robocode.event.Events.ROBOT_DEATH;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class EnemyLockScanningSystem implements ScanningSystem {
@@ -38,7 +41,7 @@ public class EnemyLockScanningSystem implements ScanningSystem {
     return this;
   }
 
-  @When(Events.ENEMY_SCANNED)
+  @When(ENEMY_SCANNED)
   public void onEnemyScanned(EnemyScannedEvent event) {
     Enemy enemy = event.enemy();
     bot.log("Enemy spotted at %s", enemy.position());
@@ -52,16 +55,17 @@ public class EnemyLockScanningSystem implements ScanningSystem {
     }
   }
 
-  @When(Events.ROBOT_DEATH)
+  @When(ROBOT_DEATH)
   public void onRobotDeath(RobotDeathEvent event) {
     if (event.getName().equals(bot.radar().lockedTarget().name())) {
-      changeTarget = true;
+      changeTarget();
     }
   }
 
-  @When(Events.CHANGE_TARGET)
+  @When(CHANGE_TARGET)
   public void changeTarget() {
     changeTarget = true;
+    bot.radar().unlockTarget();
   }
 
   private boolean canLock(Enemy enemy) {
@@ -80,4 +84,5 @@ public class EnemyLockScanningSystem implements ScanningSystem {
     }
     return false;
   }
+
 }

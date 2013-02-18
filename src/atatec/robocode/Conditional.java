@@ -1,11 +1,11 @@
-package atatec.robocode.behaviour;
+package atatec.robocode;
 
 import atatec.robocode.condition.ConditionSelector;
 
 /** @author Marcelo Varella Barca Guimarães */
-public interface Behaviours<E> {
+public interface Conditional<E> {
 
-  ConditionSelector<Behaviours<E>> use(E component);
+  ConditionSelector<Conditional<E>> use(E component);
 
   E activated();
 

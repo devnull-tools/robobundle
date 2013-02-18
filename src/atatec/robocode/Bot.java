@@ -50,7 +50,7 @@ public interface Bot {
    */
   void log(Object message, Object... params);
 
-  Bot behaveAs(Object behaviour);
+  void plug(Object plugin);
 
   Statistics statistics();
 

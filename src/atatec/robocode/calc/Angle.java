@@ -3,7 +3,7 @@ package atatec.robocode.calc;
 import robocode.util.Utils;
 
 import static atatec.robocode.calc.BotMath.areEquals;
-import static atatec.robocode.calc.BotMath.convert;
+import static atatec.robocode.calc.BotMath.toBigecimal;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class Angle {
@@ -117,7 +117,7 @@ public class Angle {
 
   @Override
   public int hashCode() {
-    return convert(radians).hashCode();
+    return toBigecimal(radians).hashCode();
   }
 
   public static Angle inDegrees(double degrees) {

@@ -3,17 +3,25 @@ package atatec.robocode.parts.aiming;
 import atatec.robocode.Bot;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
+import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Angle;
+import atatec.robocode.calc.Point;
 import atatec.robocode.parts.AimingSystem;
+import atatec.robocode.util.Drawer;
 import robocode.Rules;
 import robocode.util.Utils;
 
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+
+import static atatec.robocode.event.Events.PAINT;
+import static java.awt.Color.RED;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class PredictionAimingSystem implements AimingSystem {
 
   private final Bot bot;
+  private Point predictedLocation;
 
   public PredictionAimingSystem(Bot bot) {
     this.bot = bot;
@@ -53,6 +61,15 @@ public class PredictionAimingSystem implements AimingSystem {
       double theta = Utils.normalAbsoluteAngle(Math.atan2(predictedX - myX, predictedY - myY));
 
       bot.gun().turn(new Angle(Utils.normalRelativeAngle(theta - bot.gun().heading().radians())));
+      predictedLocation = new Point(predictedX, predictedY);
+    }
+  }
+
+  @When(PAINT)
+  public void paint(Graphics2D g) {
+    if (predictedLocation != null) {
+      Drawer drawer = new Drawer(g);
+      drawer.draw(RED).cross().at(predictedLocation);
     }
   }
 

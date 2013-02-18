@@ -2,6 +2,7 @@ package atatec.robocode.parts.radar;
 
 import atatec.robocode.AbstractBot;
 import atatec.robocode.BattleField;
+import atatec.robocode.Conditional;
 import atatec.robocode.Bot;
 import atatec.robocode.BotCommand;
 import atatec.robocode.Enemy;
@@ -11,8 +12,7 @@ import atatec.robocode.calc.Angle;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.behaviour.Behaviours;
-import atatec.robocode.parts.BehaviouralSystem;
+import atatec.robocode.parts.ConditionalSystem;
 import atatec.robocode.parts.Radar;
 import atatec.robocode.parts.ScanningSystem;
 import atatec.robocode.parts.scanner.DefaultScanningSystem;
@@ -26,7 +26,7 @@ import java.util.Map;
 /** @author Marcelo Varella Barca Guimarães */
 public class DefaultRadar extends BasePart implements Radar {
 
-  private final BehaviouralSystem<ScanningSystem> behaviour;
+  private final ConditionalSystem<ScanningSystem> behaviour;
 
   private final AbstractBot bot;
 
@@ -36,7 +36,7 @@ public class DefaultRadar extends BasePart implements Radar {
 
   public DefaultRadar(AbstractBot bot) {
     this.bot = bot;
-    this.behaviour = new BehaviouralSystem<ScanningSystem>(
+    this.behaviour = new ConditionalSystem<ScanningSystem>(
       bot, this, new RadarCommand()
     );
     this.behaviour.use(new DefaultScanningSystem());
@@ -47,7 +47,7 @@ public class DefaultRadar extends BasePart implements Radar {
     bot.setRadarColor(color);
   }
 
-  public Behaviours<ScanningSystem> scanningBehaviour() {
+  public Conditional<ScanningSystem> scanningBehaviour() {
     return behaviour;
   }
 
@@ -87,6 +87,11 @@ public class DefaultRadar extends BasePart implements Radar {
   }
 
   @Override
+  public void unlockTarget() {
+    this.target = null;
+  }
+
+  @Override
   public Angle heading() {
     return new Angle(bot.getRadarHeadingRadians());
   }
@@ -112,7 +117,7 @@ public class DefaultRadar extends BasePart implements Radar {
     enemies.put(enemy.name(), enemy);
   }
 
-  private class RadarCommand implements BotCommand<ScanningSystem> {
+  private static class RadarCommand implements BotCommand<ScanningSystem> {
 
     public void execute(Bot bot, ScanningSystem scanningSystem) {
       scanningSystem.scan();

@@ -2,14 +2,20 @@ package atatec.robocode.event;
 
 import atatec.robocode.Bot;
 import atatec.robocode.annotation.When;
+import atatec.robocode.parts.OnOffSystem;
 import atatec.robocode.parts.SystemPart;
+import org.atatec.trugger.exception.ExceptionHandler;
+import org.atatec.trugger.loader.ImplementationLoader;
+import org.atatec.trugger.reflection.MethodInvoker;
+import org.atatec.trugger.reflection.ReflectionFactory;
+import org.atatec.trugger.reflection.Reflector;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class DefaultEventRegistry implements EventRegistry {
@@ -18,8 +24,11 @@ public class DefaultEventRegistry implements EventRegistry {
 
   private Map<String, Mapping> mappings = new HashMap<String, Mapping>(20);
 
+  private final ReflectionFactory reflectionFactory;
+
   public DefaultEventRegistry(Bot bot) {
     this.bot = bot;
+    this.reflectionFactory = ImplementationLoader.instance().get(ReflectionFactory.class);
   }
 
   private Mapping getMapping(String eventName) {
@@ -33,19 +42,30 @@ public class DefaultEventRegistry implements EventRegistry {
 
   @Override
   public void register(final Object listener) {
-    Method[] methods = listener.getClass().getMethods();
+    bot.log("Registering listener: %s", listener);
+    Set<Method> methods = reflect()
+      .visible().methods().recursively()
+      .annotatedWith(When.class)
+      .in(listener);
+    bot.log("Found %d listener methods", methods.size());
     String eventName;
     for (Method method : methods) {
-      if (method.isAnnotationPresent(When.class)) {
-        eventName = method.getAnnotation(When.class).value();
-        getMapping(eventName).add(listener, method);
-      }
+      eventName = method.getAnnotation(When.class).value();
+      getMapping(eventName).add(listener, method);
     }
   }
 
   @Override
   public void send(String eventName, Object... args) {
     getMapping(eventName).send(args);
+  }
+
+  private Reflector reflect() {
+    return reflectionFactory.createReflector();
+  }
+
+  private MethodInvoker invoke(Method method) {
+    return reflectionFactory.createInvoker(method);
   }
 
   private class Mapping {
@@ -63,7 +83,11 @@ public class DefaultEventRegistry implements EventRegistry {
     public void send(Object... args) {
       for (ListenerMapping mapping : listeners) {
         Object listener = mapping.listener;
-        if (listener instanceof SystemPart) {
+        if (listener instanceof OnOffSystem) {
+          if (((OnOffSystem) listener).isOn()) {
+            mapping.send(args);
+          }
+        } else if (listener instanceof SystemPart) {
           if (bot.isActivated(listener)) {
             mapping.send(args);
           }
@@ -75,7 +99,7 @@ public class DefaultEventRegistry implements EventRegistry {
 
   }
 
-  private class ListenerMapping {
+  private class ListenerMapping implements ExceptionHandler {
 
     private Method method;
     private Object listener;
@@ -93,14 +117,14 @@ public class DefaultEventRegistry implements EventRegistry {
             return;
           }
         }
-        try {
-          method.invoke(listener, args);
-        } catch (IllegalAccessException e) {
-          e.printStackTrace();
-        } catch (InvocationTargetException e) {
-          e.printStackTrace();
-        }
+        invoke(method).in(listener).handlingExceptionsWith(this).withArgs(args);
       }
+    }
+
+    @Override
+    public void handle(Throwable throwable) {
+      bot.log("Error while invoking %s:%n\t%s - %s",
+        method, throwable.getClass(), throwable.getMessage());
     }
 
   }

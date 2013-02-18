@@ -1,15 +1,15 @@
 package atatec.robocode.parts.gun;
 
 import atatec.robocode.AbstractBot;
+import atatec.robocode.Conditional;
 import atatec.robocode.Bot;
 import atatec.robocode.BotCommand;
-import atatec.robocode.behaviour.Behaviours;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.parts.BehaviouralSystem;
+import atatec.robocode.parts.ConditionalSystem;
 import atatec.robocode.parts.FiringSystem;
 import atatec.robocode.parts.Gun;
 
@@ -20,14 +20,14 @@ public class DefaultGun extends BasePart implements Gun {
 
   private final AbstractBot bot;
 
-  private final BehaviouralSystem<AimingSystem> aimingSystem;
+  private final ConditionalSystem<AimingSystem> aimingSystem;
 
-  private final BehaviouralSystem<FiringSystem> firingSystem;
+  private final ConditionalSystem<FiringSystem> firingSystem;
 
   public DefaultGun(AbstractBot bot) {
     this.bot = bot;
-    this.aimingSystem = new BehaviouralSystem<AimingSystem>(bot, this, new AimingBotCommand());
-    this.firingSystem = new BehaviouralSystem<FiringSystem>(bot, this, new FiringBotCommand());
+    this.aimingSystem = new ConditionalSystem<AimingSystem>(bot, this, new AimingBotCommand());
+    this.firingSystem = new ConditionalSystem<FiringSystem>(bot, this, new FiringBotCommand());
   }
 
   @Override
@@ -101,11 +101,11 @@ public class DefaultGun extends BasePart implements Gun {
   }
 
 
-  public Behaviours<AimingSystem> aimingBehaviour() {
+  public Conditional<AimingSystem> aimingBehaviour() {
     return aimingSystem;
   }
 
-  public Behaviours<FiringSystem> firingBehaviour() {
+  public Conditional<FiringSystem> firingBehaviour() {
     return firingSystem;
   }
 
@@ -118,7 +118,7 @@ public class DefaultGun extends BasePart implements Gun {
     return this;
   }
 
-  private class FiringBotCommand implements BotCommand<FiringSystem> {
+  private static class FiringBotCommand implements BotCommand<FiringSystem> {
 
     public void execute(Bot bot, FiringSystem firingSystem) {
       firingSystem.fire();
@@ -126,7 +126,7 @@ public class DefaultGun extends BasePart implements Gun {
 
   }
 
-  private class AimingBotCommand implements BotCommand<AimingSystem> {
+  private static class AimingBotCommand implements BotCommand<AimingSystem> {
 
     public void execute(Bot bot, AimingSystem aimingSystem) {
       aimingSystem.aim();
