@@ -119,7 +119,7 @@ public class Nexus extends AbstractBot {
     events().send(ADD_GRAVITY_POINT,
       gravityPoint()
         .at(battleField.center())
-        .withValue(battleField.diagonal() / 2)
+        .withValue(battleField.diagonal())
         .during(10)
     );
   }
@@ -164,7 +164,7 @@ public class Nexus extends AbstractBot {
 
     for (Point wallPoint : wallPoints) {
       events().send(ADD_GRAVITY_POINT,
-        wallPoint.antiGravitational().withValue(battleField.diagonal() * 2)
+        wallPoint.antiGravitational().withValue(battleField.diagonal() / 2)
       );
     }
   }
@@ -173,11 +173,6 @@ public class Nexus extends AbstractBot {
     while (true) {
       log("***********************************");
       addEnemyPoints();
-      events().send(ADD_GRAVITY_POINT,
-        location().antiGravitational()
-          .withValue(100)
-          .during(1)
-      );
       radar().scan();
       body().move();
       gun().aim();

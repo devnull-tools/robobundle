@@ -67,8 +67,7 @@ public class GravitationalMovingSystem implements MovingSystem {
     }
     bot.log("Location: %s", location);
     bot.log("Forced Location: %s", forcePoint);
-    double move = location.bearingTo(forcePoint).distance();
-    bot.body().moveTo(forcePoint, move * 10);
+    bot.body().moveTo(forcePoint, 10);
   }
 
   @When(Events.DRAW)
