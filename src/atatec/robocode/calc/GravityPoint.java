@@ -15,11 +15,16 @@ public class GravityPoint extends Point {
     this.value = value;
   }
 
+  public double value(){
+    return value;
+  }
+
   public Point force(Point reference) {
     Position bearing = bearingTo(reference);
     Angle angle = Angle.inRadians(Math.PI / 2 - Math.atan2(y() - reference.y(), x() - reference.x()));
     double distance = bearing.distance();
-    double force = value / Math.pow(distance, 2);
+    double force = BotMath.areEquals(distance, 0) ?
+      value : value / Math.pow(distance, 2);
     return new Point(angle.sin() * force, angle.cos() * force);
   }
 

@@ -21,11 +21,12 @@ public class EnemyCircleMovingSystem implements MovingSystem {
 
   public void move() {
     double ahead = cos(bot.radar().time() >> 4) * MOVEMENT_LENGTH * random();
-    Enemy enemy = bot.radar().lockedTarget();
-    if (enemy != null) {
+    if (bot.radar().hasLockedTarget()) {
+      Enemy enemy = bot.radar().lockedTarget();
+      Angle heading = bot.body().heading();
       Angle angle = enemy.bearing().plus(Angle.PI_OVER_TWO);
       bot.log("Turning %s", angle);
-      bot.log("Body is at %s", bot.body().heading());
+      bot.log("Body is at %s", heading);
       bot.body().moveAndTurn(ahead, angle);
     }
   }

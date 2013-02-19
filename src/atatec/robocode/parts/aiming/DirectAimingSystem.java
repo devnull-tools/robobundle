@@ -27,19 +27,16 @@ public class DirectAimingSystem implements AimingSystem {
     Enemy enemy = bot.radar().lockedTarget();
     if (enemy != null) {
       enemyLocation = enemy.location();
-      Angle angle = angleToAim(enemy.bearing());
+      Angle angle = enemy.bearing()
+        .plus(bot.body().heading())
+        .minus(bot.gun().heading());
       bot.gun().turn(angle);
     }
   }
 
-  public Angle angleToAim(Angle bearing) {
-    return bearing.plus(bot.body().heading()).minus(bot.gun().heading());
-  }
-
   @When(PAINT)
   public void paint(Graphics2D g) {
-    Enemy enemy = bot.radar().lockedTarget();
-    if (enemy != null) {
+    if (enemyLocation != null) {
       Drawer drawer = new Drawer(g);
       drawer.draw(RED).cross().at(enemyLocation);
     }

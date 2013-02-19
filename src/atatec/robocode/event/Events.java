@@ -12,6 +12,7 @@ public final class Events {
   public static final String HIT_ROBOT = "HIT_ROBOT";
   public static final String HIT_WALL = "HIT_WALL";
   public static final String PAINT = "PAINT";
+  public static final String DRAW = "DRAW";
   public static final String BULLET_FIRED = "BULLET_FIRED";
   public static final String WIN = "WIN";
   public static final String ENEMY_FIRE = "ENEMY_FIRE";

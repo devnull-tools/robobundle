@@ -15,12 +15,22 @@ public class TemporaryGravityPoint {
     return point;
   }
 
+  public int duration() {
+    return duration;
+  }
+
   public GravityPoint pull() {
     duration--;
-    if (duration < 0) {
-      return null;
-    }
     return point;
+  }
+
+  public boolean expired() {
+    return duration < 0;
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%s | %d", point.toString(), duration);
   }
 
 }

@@ -16,6 +16,7 @@ import atatec.robocode.parts.Statistics;
 import atatec.robocode.parts.body.DefaultBody;
 import atatec.robocode.parts.gun.DefaultGun;
 import atatec.robocode.parts.radar.DefaultRadar;
+import atatec.robocode.util.Drawer;
 import robocode.AdvancedRobot;
 import robocode.Bullet;
 import robocode.BulletHitBulletEvent;
@@ -39,6 +40,7 @@ import static atatec.robocode.event.Events.BULLET_HIT;
 import static atatec.robocode.event.Events.BULLET_HIT_BULLET;
 import static atatec.robocode.event.Events.BULLET_MISSED;
 import static atatec.robocode.event.Events.DEATH;
+import static atatec.robocode.event.Events.DRAW;
 import static atatec.robocode.event.Events.ENEMY_SCANNED;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
 import static atatec.robocode.event.Events.HIT_ROBOT;
@@ -188,6 +190,7 @@ public abstract class AbstractBot extends AdvancedRobot implements Bot {
   @Override
   public void onPaint(Graphics2D g) {
     eventRegistry.send(PAINT, g);
+    eventRegistry.send(DRAW, new Drawer(g));
   }
 
   @Override

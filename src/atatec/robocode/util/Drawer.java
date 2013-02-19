@@ -2,6 +2,8 @@ package atatec.robocode.util;
 
 import atatec.robocode.util.drawing.CircleDrawer;
 import atatec.robocode.util.drawing.CrossDrawer;
+import atatec.robocode.util.drawing.MarkerDrawer;
+import atatec.robocode.util.drawing.StringDrawer;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -13,6 +15,10 @@ public class Drawer {
 
   public Drawer(Graphics2D g) {
     this.g = g;
+  }
+
+  public Graphics2D graphics() {
+    return g;
   }
 
   public ShapeSelector draw(Color color) {
@@ -28,6 +34,14 @@ public class Drawer {
 
     public CrossDrawer cross() {
       return new CrossDrawer(g);
+    }
+
+    public MarkerDrawer marker() {
+      return new MarkerDrawer(g);
+    }
+
+    public StringDrawer string(Object message, Object... args) {
+      return new StringDrawer(g, String.format(message.toString(), args));
     }
 
   }

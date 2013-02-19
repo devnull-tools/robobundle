@@ -13,12 +13,19 @@ import static java.awt.Color.GREEN;
 import static java.awt.Color.YELLOW;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class EnemyPaint {
+public class EnemyScannerInfo {
 
   private final Bot bot;
 
-  public EnemyPaint(Bot bot) {
+  private boolean showAttributes;
+
+  public EnemyScannerInfo(Bot bot) {
     this.bot = bot;
+  }
+
+  public EnemyScannerInfo showAttributes() {
+    this.showAttributes = true;
+    return this;
   }
 
   @When(PAINT)
@@ -35,6 +42,11 @@ public class EnemyPaint {
       drawer.draw(GREEN).circle().at(location);
     } else {
       drawer.draw(YELLOW).circle().at(location);
+    }
+    if(showAttributes) {
+      drawer.draw(GREEN).string("%.3f", enemy.distance()).at(enemy.location());
+      drawer.draw(GREEN).string("%.3f", enemy.velocity()).at(enemy.location().down(15));
+      drawer.draw(GREEN).string("%s", enemy.location()).at(enemy.location().down(30));
     }
   }
 

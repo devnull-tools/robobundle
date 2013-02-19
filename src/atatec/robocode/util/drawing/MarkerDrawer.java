@@ -5,14 +5,14 @@ import atatec.robocode.calc.Point;
 import java.awt.Graphics2D;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class CrossDrawer {
+public class MarkerDrawer {
 
   private final Graphics2D g;
 
   private Point location;
   private int size = 8;
 
-  public CrossDrawer(Graphics2D g) {
+  public MarkerDrawer(Graphics2D g) {
     this.g = g;
   }
 
@@ -21,7 +21,7 @@ public class CrossDrawer {
     draw();
   }
 
-  public CrossDrawer ofSize(int size) {
+  public MarkerDrawer ofSize(int size) {
     this.size = size;
     return this;
   }
@@ -30,8 +30,8 @@ public class CrossDrawer {
     int x = location.toAwtPoint().x;
     int y = location.toAwtPoint().y;
     int lineSize = size / 2;
-    g.drawLine(x, y - lineSize, x, y + lineSize);
-    g.drawLine(x - lineSize, y, x + lineSize, y);
+    g.drawLine(x - lineSize, y - lineSize, x + lineSize, y + lineSize);
+    g.drawLine(x - lineSize, y + lineSize, x + lineSize, y - lineSize);
   }
 
 }

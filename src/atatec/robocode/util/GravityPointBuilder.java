@@ -7,12 +7,7 @@ import atatec.robocode.calc.Point;
 public class GravityPointBuilder {
 
   private Point point;
-  private double value;
   private int mod;
-
-  public GravityPointBuilder() {
-    mod = 1;
-  }
 
   private GravityPointBuilder(int mod) {
     this.mod = mod;

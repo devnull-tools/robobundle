@@ -25,6 +25,22 @@ public class Point {
     return y;
   }
 
+  public Point left(double amount) {
+    return new Point(x - amount, y);
+  }
+
+  public Point right(double amount) {
+    return new Point(x + amount, y);
+  }
+
+  public Point up(double amount) {
+    return new Point(x, y + amount);
+  }
+
+  public Point down(double amount) {
+    return new Point(x, y - amount);
+  }
+
   public java.awt.Point toAwtPoint() {
     return new java.awt.Point((int) x, (int) y);
   }

@@ -1,8 +1,6 @@
 package atatec.robocode.robots;
 
 import atatec.robocode.AbstractBot;
-import atatec.robocode.plugin.BulletPaint;
-import atatec.robocode.plugin.Dodger;
 import atatec.robocode.parts.aiming.DirectAimingSystem;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
@@ -10,7 +8,9 @@ import atatec.robocode.parts.movement.EnemyCircleMovingSystem;
 import atatec.robocode.parts.movement.FleeEnemyMovingSystem;
 import atatec.robocode.parts.movement.FollowEnemyMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
-import atatec.robocode.plugin.EnemyPaint;
+import atatec.robocode.plugin.BulletPaint;
+import atatec.robocode.plugin.Dodger;
+import atatec.robocode.plugin.EnemyScannerInfo;
 
 import java.awt.Color;
 
@@ -39,7 +39,9 @@ public class Chronos extends AbstractBot {
       .use(new EnergyBasedFiringSystem(this));
 
     radar().scanningBehaviour()
-      .use(new EnemyLockScanningSystem(this));
+      .use(new EnemyLockScanningSystem(this)
+        .scanBattleField()
+        .lockClosestEnemy());
 
     body().movingBehaviour()
       .use(new EnemyCircleMovingSystem(this))
@@ -52,7 +54,10 @@ public class Chronos extends AbstractBot {
       .inOtherCases();
 
     plug(new Dodger(this));
-    plug(new EnemyPaint(this));
+
+    plug(new EnemyScannerInfo(this)
+      .showAttributes());
+
     plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()
       .use(new Color(253, 151, 31)).forMedium()
