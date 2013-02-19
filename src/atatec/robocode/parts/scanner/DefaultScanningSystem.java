@@ -6,7 +6,7 @@ import atatec.robocode.parts.ScanningSystem;
 public class DefaultScanningSystem implements ScanningSystem {
 
   @Override
-  public void scan() {
+  public void execute() {
 
   }
 

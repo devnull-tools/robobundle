@@ -3,8 +3,6 @@ package atatec.robocode.parts.radar;
 import atatec.robocode.BaseBot;
 import atatec.robocode.BattleField;
 import atatec.robocode.Conditional;
-import atatec.robocode.Bot;
-import atatec.robocode.BotCommand;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
@@ -26,7 +24,7 @@ import java.util.Map;
 /** @author Marcelo Varella Barca Guimarães */
 public class DefaultRadar extends BasePart implements Radar {
 
-  private final ConditionalSystem<ScanningSystem> behaviour;
+  private final ConditionalSystem<ScanningSystem> scanningSystem;
 
   private final BaseBot bot;
 
@@ -36,10 +34,8 @@ public class DefaultRadar extends BasePart implements Radar {
 
   public DefaultRadar(BaseBot bot) {
     this.bot = bot;
-    this.behaviour = new ConditionalSystem<ScanningSystem>(
-      bot, this, new RadarCommand()
-    );
-    this.behaviour.use(new DefaultScanningSystem());
+    this.scanningSystem = new ConditionalSystem<ScanningSystem>(bot, this);
+    this.scanningSystem.use(new DefaultScanningSystem());
   }
 
   @Override
@@ -47,8 +43,8 @@ public class DefaultRadar extends BasePart implements Radar {
     bot.setRadarColor(color);
   }
 
-  public Conditional<ScanningSystem> scanningBehaviour() {
-    return behaviour;
+  public Conditional<ScanningSystem> scanningSystem() {
+    return scanningSystem;
   }
 
   @Override
@@ -67,7 +63,7 @@ public class DefaultRadar extends BasePart implements Radar {
   }
 
   public void scan() {
-    behaviour.behave();
+    scanningSystem.execute();
   }
 
   public Enemy lockedTarget() {
@@ -115,14 +111,6 @@ public class DefaultRadar extends BasePart implements Radar {
   public void onEnemyScanned(EnemyScannedEvent event) {
     Enemy enemy = event.enemy();
     enemies.put(enemy.name(), enemy);
-  }
-
-  private static class RadarCommand implements BotCommand<ScanningSystem> {
-
-    public void execute(Bot bot, ScanningSystem scanningSystem) {
-      scanningSystem.scan();
-    }
-
   }
 
 }

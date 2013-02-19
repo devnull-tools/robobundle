@@ -3,76 +3,26 @@ package atatec.robocode;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
-import robocode.ScannedRobotEvent;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class Enemy {
+public interface Enemy {
+  Position position();
 
-  private final String name;
-  private final Position position;
-  private final double distance;
-  private final double energy;
-  private final double velocity;
-  private final Angle heading;
-  private final Angle bearing;
-  private final Point location;
+  double distance();
 
-  public Enemy(Bot bot, ScannedRobotEvent event) {
-    this.position = new Position(
-      new Angle(event.getBearingRadians()),
-      event.getDistance()
-    );
-    this.distance = event.getDistance();
-    this.energy = event.getEnergy();
-    this.heading = new Angle(event.getHeadingRadians());
-    this.bearing = new Angle(event.getBearingRadians());
-    this.velocity = event.getVelocity();
-    this.name = event.getName();
-    Angle absoluteBearing = bot.body().heading().plus(bearing);
-    Point botLocation = bot.location();
-    double enemyX = botLocation.x() + distance * absoluteBearing.sin();
-    double enemyY = botLocation.y() + distance * absoluteBearing.cos();
-    this.location = new Point(enemyX, enemyY);
-  }
+  double energy();
 
-  public Position position() {
-    return position;
-  }
+  Angle heading();
 
-  public double distance() {
-    return distance;
-  }
+  Angle bearing();
 
-  public double energy() {
-    return energy;
-  }
+  double velocity();
 
-  public Angle heading() {
-    return heading;
-  }
+  String name();
 
-  public Angle bearing() {
-    return bearing;
-  }
+  Point location();
 
-  public double velocity() {
-    return velocity;
-  }
+  boolean isMoving();
 
-  public String name() {
-    return name;
-  }
-
-  public Point location() {
-    return location;
-  }
-
-  public boolean isMoving() {
-    return velocity > 0;
-  }
-
-  public boolean isStopped() {
-    return !isMoving();
-  }
-
+  boolean isStopped();
 }

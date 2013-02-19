@@ -21,7 +21,7 @@ public class FollowEnemyMovingSystem implements MovingSystem {
     this.bot = bot;
   }
 
-  public void move() {
+  public void execute() {
     double ahead = MOVEMENT_LENGTH * random();
     Enemy target = bot.radar().lockedTarget();
     if (target != null) {

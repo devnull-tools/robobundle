@@ -22,7 +22,7 @@ import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 
-import static atatec.robocode.condition.Conditions.headToHeadBattle;
+import static atatec.robocode.condition.Conditions.enemyIsAtMost;
 import static atatec.robocode.event.Events.ADD_GRAVITY_POINT;
 import static atatec.robocode.event.Events.ENEMY_FIRE;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
@@ -50,9 +50,9 @@ public class Nexus extends BaseBot {
         .fireMaxAt(80)
         .fireMinAt(30));
 
-    radar().scanningBehaviour()
+    radar().scanningSystem()
       .use(new EnemyLockScanningSystem(this))
-      .when(headToHeadBattle())
+      .when(enemyIsAtMost(radar().battleField().diagonal() / 3))
 
       .use(new EnemyLockScanningSystem(this).scanBattleField())
       .inOtherCases();

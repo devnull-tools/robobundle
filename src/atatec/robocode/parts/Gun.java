@@ -6,11 +6,19 @@ import atatec.robocode.calc.Point;
 import java.awt.Color;
 
 /** @author Marcelo Varella Barca Guimarães */
-public interface Gun extends Part, AimingSystem, FiringSystem {
+public interface Gun extends Part {
 
   Gun aimTo(Point point);
 
   void fire(double power);
+
+  Gun aim();
+
+  void fireIfTargetLocked();
+
+  void fire();
+
+  double power();
 
   double heat();
 

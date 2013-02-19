@@ -21,7 +21,7 @@ public class FleeEnemyMovingSystem implements MovingSystem {
     this.bot = bot;
   }
 
-  public void move() {
+  public void execute() {
     Enemy target = bot.radar().lockedTarget();
     if (target != null) {
       double distance = MOVEMENT_LENGTH * random();

@@ -2,8 +2,6 @@ package atatec.robocode.parts.gun;
 
 import atatec.robocode.BaseBot;
 import atatec.robocode.Conditional;
-import atatec.robocode.Bot;
-import atatec.robocode.BotCommand;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
@@ -26,8 +24,8 @@ public class DefaultGun extends BasePart implements Gun {
 
   public DefaultGun(BaseBot bot) {
     this.bot = bot;
-    this.aimingSystem = new ConditionalSystem<AimingSystem>(bot, this, new AimingBotCommand());
-    this.firingSystem = new ConditionalSystem<FiringSystem>(bot, this, new FiringBotCommand());
+    this.aimingSystem = new ConditionalSystem<AimingSystem>(bot, this);
+    this.firingSystem = new ConditionalSystem<FiringSystem>(bot, this);
   }
 
   @Override
@@ -40,13 +38,16 @@ public class DefaultGun extends BasePart implements Gun {
     bot.setBulletColor(color);
   }
 
-  public void aim() {
-    aimingSystem.behave();
+  public Gun aim() {
+    aimingSystem.execute();
+    return this;
   }
 
-  public double power() {
-    FiringSystem system = firingSystem.activated();
-    return system != null ? system.power() : 0;
+  @Override
+  public void fireIfTargetLocked() {
+    if (bot.radar().hasLockedTarget()) {
+      fire();
+    }
   }
 
   @Override
@@ -55,7 +56,12 @@ public class DefaultGun extends BasePart implements Gun {
   }
 
   public void fire() {
-    firingSystem.behave();
+    firingSystem.execute();
+  }
+
+  public double power() {
+    FiringSystem activated = firingSystem.activated();
+    return activated != null ? activated.power() : 0;
   }
 
   @Override
@@ -118,19 +124,4 @@ public class DefaultGun extends BasePart implements Gun {
     return this;
   }
 
-  private static class FiringBotCommand implements BotCommand<FiringSystem> {
-
-    public void execute(Bot bot, FiringSystem firingSystem) {
-      firingSystem.fire();
-    }
-
-  }
-
-  private static class AimingBotCommand implements BotCommand<AimingSystem> {
-
-    public void execute(Bot bot, AimingSystem aimingSystem) {
-      aimingSystem.aim();
-    }
-
-  }
 }

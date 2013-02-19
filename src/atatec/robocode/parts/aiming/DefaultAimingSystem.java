@@ -6,7 +6,7 @@ import atatec.robocode.parts.AimingSystem;
 public class DefaultAimingSystem implements AimingSystem {
 
   @Override
-  public void aim() {
+  public void execute() {
   }
 
 }

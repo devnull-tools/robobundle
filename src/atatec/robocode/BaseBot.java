@@ -74,7 +74,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     this.behavioursMap = new HashMap<Class, Conditional>();
     behavioursMap.put(AimingSystem.class, gun.aimingBehaviour());
     behavioursMap.put(FiringSystem.class, gun.firingBehaviour());
-    behavioursMap.put(ScanningSystem.class, radar.scanningBehaviour());
+    behavioursMap.put(ScanningSystem.class, radar.scanningSystem());
     behavioursMap.put(MovingSystem.class, body.movingBehaviour());
   }
 

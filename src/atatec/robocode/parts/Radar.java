@@ -7,7 +7,7 @@ import atatec.robocode.Field;
 import java.util.Collection;
 
 /** @author Marcelo Varella Barca Guimarães */
-public interface Radar extends Part, ScanningSystem {
+public interface Radar extends Part {
 
   Enemy lockedTarget();
 
@@ -19,7 +19,9 @@ public interface Radar extends Part, ScanningSystem {
 
   void unlockTarget();
 
-  Conditional<ScanningSystem> scanningBehaviour();
+  Conditional<ScanningSystem> scanningSystem();
+
+  void scan();
 
   int enemiesCount();
 

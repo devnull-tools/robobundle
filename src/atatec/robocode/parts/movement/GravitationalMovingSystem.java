@@ -44,7 +44,7 @@ public class GravitationalMovingSystem implements MovingSystem {
   }
 
   @Override
-  public void move() {
+  public void execute() {
     Collection<GravityPoint> gPoints = new ArrayList<GravityPoint>(fixedPoints);
     Iterator<TemporaryGravityPoint> iterator = temporaryPoints.iterator();
     while (iterator.hasNext()) {

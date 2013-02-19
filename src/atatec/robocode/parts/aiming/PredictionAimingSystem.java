@@ -11,10 +11,9 @@ import atatec.robocode.util.Drawer;
 import robocode.Rules;
 import robocode.util.Utils;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
-import static atatec.robocode.event.Events.PAINT;
+import static atatec.robocode.event.Events.DRAW;
 import static java.awt.Color.RED;
 
 /** @author Marcelo Varella Barca Guimarães */
@@ -27,7 +26,7 @@ public class PredictionAimingSystem implements AimingSystem {
     this.bot = bot;
   }
 
-  public void aim() {
+  public void execute() {
     double bulletSpeed = Rules.getBulletSpeed(bot.gun().power());
     double myX = bot.location().x();
     double myY = bot.location().y();
@@ -65,10 +64,9 @@ public class PredictionAimingSystem implements AimingSystem {
     }
   }
 
-  @When(PAINT)
-  public void paint(Graphics2D g) {
+  @When(DRAW)
+  public void draw(Drawer drawer) {
     if (predictedLocation != null) {
-      Drawer drawer = new Drawer(g);
       drawer.draw(RED).cross().at(predictedLocation);
     }
   }

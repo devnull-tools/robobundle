@@ -36,8 +36,7 @@ public class EnergyBasedFiringSystem implements FiringSystem {
     return bestPower(bestPowerBasedOnBot(), bestPowerBasedOnEnemy());
   }
 
-  @Override
-  public void fire() {
+  public void execute() {
     bot.gun().fire(power());
   }
 

@@ -24,7 +24,7 @@ public class DefaultFiringSystem implements FiringSystem {
   }
 
   @Override
-  public void fire() {
+  public void execute() {
     bot.gun().fire(power());
   }
 

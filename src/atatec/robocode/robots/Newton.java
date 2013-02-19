@@ -30,7 +30,7 @@ public class Newton extends BaseBot {
     gun().firingBehaviour()
       .use(new EnergyBasedFiringSystem(this));
 
-    radar().scanningBehaviour()
+    radar().scanningSystem()
       .use(new EnemyLockScanningSystem(this).lockClosestEnemy());
 
     plug(new Dodger(this));

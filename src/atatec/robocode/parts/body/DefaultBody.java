@@ -2,14 +2,12 @@ package atatec.robocode.parts.body;
 
 import atatec.robocode.BaseBot;
 import atatec.robocode.Conditional;
-import atatec.robocode.Bot;
-import atatec.robocode.BotCommand;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.parts.ConditionalSystem;
 import atatec.robocode.parts.Body;
+import atatec.robocode.parts.ConditionalSystem;
 import atatec.robocode.parts.MovingSystem;
 
 import java.awt.Color;
@@ -23,7 +21,7 @@ public class DefaultBody extends BasePart implements Body {
 
   public DefaultBody(BaseBot bot) {
     this.bot = bot;
-    this.movingSystem = new ConditionalSystem<MovingSystem>(bot, this, new MovingBotCommand());
+    this.movingSystem = new ConditionalSystem<MovingSystem>(bot, this);
   }
 
   @Override
@@ -41,7 +39,7 @@ public class DefaultBody extends BasePart implements Body {
   }
 
   public void move() {
-    movingSystem.behave();
+    movingSystem.execute();
   }
 
   public Conditional<MovingSystem> movingBehaviour() {
@@ -128,13 +126,6 @@ public class DefaultBody extends BasePart implements Body {
   @Override
   public double velocity() {
     return bot.getVelocity();
-  }
-
-  private static class MovingBotCommand implements BotCommand<MovingSystem> {
-
-    public void execute(Bot bot, MovingSystem movingSystem) {
-      movingSystem.move();
-    }
   }
 
 }

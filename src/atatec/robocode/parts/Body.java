@@ -5,7 +5,7 @@ import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 
 /** @author Marcelo Varella Barca Guimarães */
-public interface Body extends Part, MovingSystem {
+public interface Body extends Part {
 
   Body turnTo(Angle angle);
 
@@ -16,6 +16,8 @@ public interface Body extends Part, MovingSystem {
   void move(double distance);
 
   void moveAndTurn(double distance, Angle angle);
+
+  void move();
 
   double energy();
 

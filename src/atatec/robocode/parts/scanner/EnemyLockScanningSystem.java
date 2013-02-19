@@ -27,7 +27,7 @@ public class EnemyLockScanningSystem implements ScanningSystem {
   }
 
   @Override
-  public void scan() {
+  public void execute() {
     bot.radar().turn(turnAmount);
   }
 
@@ -48,6 +48,7 @@ public class EnemyLockScanningSystem implements ScanningSystem {
     if (canLock(enemy)) {
       bot.log("Locking %s", enemy.name());
       bot.radar().lockTarget(enemy);
+      bot.gun().aim();
       changeTarget = false;
     }
     if (!scanBattleField) {

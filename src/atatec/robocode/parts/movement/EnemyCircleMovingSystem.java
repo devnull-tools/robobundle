@@ -19,7 +19,7 @@ public class EnemyCircleMovingSystem implements MovingSystem {
     this.bot = bot;
   }
 
-  public void move() {
+  public void execute() {
     double ahead = cos(bot.radar().time() >> 4) * MOVEMENT_LENGTH * random();
     if (bot.radar().hasLockedTarget()) {
       Enemy enemy = bot.radar().lockedTarget();

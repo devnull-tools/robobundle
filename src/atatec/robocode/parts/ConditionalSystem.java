@@ -1,9 +1,9 @@
 package atatec.robocode.parts;
 
-import atatec.robocode.Conditional;
 import atatec.robocode.Bot;
-import atatec.robocode.BotCommand;
+import atatec.robocode.Command;
 import atatec.robocode.Condition;
+import atatec.robocode.Conditional;
 import atatec.robocode.condition.ConditionSelector;
 import atatec.robocode.condition.Conditions;
 
@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class ConditionalSystem<E> implements Conditional<E> {
+public class ConditionalSystem<E extends Command> implements Conditional<E>, Command {
 
   private final Map<Condition, E> components = new LinkedHashMap<Condition, E>();
 
@@ -19,13 +19,10 @@ public class ConditionalSystem<E> implements Conditional<E> {
 
   private final Part part;
 
-  private final BotCommand<E> command;
-
   private final Bot bot;
 
-  public ConditionalSystem(Bot bot, Part part, BotCommand<E> command) {
+  public ConditionalSystem(Bot bot, Part part) {
     this.part = part;
-    this.command = command;
     this.bot = bot;
   }
 
@@ -48,29 +45,26 @@ public class ConditionalSystem<E> implements Conditional<E> {
     };
   }
 
-  public void behave() {
-    if (part.isOn()) {
-      execute(activated());
-    }
-  }
-
   public E activated() {
-    if (components.isEmpty()) {
-      return current;
-    } else {
-      for (Map.Entry<Condition, E> entry : components.entrySet()) {
-        if (entry.getKey().evaluate(bot)) {
-          return entry.getValue();
+    if (part.isOn()) {
+      if (components.isEmpty()) {
+        return current;
+      } else {
+        for (Map.Entry<Condition, E> entry : components.entrySet()) {
+          if (entry.getKey().evaluate(bot)) {
+            return entry.getValue();
+          }
         }
       }
     }
     return null;
   }
 
-  private void execute(E component) {
-    if (component != null) {
-      bot.log("Executing " + component.getClass().getSimpleName());
-      this.command.execute(bot, component);
+  @Override
+  public void execute() {
+    E activated = activated();
+    if(activated != null) {
+      activated.execute();
     }
   }
 

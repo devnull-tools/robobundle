@@ -1,26 +1,40 @@
 package atatec.robocode.robots;
 
 import atatec.robocode.BaseBot;
-import atatec.robocode.parts.movement.GravitationalMovingSystem;
+import atatec.robocode.parts.aiming.DirectAimingSystem;
+import atatec.robocode.parts.firing.DefaultFiringSystem;
+import atatec.robocode.parts.movement.EnemyCircleMovingSystem;
+import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class Buster extends BaseBot {
-
-  private GravitationalMovingSystem movingSystem = new GravitationalMovingSystem(this);
 
   @Override
   protected void configure() {
     independentMovement();
 
     body().movingBehaviour()
-      .use(movingSystem);
+      .use(new EnemyCircleMovingSystem(this));
+
+    gun().aimingBehaviour()
+      .use(new DirectAimingSystem(this));
+
+    radar().scanningSystem()
+      .use(new EnemyLockScanningSystem(this));
+
+    gun().firingBehaviour()
+      .use(new DefaultFiringSystem(this));
   }
 
   @Override
   protected void battle() {
-    movingSystem.add(radar().battleField().center().gravitational().withValue(300));
     while(true) {
+      log("************************************");
+      radar().scan();
       body().move();
+      if(radar().hasLockedTarget()) {
+        gun().fire();
+      }
       execute();
     }
   }

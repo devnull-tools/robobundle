@@ -5,7 +5,6 @@ import atatec.robocode.parts.aiming.DirectAimingSystem;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
 import atatec.robocode.parts.movement.EnemyCircleMovingSystem;
-import atatec.robocode.parts.movement.FleeEnemyMovingSystem;
 import atatec.robocode.parts.movement.FollowEnemyMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 import atatec.robocode.plugin.BulletPaint;
@@ -15,7 +14,6 @@ import atatec.robocode.plugin.EnemyScannerInfo;
 import java.awt.Color;
 
 import static atatec.robocode.condition.Conditions.enemyIsAtMost;
-import static atatec.robocode.condition.Conditions.enemyIsAtRange;
 import static atatec.robocode.condition.Conditions.enemyIsMoving;
 
 /** @author Marcelo Varella Barca Guimarães */
@@ -38,17 +36,12 @@ public class Chronos extends BaseBot {
     gun().firingBehaviour()
       .use(new EnergyBasedFiringSystem(this));
 
-    radar().scanningBehaviour()
-      .use(new EnemyLockScanningSystem(this)
-        .scanBattleField()
-        .lockClosestEnemy());
+    radar().scanningSystem()
+      .use(new EnemyLockScanningSystem(this));
 
     body().movingBehaviour()
       .use(new EnemyCircleMovingSystem(this))
-      .when(enemyIsAtRange(100, 400))
-
-      .use(new FleeEnemyMovingSystem(this))
-      .when(enemyIsAtMost(100))
+      .when(enemyIsAtMost(400))
 
       .use(new FollowEnemyMovingSystem(this))
       .inOtherCases();
@@ -69,7 +62,6 @@ public class Chronos extends BaseBot {
       log("***********************************");
       radar().scan();
       body().move();
-      gun().aim();
       if (radar().hasLockedTarget()) {
         gun().fire();
       }

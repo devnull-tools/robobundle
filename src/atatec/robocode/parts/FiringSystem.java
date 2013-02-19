@@ -5,6 +5,4 @@ public interface FiringSystem extends SystemPart {
 
   double power();
 
-  void fire();
-
 }

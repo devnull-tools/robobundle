@@ -8,9 +8,7 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.util.Drawer;
 
-import java.awt.Graphics2D;
-
-import static atatec.robocode.event.Events.PAINT;
+import static atatec.robocode.event.Events.DRAW;
 import static java.awt.Color.RED;
 
 /** @author Marcelo Varella Barca Guimarães */
@@ -23,7 +21,7 @@ public class DirectAimingSystem implements AimingSystem {
     this.bot = bot;
   }
 
-  public void aim() {
+  public void execute() {
     Enemy enemy = bot.radar().lockedTarget();
     if (enemy != null) {
       enemyLocation = enemy.location();
@@ -34,10 +32,9 @@ public class DirectAimingSystem implements AimingSystem {
     }
   }
 
-  @When(PAINT)
-  public void paint(Graphics2D g) {
+  @When(DRAW)
+  public void paint(Drawer drawer) {
     if (enemyLocation != null) {
-      Drawer drawer = new Drawer(g);
       drawer.draw(RED).cross().at(enemyLocation);
     }
   }
