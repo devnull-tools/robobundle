@@ -1,6 +1,6 @@
 package atatec.robocode.parts.gun;
 
-import atatec.robocode.AbstractBot;
+import atatec.robocode.BaseBot;
 import atatec.robocode.Conditional;
 import atatec.robocode.Bot;
 import atatec.robocode.BotCommand;
@@ -18,13 +18,13 @@ import java.awt.Color;
 /** @author Marcelo Varella Barca Guimarães */
 public class DefaultGun extends BasePart implements Gun {
 
-  private final AbstractBot bot;
+  private final BaseBot bot;
 
   private final ConditionalSystem<AimingSystem> aimingSystem;
 
   private final ConditionalSystem<FiringSystem> firingSystem;
 
-  public DefaultGun(AbstractBot bot) {
+  public DefaultGun(BaseBot bot) {
     this.bot = bot;
     this.aimingSystem = new ConditionalSystem<AimingSystem>(bot, this, new AimingBotCommand());
     this.firingSystem = new ConditionalSystem<FiringSystem>(bot, this, new FiringBotCommand());

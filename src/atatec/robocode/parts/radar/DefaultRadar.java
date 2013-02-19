@@ -1,6 +1,6 @@
 package atatec.robocode.parts.radar;
 
-import atatec.robocode.AbstractBot;
+import atatec.robocode.BaseBot;
 import atatec.robocode.BattleField;
 import atatec.robocode.Conditional;
 import atatec.robocode.Bot;
@@ -28,13 +28,13 @@ public class DefaultRadar extends BasePart implements Radar {
 
   private final ConditionalSystem<ScanningSystem> behaviour;
 
-  private final AbstractBot bot;
+  private final BaseBot bot;
 
   private Enemy target;
 
   private Map<String, Enemy> enemies = new HashMap<String, Enemy>();
 
-  public DefaultRadar(AbstractBot bot) {
+  public DefaultRadar(BaseBot bot) {
     this.bot = bot;
     this.behaviour = new ConditionalSystem<ScanningSystem>(
       bot, this, new RadarCommand()

@@ -1,6 +1,6 @@
 package atatec.robocode.robots;
 
-import atatec.robocode.AbstractBot;
+import atatec.robocode.BaseBot;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
@@ -33,7 +33,7 @@ import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class Nexus extends AbstractBot {
+public class Nexus extends BaseBot {
 
   protected void configure() {
     body().setColor(new Color(39, 40, 34));
@@ -77,8 +77,8 @@ public class Nexus extends AbstractBot {
       GravityPointBuilder
         .antiGravityPoint()
         .at(location())
-        .withValue(30)
-        .during(5)
+        .withValue(300)
+        .during(10)
     );
   }
 
@@ -118,7 +118,7 @@ public class Nexus extends AbstractBot {
     Field battleField = radar().battleField();
     events().send(ADD_GRAVITY_POINT,
       gravityPoint()
-        .at(battleField.center())
+        .at(location())
         .withValue(battleField.diagonal())
         .during(10)
     );

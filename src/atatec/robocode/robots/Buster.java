@@ -1,10 +1,10 @@
 package atatec.robocode.robots;
 
-import atatec.robocode.AbstractBot;
+import atatec.robocode.BaseBot;
 import atatec.robocode.parts.movement.GravitationalMovingSystem;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class Buster extends AbstractBot {
+public class Buster extends BaseBot {
 
   private GravitationalMovingSystem movingSystem = new GravitationalMovingSystem(this);
 

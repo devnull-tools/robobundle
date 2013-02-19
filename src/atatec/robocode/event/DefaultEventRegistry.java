@@ -118,6 +118,9 @@ public class DefaultEventRegistry implements EventRegistry {
           }
         }
         invoke(method).in(listener).handlingExceptionsWith(this).withArgs(args);
+      } else if(parameterTypes.length == 0) {
+        //if the method does not take any args, invoke it
+        invoke(method).in(listener).handlingExceptionsWith(this).withoutArgs();
       }
     }
 

@@ -1,6 +1,6 @@
 package atatec.robocode.parts.body;
 
-import atatec.robocode.AbstractBot;
+import atatec.robocode.BaseBot;
 import atatec.robocode.Conditional;
 import atatec.robocode.Bot;
 import atatec.robocode.BotCommand;
@@ -19,9 +19,9 @@ public class DefaultBody extends BasePart implements Body {
 
   private final ConditionalSystem<MovingSystem> movingSystem;
 
-  private final AbstractBot bot;
+  private final BaseBot bot;
 
-  public DefaultBody(AbstractBot bot) {
+  public DefaultBody(BaseBot bot) {
     this.bot = bot;
     this.movingSystem = new ConditionalSystem<MovingSystem>(bot, this, new MovingBotCommand());
   }

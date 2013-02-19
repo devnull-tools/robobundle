@@ -1,6 +1,6 @@
 package atatec.robocode.robots;
 
-import atatec.robocode.AbstractBot;
+import atatec.robocode.BaseBot;
 import atatec.robocode.parts.aiming.DirectAimingSystem;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
@@ -19,7 +19,7 @@ import static atatec.robocode.condition.Conditions.enemyIsAtRange;
 import static atatec.robocode.condition.Conditions.enemyIsMoving;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class Chronos extends AbstractBot {
+public class Chronos extends BaseBot {
 
   protected void configure() {
     body().setColor(new Color(39, 40, 34));

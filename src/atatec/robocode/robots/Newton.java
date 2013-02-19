@@ -1,6 +1,6 @@
 package atatec.robocode.robots;
 
-import atatec.robocode.AbstractBot;
+import atatec.robocode.BaseBot;
 import atatec.robocode.annotation.When;
 import atatec.robocode.plugin.BulletPaint;
 import atatec.robocode.plugin.Dodger;
@@ -14,7 +14,7 @@ import atatec.robocode.plugin.EnemyScannerInfo;
 import java.awt.Color;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class Newton extends AbstractBot {
+public class Newton extends BaseBot {
 
   @Override
   public void configure() {
