@@ -24,8 +24,7 @@ public class Buster extends BaseBot {
       .use(new EnemyLockScanningSystem(this));
   }
 
-  @Override
-  protected void doTurnMoves() {
+  protected void onNextTurn() {
     radar().scan();
     body().move();
     gun().aim().fireIfTargetLocked();

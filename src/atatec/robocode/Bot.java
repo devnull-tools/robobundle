@@ -6,39 +6,45 @@ import atatec.robocode.parts.Body;
 import atatec.robocode.parts.Gun;
 import atatec.robocode.parts.Radar;
 import atatec.robocode.parts.Statistics;
+import atatec.robocode.parts.SystemPart;
 
 /**
  * Interface that defines a robot.
+ * <p/>
+ * In Robobundle, every robot has three independent parts: a {@link Gun}, a {@link Body}
+ * and a {@link Radar}. The bot has also a pluggable system and a event driven module
+ * designed for better composition of features.
  *
  * @author Marcelo Varella Barca Guimarães
+ * @see atatec.robocode.annotation.When
  */
 public interface Bot {
 
   /**
-   * Returns a coordinate representing this bot location in the battlefield.
+   * Returns a coordinate representing this robot location in the battlefield.
    *
-   * @return a coordinate representing this bot location in the battlefield.
+   * @return a coordinate representing this robot location in the battlefield.
    */
   Point location();
 
   /**
-   * Returns the bot's gun abstraction.
+   * Returns the robot's gun part.
    *
-   * @return the bot's gun
+   * @return the robot's gun
    */
   Gun gun();
 
   /**
-   * The bot's body abstraction.
+   * The robot's body part.
    *
-   * @return the bot's body
+   * @return the robot's body
    */
   Body body();
 
   /**
-   * Returns the bot's radar abstraction
+   * Returns the robot's radar part
    *
-   * @return the bot's radar
+   * @return the robot's radar
    */
   Radar radar();
 
@@ -50,12 +56,32 @@ public interface Bot {
    */
   void log(Object message, Object... params);
 
+  /**
+   * Plugs a component that will listen to events through methods annotated with {@link
+   * atatec.robocode.annotation.When}
+   *
+   * @see #events()
+   */
   void plug(Object plugin);
 
+  /**
+   * Returns the event registry for registering listeners and sending events.
+   *
+   * @return the event registry
+   */
+  EventRegistry events();
+
+  /**
+   * Returns the robot's statistics.
+   *
+   * @return the robot's statistics.
+   */
   Statistics statistics();
 
-  boolean isActivated(Object component);
+  /** Checks if the given component is activated */
+  boolean isActivated(SystemPart systemPart);
 
-  EventRegistry events();
+  /** Executes the pending movements */
+  void execute();
 
 }

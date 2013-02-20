@@ -13,6 +13,7 @@ import atatec.robocode.parts.MovingSystem;
 import atatec.robocode.parts.Radar;
 import atatec.robocode.parts.ScanningSystem;
 import atatec.robocode.parts.Statistics;
+import atatec.robocode.parts.SystemPart;
 import atatec.robocode.parts.body.DefaultBody;
 import atatec.robocode.parts.gun.DefaultGun;
 import atatec.robocode.parts.radar.DefaultRadar;
@@ -45,14 +46,18 @@ import static atatec.robocode.event.Events.ENEMY_SCANNED;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
 import static atatec.robocode.event.Events.HIT_ROBOT;
 import static atatec.robocode.event.Events.HIT_WALL;
+import static atatec.robocode.event.Events.NEXT_TURN;
 import static atatec.robocode.event.Events.PAINT;
 import static atatec.robocode.event.Events.ROBOT_DEATH;
 import static atatec.robocode.event.Events.ROUND_ENDED;
 import static atatec.robocode.event.Events.ROUND_STARTED;
-import static atatec.robocode.event.Events.NEW_TURN;
 import static atatec.robocode.event.Events.WIN;
 
-/** @author Marcelo Varella Barca Guimarães */
+/**
+ * A base class that provides a default abstraction to creating first class robots.
+ *
+ * @author Marcelo Varella Barca Guimarães
+ */
 public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   private Gun gun;
@@ -67,6 +72,15 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   private Map<Class, ConditionalSystem> conditionalSystems;
 
+  private boolean roundEnded = false;
+
+  /**
+   * Initializes the bot using the given parts
+   *
+   * @param gun   the gun to use
+   * @param body  the body to use
+   * @param radar the radar to use
+   */
   protected final void initialize(Gun gun, Body body, Radar radar) {
     this.gun = gun;
     this.body = body;
@@ -79,25 +93,20 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     conditionalSystems.put(MovingSystem.class, body.movingSystem());
   }
 
-  protected void initializeParts() {
+  private void initializeParts() {
     initialize(new DefaultGun(this), new DefaultBody(this), new DefaultRadar(this));
   }
 
+  /** Configures the bot behaviours. All configuration must be done here. */
   protected abstract void configure();
 
-  protected boolean roundEnded = false;
-
-  protected void battle() {
-    while (!roundEnded) {
-      doTurnMoves();
-      events().send(NEW_TURN);
-      execute();
-    }
-  }
-
-  protected void doTurnMoves() {
-  }
-
+  /**
+   * Sets up the bot default configurations. Every part is adjusted to turn independently
+   * and the {@link Radar}, {@link Gun} and {@link Body}.
+   * <p/>
+   * This method calls {@link #configure()} and, at the end, calls {@link
+   * #onRoundStarted()}
+   */
   public final void run() {
     setAdjustGunForRobotTurn(true);
     setAdjustRadarForGunTurn(true);
@@ -112,26 +121,52 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     events().register(this);
     events().send(ROUND_STARTED);
 
-    battle();
+    onRoundStarted();
   }
 
-  public Point location() {
+  /**
+   * Called when each round was started. Override this method if you want to change the
+   * default behaviour.
+   * <p/>
+   * By default, this method maintains a loop until the round ends and, for each step,
+   * calls {@link #onNextTurn()} and sends a {@link atatec.robocode.event.Events#NEXT_TURN}
+   * event.
+   */
+  protected void onRoundStarted() {
+    while (!roundEnded) {
+      onNextTurn();
+      events().send(NEXT_TURN);
+      execute();
+    }
+  }
+
+  /**
+   * Do the robot's movements. Override this method if you want to use the default
+   * behaviour of {@link #onRoundStarted()}.
+   *
+   * You may manipulate any part of the robot
+   */
+  protected void onNextTurn() {
+
+  }
+
+  public final Point location() {
     return new Point(getX(), getY());
   }
 
-  public Gun gun() {
+  public final Gun gun() {
     return gun;
   }
 
-  public Body body() {
+  public final Body body() {
     return body;
   }
 
-  public Radar radar() {
+  public final Radar radar() {
     return radar;
   }
 
-  public EventRegistry events() {
+  public final EventRegistry events() {
     return eventRegistry;
   }
 
@@ -146,92 +181,92 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     }
   }
 
-  public void log(Object message, Object... params) {
+  public final void log(Object message, Object... params) {
     out.printf(message.toString(), params);
     out.println();
   }
 
   @Override
-  public void onScannedRobot(ScannedRobotEvent event) {
+  public final void onScannedRobot(ScannedRobotEvent event) {
     eventRegistry.send(ENEMY_SCANNED, new EnemyScannedEvent(this, event));
   }
 
   @Override
-  public void onBulletHit(BulletHitEvent event) {
+  public final void onBulletHit(BulletHitEvent event) {
     statistics.hits++;
     eventRegistry.send(BULLET_HIT, event);
   }
 
   @Override
-  public void onBulletHitBullet(BulletHitBulletEvent event) {
+  public final void onBulletHitBullet(BulletHitBulletEvent event) {
     statistics.missed++;
     eventRegistry.send(BULLET_HIT_BULLET, event);
   }
 
   @Override
-  public void onBulletMissed(BulletMissedEvent event) {
+  public final void onBulletMissed(BulletMissedEvent event) {
     statistics.missed++;
     eventRegistry.send(BULLET_MISSED, event);
   }
 
   @Override
-  public void onHitByBullet(HitByBulletEvent event) {
+  public final void onHitByBullet(HitByBulletEvent event) {
     statistics.taken++;
     eventRegistry.send(HIT_BY_BULLET, event);
   }
 
   @Override
-  public void onRobotDeath(RobotDeathEvent event) {
+  public final void onRobotDeath(RobotDeathEvent event) {
     eventRegistry.send(ROBOT_DEATH, event);
   }
 
   @Override
-  public void onHitRobot(HitRobotEvent event) {
+  public final void onHitRobot(HitRobotEvent event) {
     eventRegistry.send(HIT_ROBOT, event);
   }
 
   @Override
-  public void onHitWall(HitWallEvent event) {
+  public final void onHitWall(HitWallEvent event) {
     eventRegistry.send(HIT_WALL, event);
   }
 
   @Override
-  public void onPaint(Graphics2D g) {
+  public final void onPaint(Graphics2D g) {
     eventRegistry.send(PAINT, g);
     eventRegistry.send(DRAW, new Drawer(g));
   }
 
   @Override
-  public void onDeath(DeathEvent event) {
+  public final void onDeath(DeathEvent event) {
     eventRegistry.send(DEATH, event);
   }
 
   @Override
-  public void onWin(WinEvent event) {
+  public final void onWin(WinEvent event) {
     eventRegistry.send(WIN, event);
   }
 
   @Override
-  public void onRoundEnded(RoundEndedEvent event) {
+  public final void onRoundEnded(RoundEndedEvent event) {
     roundEnded = true;
     eventRegistry.send(ROUND_ENDED, event);
   }
 
   @Override
-  public void plug(Object behaviour) {
+  public final void plug(Object behaviour) {
     eventRegistry.register(behaviour);
   }
 
   @Override
-  public Statistics statistics() {
+  public final Statistics statistics() {
     return statistics;
   }
 
   @Override
-  public boolean isActivated(Object component) {
+  public final boolean isActivated(SystemPart systemPart) {
     for (Map.Entry<Class, ConditionalSystem> entry : conditionalSystems.entrySet()) {
-      if (entry.getKey().isAssignableFrom(component.getClass())
-        && entry.getValue().activated().equals(component)) {
+      if (entry.getKey().isAssignableFrom(systemPart.getClass())
+        && entry.getValue().activated().equals(systemPart)) {
         return true;
       }
     }

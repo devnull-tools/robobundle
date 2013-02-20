@@ -45,7 +45,7 @@ public class Newton extends BaseBot {
       event.enemy().bearing().inverse());
   }
 
-  protected void doTurnMoves() {
+  protected void onNextTurn() {
     gun().aim().fireIfTargetLocked();
     radar().scan();
   }

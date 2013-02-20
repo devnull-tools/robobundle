@@ -24,13 +24,13 @@ import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 
-import static atatec.robocode.condition.Conditions.enemyIsAtMost;
 import static atatec.robocode.condition.Conditions.headToHeadBattle;
 import static atatec.robocode.event.Events.ADD_GRAVITY_POINT;
 import static atatec.robocode.event.Events.ENEMY_FIRE;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
 import static atatec.robocode.event.Events.HIT_ROBOT;
 import static atatec.robocode.event.Events.HIT_WALL;
+import static atatec.robocode.event.Events.NEXT_TURN;
 import static atatec.robocode.event.Events.ROUND_STARTED;
 import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
@@ -43,7 +43,7 @@ public class Nexus extends BaseBot {
     public boolean evaluate(Bot bot) {
       if (bot.radar().hasLockedTarget()) {
         Enemy target = bot.radar().lockedTarget();
-        if (target.distance() <= bot.radar().battleField().diagonal() / 3) {
+        if (target.distance() <= 300) {
           return true;
         }
       }
@@ -69,11 +69,6 @@ public class Nexus extends BaseBot {
       .when(headToHeadBattle())
 
       .use(new EnemyLockScanningSystem(this)
-        .lockClosestEnemy())
-      .when(enemyIsAtMost(radar().battleField().diagonal() / 3))
-
-      .use(new EnemyLockScanningSystem(this)
-        .lockClosestEnemy()
         .scanBattleField())
       .inOtherCases();
 
@@ -189,7 +184,8 @@ public class Nexus extends BaseBot {
     }
   }
 
-  protected void doTurnMoves() {
+  @When(NEXT_TURN)
+  protected void onNextTurn() {
     log("***********************************");
     addEnemyPoints();
     radar().scan();
@@ -203,7 +199,7 @@ public class Nexus extends BaseBot {
       if (enemy.equals(radar().lockedTarget())) {
         point = enemy.location().gravitational().withValue(enemy.distance() * 2);
       } else {
-        point = enemy.location().antiGravitational().withValue(enemy.distance());
+        point = enemy.location().antiGravitational().withValue(enemy.distance() / 2);
       }
       events().send(ADD_GRAVITY_POINT,
         point.during(1)

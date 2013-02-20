@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class DefaultConditionalSystem<E extends Command> implements ConditionalSystem<E>, Command {
+public class DefaultConditionalSystem<E extends SystemPart> implements ConditionalSystem<E>, Command {
 
   private final Map<Condition, E> components = new LinkedHashMap<Condition, E>();
 
@@ -27,9 +27,9 @@ public class DefaultConditionalSystem<E extends Command> implements ConditionalS
   }
 
   @Override
-  public ConditionSelector<ConditionalSystem<E>> use(E component) {
-    this.current = component;
-    this.bot.plug(component);
+  public ConditionSelector<ConditionalSystem<E>> use(E systemPart) {
+    this.current = systemPart;
+    this.bot.plug(systemPart);
     return new ConditionSelector<ConditionalSystem<E>>() {
 
       public ConditionalSystem<E> when(Condition condition) {
@@ -63,7 +63,7 @@ public class DefaultConditionalSystem<E extends Command> implements ConditionalS
   @Override
   public void execute() {
     E activated = activated();
-    if(activated != null) {
+    if (activated != null) {
       activated.execute();
     }
   }

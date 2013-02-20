@@ -55,7 +55,7 @@ public class Chronos extends BaseBot {
       .use(new Color(54, 151, 255)).forWeak());
   }
 
-  protected void doTurnMoves() {
+  protected void onNextTurn() {
     log("***********************************");
     radar().scan();
     body().move();

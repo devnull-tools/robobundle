@@ -68,7 +68,7 @@ public class DefaultEventRegistry implements EventRegistry {
             mapping.send(args);
           }
         } else if (listener instanceof SystemPart) {
-          if (bot.isActivated(listener)) {
+          if (bot.isActivated((SystemPart) listener)) {
             mapping.send(args);
           }
         } else {
