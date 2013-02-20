@@ -48,7 +48,6 @@ public class EnemyLockScanningSystem implements ScanningSystem {
     if (canLock(enemy)) {
       bot.log("Locking %s", enemy.name());
       bot.radar().lockTarget(enemy);
-      bot.gun().aim();
       changeTarget = false;
     }
     if (!scanBattleField) {

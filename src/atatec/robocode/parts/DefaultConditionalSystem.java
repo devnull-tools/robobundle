@@ -3,7 +3,7 @@ package atatec.robocode.parts;
 import atatec.robocode.Bot;
 import atatec.robocode.Command;
 import atatec.robocode.Condition;
-import atatec.robocode.Conditional;
+import atatec.robocode.ConditionalSystem;
 import atatec.robocode.condition.ConditionSelector;
 import atatec.robocode.condition.Conditions;
 
@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class ConditionalSystem<E extends Command> implements Conditional<E>, Command {
+public class DefaultConditionalSystem<E extends Command> implements ConditionalSystem<E>, Command {
 
   private final Map<Condition, E> components = new LinkedHashMap<Condition, E>();
 
@@ -21,21 +21,21 @@ public class ConditionalSystem<E extends Command> implements Conditional<E>, Com
 
   private final Bot bot;
 
-  public ConditionalSystem(Bot bot, Part part) {
+  public DefaultConditionalSystem(Bot bot, Part part) {
     this.part = part;
     this.bot = bot;
   }
 
   @Override
-  public ConditionSelector<Conditional<E>> use(E component) {
+  public ConditionSelector<ConditionalSystem<E>> use(E component) {
     this.current = component;
     this.bot.plug(component);
-    return new ConditionSelector<Conditional<E>>() {
+    return new ConditionSelector<ConditionalSystem<E>>() {
 
-      public Conditional<E> when(Condition condition) {
+      public ConditionalSystem<E> when(Condition condition) {
         components.put(condition, current);
         current = null;
-        return ConditionalSystem.this;
+        return DefaultConditionalSystem.this;
       }
 
       public void inOtherCases() {

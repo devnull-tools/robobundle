@@ -2,7 +2,7 @@ package atatec.robocode.parts.radar;
 
 import atatec.robocode.BaseBot;
 import atatec.robocode.BattleField;
-import atatec.robocode.Conditional;
+import atatec.robocode.ConditionalSystem;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
@@ -10,10 +10,11 @@ import atatec.robocode.calc.Angle;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.parts.ConditionalSystem;
+import atatec.robocode.parts.DefaultConditionalSystem;
 import atatec.robocode.parts.Radar;
 import atatec.robocode.parts.ScanningSystem;
 import atatec.robocode.parts.scanner.DefaultScanningSystem;
+import robocode.RobotDeathEvent;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import java.util.Map;
 /** @author Marcelo Varella Barca Guimarães */
 public class DefaultRadar extends BasePart implements Radar {
 
-  private final ConditionalSystem<ScanningSystem> scanningSystem;
+  private final DefaultConditionalSystem<ScanningSystem> scanningSystem;
 
   private final BaseBot bot;
 
@@ -34,7 +35,7 @@ public class DefaultRadar extends BasePart implements Radar {
 
   public DefaultRadar(BaseBot bot) {
     this.bot = bot;
-    this.scanningSystem = new ConditionalSystem<ScanningSystem>(bot, this);
+    this.scanningSystem = new DefaultConditionalSystem<ScanningSystem>(bot, this);
     this.scanningSystem.use(new DefaultScanningSystem());
   }
 
@@ -43,7 +44,7 @@ public class DefaultRadar extends BasePart implements Radar {
     bot.setRadarColor(color);
   }
 
-  public Conditional<ScanningSystem> scanningSystem() {
+  public ConditionalSystem<ScanningSystem> scanningSystem() {
     return scanningSystem;
   }
 
@@ -111,6 +112,11 @@ public class DefaultRadar extends BasePart implements Radar {
   public void onEnemyScanned(EnemyScannedEvent event) {
     Enemy enemy = event.enemy();
     enemies.put(enemy.name(), enemy);
+  }
+
+  @When(Events.ROBOT_DEATH)
+  public void onRobotDeath(RobotDeathEvent event) {
+    enemies.remove(event.getName());
   }
 
 }

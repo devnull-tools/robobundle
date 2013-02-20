@@ -49,6 +49,7 @@ import static atatec.robocode.event.Events.PAINT;
 import static atatec.robocode.event.Events.ROBOT_DEATH;
 import static atatec.robocode.event.Events.ROUND_ENDED;
 import static atatec.robocode.event.Events.ROUND_STARTED;
+import static atatec.robocode.event.Events.NEW_TURN;
 import static atatec.robocode.event.Events.WIN;
 
 /** @author Marcelo Varella Barca Guimarães */
@@ -64,42 +65,53 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   private BotStatistics statistics = new BotStatistics();
 
-  private Map<Class, Conditional> behavioursMap;
+  private Map<Class, ConditionalSystem> conditionalSystems;
 
   protected final void initialize(Gun gun, Body body, Radar radar) {
     this.gun = gun;
     this.body = body;
     this.radar = radar;
 
-    this.behavioursMap = new HashMap<Class, Conditional>();
-    behavioursMap.put(AimingSystem.class, gun.aimingBehaviour());
-    behavioursMap.put(FiringSystem.class, gun.firingBehaviour());
-    behavioursMap.put(ScanningSystem.class, radar.scanningSystem());
-    behavioursMap.put(MovingSystem.class, body.movingBehaviour());
+    this.conditionalSystems = new HashMap<Class, ConditionalSystem>();
+    conditionalSystems.put(AimingSystem.class, gun.aimingSystem());
+    conditionalSystems.put(FiringSystem.class, gun.firingSystem());
+    conditionalSystems.put(ScanningSystem.class, radar.scanningSystem());
+    conditionalSystems.put(MovingSystem.class, body.movingSystem());
   }
 
-  protected void initialize() {
+  protected void initializeParts() {
     initialize(new DefaultGun(this), new DefaultBody(this), new DefaultRadar(this));
-  }
-
-  protected void independentMovement() {
-    setAdjustGunForRobotTurn(true);
-    setAdjustRadarForGunTurn(true);
-    setAdjustRadarForRobotTurn(true);
   }
 
   protected abstract void configure();
 
-  protected abstract void battle();
+  protected boolean roundEnded = false;
+
+  protected void battle() {
+    while (!roundEnded) {
+      doTurnMoves();
+      events().send(NEW_TURN);
+      execute();
+    }
+  }
+
+  protected void doTurnMoves() {
+  }
 
   public final void run() {
-    initialize();
+    setAdjustGunForRobotTurn(true);
+    setAdjustRadarForGunTurn(true);
+    setAdjustRadarForRobotTurn(true);
+
+    initializeParts();
     configure();
+
     events().register(body);
     events().register(gun);
     events().register(radar);
     events().register(this);
     events().send(ROUND_STARTED);
+
     battle();
   }
 
@@ -137,10 +149,6 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   public void log(Object message, Object... params) {
     out.printf(message.toString(), params);
     out.println();
-  }
-
-  public void clearEvents() {
-    clearAllEvents();
   }
 
   @Override
@@ -205,6 +213,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   @Override
   public void onRoundEnded(RoundEndedEvent event) {
+    roundEnded = true;
     eventRegistry.send(ROUND_ENDED, event);
   }
 
@@ -220,7 +229,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   @Override
   public boolean isActivated(Object component) {
-    for (Map.Entry<Class, Conditional> entry : behavioursMap.entrySet()) {
+    for (Map.Entry<Class, ConditionalSystem> entry : conditionalSystems.entrySet()) {
       if (entry.getKey().isAssignableFrom(component.getClass())
         && entry.getValue().activated().equals(component)) {
         return true;

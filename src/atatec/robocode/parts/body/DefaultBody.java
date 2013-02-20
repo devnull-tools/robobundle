@@ -1,13 +1,13 @@
 package atatec.robocode.parts.body;
 
 import atatec.robocode.BaseBot;
-import atatec.robocode.Conditional;
+import atatec.robocode.ConditionalSystem;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 import atatec.robocode.parts.BasePart;
 import atatec.robocode.parts.Body;
-import atatec.robocode.parts.ConditionalSystem;
+import atatec.robocode.parts.DefaultConditionalSystem;
 import atatec.robocode.parts.MovingSystem;
 
 import java.awt.Color;
@@ -15,13 +15,13 @@ import java.awt.Color;
 /** @author Marcelo Varella Barca Guimarães */
 public class DefaultBody extends BasePart implements Body {
 
-  private final ConditionalSystem<MovingSystem> movingSystem;
+  private final DefaultConditionalSystem<MovingSystem> movingSystem;
 
   private final BaseBot bot;
 
   public DefaultBody(BaseBot bot) {
     this.bot = bot;
-    this.movingSystem = new ConditionalSystem<MovingSystem>(bot, this);
+    this.movingSystem = new DefaultConditionalSystem<MovingSystem>(bot, this);
   }
 
   @Override
@@ -42,7 +42,7 @@ public class DefaultBody extends BasePart implements Body {
     movingSystem.execute();
   }
 
-  public Conditional<MovingSystem> movingBehaviour() {
+  public ConditionalSystem<MovingSystem> movingSystem() {
     return movingSystem;
   }
 

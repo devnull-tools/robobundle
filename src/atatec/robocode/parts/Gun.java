@@ -1,6 +1,7 @@
 package atatec.robocode.parts;
 
-import atatec.robocode.Conditional;
+import atatec.robocode.Condition;
+import atatec.robocode.ConditionalSystem;
 import atatec.robocode.calc.Point;
 
 import java.awt.Color;
@@ -16,6 +17,8 @@ public interface Gun extends Part {
 
   void fireIfTargetLocked();
 
+  void fireIf(Condition condition);
+
   void fire();
 
   double power();
@@ -24,9 +27,9 @@ public interface Gun extends Part {
 
   double coolingRate();
 
-  Conditional<AimingSystem> aimingBehaviour();
+  ConditionalSystem<AimingSystem> aimingSystem();
 
-  Conditional<FiringSystem> firingBehaviour();
+  ConditionalSystem<FiringSystem> firingSystem();
 
   void setBulletColor(Color color);
 

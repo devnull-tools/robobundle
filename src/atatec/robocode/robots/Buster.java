@@ -1,8 +1,8 @@
 package atatec.robocode.robots;
 
 import atatec.robocode.BaseBot;
-import atatec.robocode.parts.aiming.DirectAimingSystem;
-import atatec.robocode.parts.firing.DefaultFiringSystem;
+import atatec.robocode.parts.aiming.PredictionAimingSystem;
+import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
 import atatec.robocode.parts.movement.EnemyCircleMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 
@@ -11,32 +11,24 @@ public class Buster extends BaseBot {
 
   @Override
   protected void configure() {
-    independentMovement();
-
-    body().movingBehaviour()
+    body().movingSystem()
       .use(new EnemyCircleMovingSystem(this));
 
-    gun().aimingBehaviour()
-      .use(new DirectAimingSystem(this));
+    gun().aimingSystem()
+      .use(new PredictionAimingSystem(this));
+
+    gun().firingSystem()
+      .use(new EnergyBasedFiringSystem(this));
 
     radar().scanningSystem()
       .use(new EnemyLockScanningSystem(this));
-
-    gun().firingBehaviour()
-      .use(new DefaultFiringSystem(this));
   }
 
   @Override
-  protected void battle() {
-    while(true) {
-      log("************************************");
-      radar().scan();
-      body().move();
-      if(radar().hasLockedTarget()) {
-        gun().fire();
-      }
-      execute();
-    }
+  protected void doTurnMoves() {
+    radar().scan();
+    body().move();
+    gun().aim().fireIfTargetLocked();
   }
 
 }

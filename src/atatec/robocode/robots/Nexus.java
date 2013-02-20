@@ -1,6 +1,8 @@
 package atatec.robocode.robots;
 
 import atatec.robocode.BaseBot;
+import atatec.robocode.Bot;
+import atatec.robocode.Condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
@@ -23,6 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static atatec.robocode.condition.Conditions.enemyIsAtMost;
+import static atatec.robocode.condition.Conditions.headToHeadBattle;
 import static atatec.robocode.event.Events.ADD_GRAVITY_POINT;
 import static atatec.robocode.event.Events.ENEMY_FIRE;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
@@ -35,29 +38,46 @@ import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 /** @author Marcelo Varella Barca Guimarães */
 public class Nexus extends BaseBot {
 
+  private Condition targetInGoodDistance = new Condition() {
+    @Override
+    public boolean evaluate(Bot bot) {
+      if (bot.radar().hasLockedTarget()) {
+        Enemy target = bot.radar().lockedTarget();
+        if (target.distance() <= bot.radar().battleField().diagonal() / 3) {
+          return true;
+        }
+      }
+      return false;
+    }
+  };
+
   protected void configure() {
     body().setColor(new Color(39, 40, 34));
     gun().setColor(new Color(166, 226, 46));
     radar().setColor(new Color(39, 40, 34));
 
-    independentMovement();
-
-    gun().aimingBehaviour()
+    gun().aimingSystem()
       .use(new PredictionAimingSystem(this));
 
-    gun().firingBehaviour()
+    gun().firingSystem()
       .use(new EnergyBasedFiringSystem(this)
         .fireMaxAt(80)
         .fireMinAt(30));
 
     radar().scanningSystem()
       .use(new EnemyLockScanningSystem(this))
+      .when(headToHeadBattle())
+
+      .use(new EnemyLockScanningSystem(this)
+        .lockClosestEnemy())
       .when(enemyIsAtMost(radar().battleField().diagonal() / 3))
 
-      .use(new EnemyLockScanningSystem(this).scanBattleField())
+      .use(new EnemyLockScanningSystem(this)
+        .lockClosestEnemy()
+        .scanBattleField())
       .inOtherCases();
 
-    body().movingBehaviour()
+    body().movingSystem()
       .use(new GravitationalMovingSystem(this));
 
     plug(new Dodger(this));
@@ -107,7 +127,7 @@ public class Nexus extends BaseBot {
     events().send(ADD_GRAVITY_POINT,
       antiGravityPoint()
         .at(location())
-        .withValue(100)
+        .withValue(1000)
         .during(10)
     );
   }
@@ -169,18 +189,12 @@ public class Nexus extends BaseBot {
     }
   }
 
-  protected void battle() {
-    while (true) {
-      log("***********************************");
-      addEnemyPoints();
-      radar().scan();
-      body().move();
-      gun().aim();
-      if (radar().hasLockedTarget()) {
-        gun().fire();
-      }
-      execute();
-    }
+  protected void doTurnMoves() {
+    log("***********************************");
+    addEnemyPoints();
+    radar().scan();
+    body().move();
+    gun().aim().fireIf(targetInGoodDistance);
   }
 
   private void addEnemyPoints() {

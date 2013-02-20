@@ -1,13 +1,15 @@
 package atatec.robocode.parts.gun;
 
 import atatec.robocode.BaseBot;
-import atatec.robocode.Conditional;
+import atatec.robocode.Condition;
+import atatec.robocode.ConditionalSystem;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
+import atatec.robocode.condition.Conditions;
 import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.parts.ConditionalSystem;
+import atatec.robocode.parts.DefaultConditionalSystem;
 import atatec.robocode.parts.FiringSystem;
 import atatec.robocode.parts.Gun;
 
@@ -18,14 +20,14 @@ public class DefaultGun extends BasePart implements Gun {
 
   private final BaseBot bot;
 
-  private final ConditionalSystem<AimingSystem> aimingSystem;
+  private final DefaultConditionalSystem<AimingSystem> aimingSystem;
 
-  private final ConditionalSystem<FiringSystem> firingSystem;
+  private final DefaultConditionalSystem<FiringSystem> firingSystem;
 
   public DefaultGun(BaseBot bot) {
     this.bot = bot;
-    this.aimingSystem = new ConditionalSystem<AimingSystem>(bot, this);
-    this.firingSystem = new ConditionalSystem<FiringSystem>(bot, this);
+    this.aimingSystem = new DefaultConditionalSystem<AimingSystem>(bot, this);
+    this.firingSystem = new DefaultConditionalSystem<FiringSystem>(bot, this);
   }
 
   @Override
@@ -45,7 +47,12 @@ public class DefaultGun extends BasePart implements Gun {
 
   @Override
   public void fireIfTargetLocked() {
-    if (bot.radar().hasLockedTarget()) {
+    fireIf(Conditions.targetLocked());
+  }
+
+  @Override
+  public void fireIf(Condition condition) {
+    if (condition.evaluate(bot)) {
       fire();
     }
   }
@@ -107,11 +114,11 @@ public class DefaultGun extends BasePart implements Gun {
   }
 
 
-  public Conditional<AimingSystem> aimingBehaviour() {
+  public ConditionalSystem<AimingSystem> aimingSystem() {
     return aimingSystem;
   }
 
-  public Conditional<FiringSystem> firingBehaviour() {
+  public ConditionalSystem<FiringSystem> firingSystem() {
     return firingSystem;
   }
 

@@ -17,6 +17,15 @@ public class Conditions {
     }
   };
 
+  public static Condition targetLocked() {
+    return new Condition() {
+      @Override
+      public boolean evaluate(Bot bot) {
+        return bot.radar().hasLockedTarget();
+      }
+    };
+  }
+
   public static Condition enemyIsMoving() {
     return new Condition() {
       public boolean evaluate(Bot bot) {
@@ -107,7 +116,7 @@ public class Conditions {
     return new Condition() {
       @Override
       public boolean evaluate(Bot bot) {
-        MovingSystem activated = bot.body().movingBehaviour().activated();
+        MovingSystem activated = bot.body().movingSystem().activated();
         return activated != null && activated.getClass().equals(type);
       }
     };

@@ -22,12 +22,10 @@ public class Newton extends BaseBot {
     gun().setColor(new Color(230, 219, 116));
     radar().setColor(new Color(39, 40, 34));
 
-    independentMovement();
-
-    gun().aimingBehaviour()
+    gun().aimingSystem()
       .use(new PredictionAimingSystem(this));
 
-    gun().firingBehaviour()
+    gun().firingSystem()
       .use(new EnergyBasedFiringSystem(this));
 
     radar().scanningSystem()
@@ -47,13 +45,9 @@ public class Newton extends BaseBot {
       event.enemy().bearing().inverse());
   }
 
-  protected void battle() {
-    while (true) {
-      gun().aim();
-      gun().fire();
-      radar().scan();
-      execute();
-    }
+  protected void doTurnMoves() {
+    gun().aim().fireIfTargetLocked();
+    radar().scan();
   }
 
 }

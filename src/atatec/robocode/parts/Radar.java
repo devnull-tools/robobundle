@@ -1,6 +1,6 @@
 package atatec.robocode.parts;
 
-import atatec.robocode.Conditional;
+import atatec.robocode.ConditionalSystem;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 
@@ -19,7 +19,7 @@ public interface Radar extends Part {
 
   void unlockTarget();
 
-  Conditional<ScanningSystem> scanningSystem();
+  ConditionalSystem<ScanningSystem> scanningSystem();
 
   void scan();
 

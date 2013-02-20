@@ -6,10 +6,9 @@ import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Point;
 import atatec.robocode.util.Drawer;
 
-import java.awt.Graphics2D;
-
-import static atatec.robocode.event.Events.PAINT;
+import static atatec.robocode.event.Events.DRAW;
 import static java.awt.Color.GREEN;
+import static java.awt.Color.ORANGE;
 import static java.awt.Color.YELLOW;
 
 /** @author Marcelo Varella Barca Guimarães */
@@ -28,18 +27,18 @@ public class EnemyScannerInfo {
     return this;
   }
 
-  @When(PAINT)
-  public void paint(Graphics2D g) {
+  @When(DRAW)
+  public void paint(Drawer drawer) {
     for (Enemy enemy : bot.radar().knownEnemies()) {
-      paintEnemy(g, enemy);
+      paintEnemy(drawer, enemy);
     }
   }
 
-  private void paintEnemy(Graphics2D g, Enemy enemy) {
+  private void paintEnemy(Drawer drawer, Enemy enemy) {
     Point location = enemy.location();
-    Drawer drawer = new Drawer(g);
     if(enemy == bot.radar().lockedTarget()) {
       drawer.draw(GREEN).circle().at(location);
+      drawer.draw(ORANGE).string(enemy.name()).at(bot.location().down(18));
     } else {
       drawer.draw(YELLOW).circle().at(location);
     }

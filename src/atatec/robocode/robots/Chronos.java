@@ -24,22 +24,20 @@ public class Chronos extends BaseBot {
     gun().setColor(new Color(54, 151, 255));
     radar().setColor(new Color(39, 40, 34));
 
-    independentMovement();
-
-    gun().aimingBehaviour()
+    gun().aimingSystem()
       .use(new PredictionAimingSystem(this))
       .when(enemyIsMoving())
 
       .use(new DirectAimingSystem(this))
       .inOtherCases();
 
-    gun().firingBehaviour()
+    gun().firingSystem()
       .use(new EnergyBasedFiringSystem(this));
 
     radar().scanningSystem()
       .use(new EnemyLockScanningSystem(this));
 
-    body().movingBehaviour()
+    body().movingSystem()
       .use(new EnemyCircleMovingSystem(this))
       .when(enemyIsAtMost(400))
 
@@ -57,16 +55,11 @@ public class Chronos extends BaseBot {
       .use(new Color(54, 151, 255)).forWeak());
   }
 
-  protected void battle() {
-    while (true) {
-      log("***********************************");
-      radar().scan();
-      body().move();
-      if (radar().hasLockedTarget()) {
-        gun().fire();
-      }
-      execute();
-    }
+  protected void doTurnMoves() {
+    log("***********************************");
+    radar().scan();
+    body().move();
+    gun().aim().fireIfTargetLocked();
   }
 
 }
