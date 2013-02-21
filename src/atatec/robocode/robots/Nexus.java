@@ -26,15 +26,12 @@ package atatec.robocode.robots;
 import atatec.robocode.BaseBot;
 import atatec.robocode.Bot;
 import atatec.robocode.Condition;
-import atatec.robocode.ConditionalSystem;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
 import atatec.robocode.calc.GravityPoint;
 import atatec.robocode.calc.Point;
 import atatec.robocode.event.EnemyFireEvent;
-import atatec.robocode.parts.DefaultConditionalSystem;
-import atatec.robocode.parts.MovingSystem;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
 import atatec.robocode.parts.movement.EnemyCircleMovingSystem;
@@ -53,9 +50,9 @@ import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 
+import static atatec.robocode.condition.Conditions.all;
 import static atatec.robocode.condition.Conditions.enemyIsAtMost;
 import static atatec.robocode.condition.Conditions.headToHeadBattle;
-import static atatec.robocode.event.Events.ADD_GRAVITY_POINT;
 import static atatec.robocode.event.Events.ENEMY_FIRE;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
 import static atatec.robocode.event.Events.HIT_ROBOT;
@@ -63,6 +60,8 @@ import static atatec.robocode.event.Events.HIT_WALL;
 import static atatec.robocode.event.Events.NEAR_TO_ENEMY;
 import static atatec.robocode.event.Events.NEAR_TO_WALL;
 import static atatec.robocode.event.Events.ROUND_STARTED;
+import static atatec.robocode.parts.movement.GravitationalMovingSystem.ADD_GRAVITY_POINT;
+import static atatec.robocode.parts.movement.GravitationalMovingSystem.LOW_ENFORCING;
 import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 
@@ -70,11 +69,20 @@ import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 public class Nexus extends BaseBot {
 
   private double distanceThreshold = 300;
-  private double lowEnforcing = 0.4;
+  private double lowEnforcingValue = 0.4;
   private int wallGPointsDistance = 40;
   private int avoidDistance = 80;
 
   private double avoidingPower = 3000;
+
+  private boolean isLowEnforcing = false;
+
+  private Condition lowEnforcing = new Condition() {
+    @Override
+    public boolean evaluate(Bot bot) {
+      return isLowEnforcing;
+    }
+  };
 
   private Condition targetInGoodDistance = new Condition() {
     @Override
@@ -110,19 +118,18 @@ public class Nexus extends BaseBot {
         .scanBattleField())
       .inOtherCases();
 
-    ConditionalSystem<MovingSystem> alternative =
-      new DefaultConditionalSystem<MovingSystem>(this, body());
-
-    alternative.use(new EnemyCircleMovingSystem(this))
-      .when(enemyIsAtMost(distanceThreshold))
+    body().movingSystem()
+      .use(new EnemyCircleMovingSystem(this))
+      .when(
+        all(lowEnforcing, enemyIsAtMost(distanceThreshold))
+      )
 
       .use(new FollowEnemyMovingSystem(this))
-      .inOtherCases();
+      .when(lowEnforcing)
 
-    body().movingSystem()
       .use(new GravitationalMovingSystem(this)
-        .lowEnforcingAt(lowEnforcing)
-        .whenLowEnforcingExecute(alternative));
+        .lowEnforcingAt(lowEnforcingValue))
+      .inOtherCases();
 
     plug(new Dodger(this));
     plug(new Avoider(this)
@@ -134,6 +141,13 @@ public class Nexus extends BaseBot {
       .use(new Color(255, 84, 84)).forStrong()
       .use(new Color(253, 151, 31)).forMedium()
       .use(new Color(54, 151, 255)).forWeak());
+  }
+
+  @When(LOW_ENFORCING)
+  public void lowEnforcing() {
+    isLowEnforcing = true;
+    body().move();
+    isLowEnforcing = false;
   }
 
   @When(HIT_BY_BULLET)

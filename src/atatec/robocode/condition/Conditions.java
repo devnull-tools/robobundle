@@ -145,4 +145,46 @@ public class Conditions {
     };
   }
 
+  public static Condition all(final Condition... conditions) {
+    return new Condition() {
+      @Override
+      public boolean evaluate(Bot bot) {
+        for (Condition condition : conditions) {
+          if (!condition.evaluate(bot)) {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+  }
+
+  public static Condition none(final Condition... conditions) {
+    return new Condition() {
+      @Override
+      public boolean evaluate(Bot bot) {
+        for (Condition condition : conditions) {
+          if (condition.evaluate(bot)) {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+  }
+
+  public static Condition any(final Condition... conditions) {
+    return new Condition() {
+      @Override
+      public boolean evaluate(Bot bot) {
+        for (Condition condition : conditions) {
+          if (condition.evaluate(bot)) {
+            return true;
+          }
+        }
+        return false;
+      }
+    };
+  }
+
 }

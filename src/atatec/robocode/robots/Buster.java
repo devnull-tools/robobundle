@@ -25,7 +25,6 @@ package atatec.robocode.robots;
 
 import atatec.robocode.BaseBot;
 import atatec.robocode.calc.Point;
-import atatec.robocode.event.Events;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.movement.GravitationalMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
@@ -67,14 +66,14 @@ public class Buster extends BaseBot {
   public void onMouseReleased(MouseEvent e) {
     long power = e.getWhen() - time;
     if (e.getButton() == MouseEvent.BUTTON1) {
-      events().send(Events.ADD_GRAVITY_POINT,
+      events().send(GravitationalMovingSystem.ADD_GRAVITY_POINT,
         new Point(e.getPoint().getX(), e.getPoint().getY())
           .gravitational()
           .withValue(power)
           .during(50)
       );
     } else {
-      events().send(Events.ADD_GRAVITY_POINT,
+      events().send(GravitationalMovingSystem.ADD_GRAVITY_POINT,
         new Point(e.getPoint().getX(), e.getPoint().getY())
           .antiGravitational()
           .withValue(power)
