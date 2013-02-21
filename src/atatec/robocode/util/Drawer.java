@@ -34,6 +34,10 @@ import java.awt.Graphics2D;
 /** @author Marcelo Varella Barca Guimarães */
 public class Drawer {
 
+  public enum Mode {
+    TRANSPARENT
+  }
+
   private final Graphics2D g;
 
   public Drawer(Graphics2D g) {
@@ -42,6 +46,20 @@ public class Drawer {
 
   public Graphics2D graphics() {
     return g;
+  }
+
+  public ShapeSelector draw(Mode mode, Color color) {
+    switch (mode) {
+      case TRANSPARENT:
+        color = new Color(
+          color.getRed(),
+          color.getGreen(),
+          color.getBlue(),
+          120
+        );
+        break;
+    }
+    return draw(color);
   }
 
   public ShapeSelector draw(Color color) {

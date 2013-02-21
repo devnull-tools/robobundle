@@ -26,67 +26,76 @@ package atatec.robocode.plugin;
 import atatec.robocode.Bot;
 import atatec.robocode.Enemy;
 import atatec.robocode.annotation.When;
-import atatec.robocode.event.EnemyScannedEvent;
+import atatec.robocode.event.BulletFiredEvent;
 import atatec.robocode.event.Events;
 import atatec.robocode.util.Drawer;
+import robocode.Bullet;
+import robocode.BulletHitEvent;
+import robocode.BulletMissedEvent;
 
+import java.awt.Color;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-
-import static atatec.robocode.util.Drawer.Mode.TRANSPARENT;
-import static java.awt.Color.LIGHT_GRAY;
+import java.util.concurrent.atomic.AtomicLong;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class EnemyHistory {
-
-  private Map<String, List<Enemy>> enemyHistory;
-
-  private int historySize;
+public class DistanceThreshold {
 
   private final Bot bot;
 
-  public EnemyHistory(Bot bot) {
-    this(bot, 20);
+  private double baseDistance;
+  private double stepPoint;
+
+  private Map<Bullet, String> bullets;
+
+  private Map<String, AtomicLong> modifiers;
+
+  public DistanceThreshold(Bot bot) {
+    this(bot, 100, 10);
   }
 
-  public EnemyHistory(Bot bot, int historySize) {
-    this.enemyHistory = new HashMap<String, List<Enemy>>();
+  public DistanceThreshold(Bot bot, double baseDistance, double stepPoint) {
     this.bot = bot;
-    this.historySize = historySize;
+    this.baseDistance = baseDistance;
+    this.stepPoint = stepPoint;
+    this.bullets = new HashMap<Bullet, String>();
+    this.modifiers = new HashMap<String, AtomicLong>();
   }
 
-  @When(Events.ENEMY_SCANNED)
-  public void registerEnemy(EnemyScannedEvent event) {
-    Enemy enemy = event.enemy();
-    if (!enemyHistory.containsKey(enemy.name())) {
-      enemyHistory.put(enemy.name(), new LinkedList<Enemy>());
-    }
-    List<Enemy> history = enemyHistory.get(enemy.name());
-    history.add(0, enemy);
-    if (history.size() > historySize) {
-      history.remove(history.size() - 1);
+  @When(Events.BULLET_FIRED)
+  public void registerBulletFired(BulletFiredEvent event) {
+    String name = bot.radar().lockedTarget().name();
+    bullets.put(event.bullet(), name);
+    if (!modifiers.containsKey(name)) {
+      modifiers.put(name, new AtomicLong());
     }
   }
 
-  public List<Enemy> historyFor(Enemy enemy) {
-    if (!enemyHistory.containsKey(enemy.name())) {
-      return Collections.emptyList();
+  @When(Events.BULLET_MISSED)
+  public void registerBulletMissed(BulletMissedEvent event) {
+    String name = bullets.get(event.getBullet());
+    modifiers.get(name).decrementAndGet();
+  }
+
+  @When(Events.BULLET_HIT)
+  public void registerBulletHit(BulletHitEvent event) {
+    String name = bullets.get(event.getBullet());
+    modifiers.get(name).incrementAndGet();
+  }
+
+  public double maximumDistanceTo(Enemy enemy) {
+    if (modifiers.containsKey(enemy.name())) {
+      return baseDistance + (stepPoint * modifiers.get(enemy.name()).get());
     }
-    return Collections.unmodifiableList(enemyHistory.get(enemy.name()));
+    return baseDistance;
   }
 
   @When(Events.DRAW)
-  public void drawHistory(Drawer drawer) {
+  public void draw(Drawer drawer) {
     Collection<Enemy> enemies = bot.radar().knownEnemies();
     for (Enemy enemy : enemies) {
-      List<Enemy> history = historyFor(enemy);
-      for (Enemy enemyHistory : history) {
-        drawer.draw(TRANSPARENT, LIGHT_GRAY).circle().at(enemyHistory.location());
-      }
+      drawer.draw(Color.PINK).string(maximumDistanceTo(enemy)).at(enemy.location());
     }
   }
 

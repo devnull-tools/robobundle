@@ -40,6 +40,7 @@ import atatec.robocode.parts.movement.GravitationalMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 import atatec.robocode.plugin.Avoider;
 import atatec.robocode.plugin.BulletPaint;
+import atatec.robocode.plugin.DistanceThreshold;
 import atatec.robocode.plugin.Dodger;
 import atatec.robocode.plugin.EnemyHistory;
 import atatec.robocode.plugin.EnemyScannerInfo;
@@ -68,16 +69,21 @@ import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 /** @author Marcelo Varella Barca Guimarães */
 public class Nexus extends BaseBot {
 
-  private double distanceThreshold = 300;
   private double lowEnforcingValue = 0.4;
   private int wallGPointsDistance = 40;
   private int avoidDistance = 80;
+
+  private int considerStopped = 15;
+
+  private int fireSkipToChangeTarget = 50;
 
   private double avoidingPower = 3000;
 
   private boolean isLowEnforcing = false;
 
-  private EnemyHistory enemyHistory = new EnemyHistory(this, 5);
+  private EnemyHistory enemyHistory;
+
+  private DistanceThreshold distanceThreshold;
 
   private Condition lowEnforcing = new Condition() {
     @Override
@@ -91,14 +97,17 @@ public class Nexus extends BaseBot {
     public boolean evaluate() {
       if (radar().hasLockedTarget()) {
         Enemy target = radar().lockedTarget();
-        if (target.distance() <= distanceThreshold) {
+        if (target.distance() <= distanceThreshold.maximumDistanceTo(target)) {
           return true;
         } else {
           // checks if the enemy is stopped for a while
           List<Enemy> history = enemyHistory.historyFor(target);
+          int i = 0;
           for (Enemy enemy : history) {
             if (enemy.isMoving()) {
               return false;
+            } else if (i++ >= considerStopped) {
+              break;
             }
           }
           return true;
@@ -134,7 +143,7 @@ public class Nexus extends BaseBot {
     body().forMoving()
       .use(new EnemyCircleMovingSystem(this))
       .when(
-        all(lowEnforcing, conditions.enemy().isAtMost(distanceThreshold))
+        all(lowEnforcing, conditions.enemy().isAtMost(400))
       )
 
       .use(new FollowEnemyMovingSystem(this))
@@ -144,12 +153,16 @@ public class Nexus extends BaseBot {
         .lowEnforcingAt(lowEnforcingValue))
       .inOtherCases();
 
+    enemyHistory = new EnemyHistory(this);
+    distanceThreshold = new DistanceThreshold(this);
+
     plug(new Dodger(this));
     plug(new Avoider(this)
       .notifyAt(avoidDistance));
 
     plug(new EnemyScannerInfo(this));
     plug(enemyHistory);
+    plug(distanceThreshold);
 
     plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()
@@ -285,12 +298,20 @@ public class Nexus extends BaseBot {
     );
   }
 
+  private int fireSkip = 0;
+
   protected void onNextTurn() {
     log("***********************************");
     addEnemyPoints();
     radar().scan();
     body().move();
-    gun().aim().fireIf(targetInGoodDistance);
+    gun().aim();
+    if (targetInGoodDistance.evaluate()) {
+      gun().fire();
+      fireSkip = 0;
+    } else if (++fireSkip > fireSkipToChangeTarget && radar().enemiesCount() > 1) {
+      radar().unlockTarget();
+    }
   }
 
   private void addEnemyPoints() {
