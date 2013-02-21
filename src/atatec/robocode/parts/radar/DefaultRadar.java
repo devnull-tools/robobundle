@@ -112,6 +112,11 @@ public class DefaultRadar extends BasePart implements Radar {
   }
 
   @Override
+  public Enemy enemy(String name) {
+    return enemies.get(name);
+  }
+
+  @Override
   public Angle heading() {
     return new Angle(bot.getRadarHeadingRadians());
   }

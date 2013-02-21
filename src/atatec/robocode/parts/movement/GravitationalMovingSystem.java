@@ -24,6 +24,7 @@
 package atatec.robocode.parts.movement;
 
 import atatec.robocode.Bot;
+import atatec.robocode.Command;
 import atatec.robocode.annotation.When;
 import atatec.robocode.calc.GravityPoint;
 import atatec.robocode.calc.Point;
@@ -39,6 +40,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import static atatec.robocode.event.Events.ADD_GRAVITY_POINT;
+import static java.lang.Math.random;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class GravitationalMovingSystem implements MovingSystem {
@@ -47,9 +49,22 @@ public class GravitationalMovingSystem implements MovingSystem {
   private Collection<GravityPoint> fixedPoints = new HashSet<GravityPoint>(100);
   private Collection<TemporaryGravityPoint> temporaryPoints = new HashSet<TemporaryGravityPoint>(100);
   private Point forcePoint;
+  private double lowEnforcing;
+
+  private Command alternate = null;
 
   public GravitationalMovingSystem(Bot bot) {
     this.bot = bot;
+  }
+
+  public GravitationalMovingSystem lowEnforcingAt(double forcePointDistance) {
+    lowEnforcing = forcePointDistance;
+    return this;
+  }
+
+  public GravitationalMovingSystem whenLowEnforcingExecute(Command command) {
+    alternate = command;
+    return this;
   }
 
   @When(ADD_GRAVITY_POINT)
@@ -90,13 +105,22 @@ public class GravitationalMovingSystem implements MovingSystem {
     }
     bot.log("Location: %s", location);
     bot.log("Forced Location: %s", forcePoint);
-    bot.body().moveTo(forcePoint, 10);
+    if (lowEnforcing() && alternate != null) {
+      forcePoint = null;
+      alternate.execute();
+      return;
+    }
+    bot.body().moveTo(forcePoint, 10 + (random() * 50));
+  }
+
+  private boolean lowEnforcing() {
+    return bot.location().bearingTo(forcePoint).distance() <= 0.05;
   }
 
   @When(Events.DRAW)
   public void drawForcePoint(Drawer drawer) {
     if (forcePoint != null) {
-      drawer.draw(Color.MAGENTA).marker().at(forcePoint);
+      drawer.draw(Color.MAGENTA).circle().at(forcePoint);
     }
   }
 

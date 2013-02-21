@@ -51,4 +51,7 @@ public interface Radar extends Part {
   Field battleField();
 
   long time();
+
+  Enemy enemy(String name);
+
 }

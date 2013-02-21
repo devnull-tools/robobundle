@@ -27,7 +27,7 @@ import atatec.robocode.condition.ConditionSelector;
 import atatec.robocode.parts.SystemPart;
 
 /** @author Marcelo Varella Barca Guimarães */
-public interface ConditionalSystem<E extends SystemPart> {
+public interface ConditionalSystem<E extends SystemPart> extends Command {
 
   ConditionSelector<ConditionalSystem<E>> use(E systemPart);
 

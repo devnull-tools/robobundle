@@ -85,4 +85,25 @@ public class BattleField implements Field {
       BotMath.compare(p.x(), width) <= 0 && BotMath.compare(p.y(), height) <= 0;
   }
 
+  @Override
+  public Point closestWallPointTo(Point p) {
+    if (contains(p)) {
+      Point a, b;
+      if (p.x() < width / 2) {
+        // on left side
+        a = new Point(0, p.y());
+      } else {
+        // on right side
+        a = new Point(width, p.y());
+      }
+      if (p.y() < height / 2) {
+        b = new Point(p.x(), 0);
+      } else {
+        b = new Point(p.x(), height);
+      }
+      return p.bearingTo(a).distance() < p.bearingTo(b).distance() ? a : b;
+    }
+    return null;
+  }
+
 }

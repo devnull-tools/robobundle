@@ -81,5 +81,6 @@ public class GravityPoint extends Point {
   public String toString() {
     return String.format("%s | %.4f", super.toString(), value);
   }
+
 }
 

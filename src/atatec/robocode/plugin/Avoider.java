@@ -21,64 +21,73 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.robots;
+package atatec.robocode.plugin;
 
-import atatec.robocode.BaseBot;
+import atatec.robocode.Bot;
+import atatec.robocode.Enemy;
+import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Point;
 import atatec.robocode.event.Events;
-import atatec.robocode.parts.aiming.PredictionAimingSystem;
-import atatec.robocode.parts.movement.GravitationalMovingSystem;
-import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
+import atatec.robocode.util.Drawer;
 
-import java.awt.event.MouseEvent;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class Buster extends BaseBot {
+public class Avoider {
 
-  @Override
-  protected void configure() {
-    body().movingSystem()
-      .use(new GravitationalMovingSystem(this));
+  private final Bot bot;
+  private int threshold;
+  private Point wallPoint;
+  private Collection<Enemy> closestEnemies;
 
-    gun().aimingSystem()
-      .use(new PredictionAimingSystem(this));
-
-    /*gun().firingSystem()
-      .use(new EnergyBasedFiringSystem(this));*/
-
-    radar().scanningSystem()
-      .use(new EnemyLockScanningSystem(this));
+  public Avoider(Bot bot) {
+    this.bot = bot;
+    this.threshold = 40;
+    this.closestEnemies = new ArrayList<Enemy>();
   }
 
-  protected void onNextTurn() {
-    radar().scan();
-    body().move();
-    gun().aim().fireIfTargetLocked();
+  public Avoider notifyAt(int threshold) {
+    this.threshold = threshold;
+    return this;
   }
 
-  long time;
-
-  @Override
-  public void onMousePressed(MouseEvent e) {
-    time = e.getWhen();
+  @When(Events.NEXT_TURN)
+  public void checkWalls() {
+    wallPoint = bot.radar().battleField().closestWallPointTo(bot.location());
+    if (isBotNearTo(wallPoint)) {
+      bot.events().send(Events.NEAR_TO_WALL, wallPoint);
+    }
   }
 
-  @Override
-  public void onMouseReleased(MouseEvent e) {
-    long power = e.getWhen() - time;
-    if (e.getButton() == MouseEvent.BUTTON1) {
-      events().send(Events.ADD_GRAVITY_POINT,
-        new Point(e.getPoint().getX(), e.getPoint().getY())
-          .gravitational()
-          .withValue(power)
-          .during(50)
-      );
-    } else {
-      events().send(Events.ADD_GRAVITY_POINT,
-        new Point(e.getPoint().getX(), e.getPoint().getY())
-          .antiGravitational()
-          .withValue(power)
-      );
+  @When(Events.NEXT_TURN)
+  public void checkEnemies() {
+    Collection<Enemy> enemies = bot.radar().knownEnemies();
+    closestEnemies.clear();
+    for (Enemy enemy : enemies) {
+      if (isBotNearTo(enemy.location())) {
+        bot.events().send(Events.NEAR_TO_ENEMY, enemy);
+        closestEnemies.add(enemy);
+      }
+    }
+  }
+
+  private boolean isBotNearTo(Point point) {
+    return point.bearingTo(bot.location()).distance() <= threshold;
+  }
+
+  @When(Events.DRAW)
+  public void markClosestWall(Drawer drawer) {
+    if (wallPoint != null) {
+      drawer.draw(Color.RED).marker().at(wallPoint);
+    }
+  }
+
+  @When(Events.DRAW)
+  public void markClosestEnemies(Drawer drawer) {
+    for (Enemy enemy : closestEnemies) {
+      drawer.draw(Color.RED).marker().at(enemy.location());
     }
   }
 

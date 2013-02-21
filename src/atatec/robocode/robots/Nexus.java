@@ -26,16 +26,22 @@ package atatec.robocode.robots;
 import atatec.robocode.BaseBot;
 import atatec.robocode.Bot;
 import atatec.robocode.Condition;
+import atatec.robocode.ConditionalSystem;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
 import atatec.robocode.calc.GravityPoint;
 import atatec.robocode.calc.Point;
 import atatec.robocode.event.EnemyFireEvent;
+import atatec.robocode.parts.DefaultConditionalSystem;
+import atatec.robocode.parts.MovingSystem;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
+import atatec.robocode.parts.movement.EnemyCircleMovingSystem;
+import atatec.robocode.parts.movement.FollowEnemyMovingSystem;
 import atatec.robocode.parts.movement.GravitationalMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
+import atatec.robocode.plugin.Avoider;
 import atatec.robocode.plugin.BulletPaint;
 import atatec.robocode.plugin.Dodger;
 import atatec.robocode.plugin.EnemyScannerInfo;
@@ -47,13 +53,15 @@ import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 
+import static atatec.robocode.condition.Conditions.enemyIsAtMost;
 import static atatec.robocode.condition.Conditions.headToHeadBattle;
 import static atatec.robocode.event.Events.ADD_GRAVITY_POINT;
 import static atatec.robocode.event.Events.ENEMY_FIRE;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
 import static atatec.robocode.event.Events.HIT_ROBOT;
 import static atatec.robocode.event.Events.HIT_WALL;
-import static atatec.robocode.event.Events.NEXT_TURN;
+import static atatec.robocode.event.Events.NEAR_TO_ENEMY;
+import static atatec.robocode.event.Events.NEAR_TO_WALL;
 import static atatec.robocode.event.Events.ROUND_STARTED;
 import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
@@ -61,12 +69,19 @@ import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 /** @author Marcelo Varella Barca Guimarães */
 public class Nexus extends BaseBot {
 
+  private double distanceThreshold = 300;
+  private double lowEnforcing = 0.4;
+  private int wallGPointsDistance = 40;
+  private int avoidDistance = 80;
+
+  private double avoidingPower = 3000;
+
   private Condition targetInGoodDistance = new Condition() {
     @Override
     public boolean evaluate(Bot bot) {
       if (bot.radar().hasLockedTarget()) {
         Enemy target = bot.radar().lockedTarget();
-        if (target.distance() <= 300) {
+        if (target.distance() <= distanceThreshold) {
           return true;
         }
       }
@@ -95,13 +110,25 @@ public class Nexus extends BaseBot {
         .scanBattleField())
       .inOtherCases();
 
+    ConditionalSystem<MovingSystem> alternative =
+      new DefaultConditionalSystem<MovingSystem>(this, body());
+
+    alternative.use(new EnemyCircleMovingSystem(this))
+      .when(enemyIsAtMost(distanceThreshold))
+
+      .use(new FollowEnemyMovingSystem(this))
+      .inOtherCases();
+
     body().movingSystem()
-      .use(new GravitationalMovingSystem(this));
+      .use(new GravitationalMovingSystem(this)
+        .lowEnforcingAt(lowEnforcing)
+        .whenLowEnforcingExecute(alternative));
 
     plug(new Dodger(this));
+    plug(new Avoider(this)
+      .notifyAt(avoidDistance));
 
-    plug(new EnemyScannerInfo(this)
-      .showAttributes());
+    plug(new EnemyScannerInfo(this));
 
     plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()
@@ -140,31 +167,46 @@ public class Nexus extends BaseBot {
   }
 
   @When(HIT_ROBOT)
-  public void hitHobot(HitRobotEvent event) {
-    log("Adding anti-gravity points to avoid %s", event.getName());
+  public void hitRobot(HitRobotEvent event) {
+    log("Hit robot at %s", event.getBearingRadians());
+    Enemy enemy = radar().enemy(event.getName());
+    Point point;
+    if (enemy != null) { // use information from radar
+      point = enemy.location();
+    } else {
+      point = location();
+    }
     events().send(ADD_GRAVITY_POINT,
       antiGravityPoint()
-        .at(location())
-        .withValue(1000)
-        .during(10)
+        .at(point)
+        .withValue(3000)
+        .during(1)
+    );
+  }
+
+  @When(NEAR_TO_ENEMY)
+  public void avoidEnemy(Enemy enemy) {
+    events().send(ADD_GRAVITY_POINT,
+      antiGravityPoint()
+        .at(enemy.location())
+        .withValue(avoidingPower)
+        .during(1)
     );
   }
 
   @When(HIT_WALL)
   public void hitWall(HitWallEvent event) {
-    log("Adding gravity pull to avoid wall");
     Field battleField = radar().battleField();
     events().send(ADD_GRAVITY_POINT,
       gravityPoint()
-        .at(location())
-        .withValue(battleField.diagonal())
+        .at(battleField.closestWallPointTo(location()))
+        .withValue(2000)
         .during(10)
     );
   }
 
   @When(ROUND_STARTED)
   public void addCenterPoint() {
-    log("Adding center antigravity point");
     Field field = radar().battleField();
     events().send(ADD_GRAVITY_POINT,
       field.center()
@@ -175,28 +217,27 @@ public class Nexus extends BaseBot {
 
   @When(ROUND_STARTED)
   public void addWallGravityPoints() {
-    log("Adding gravity points to avoid walls");
     Field battleField = radar().battleField();
     Set<Point> wallPoints = new HashSet<Point>(1000);
 
     // bottom wall points
     Point point = battleField.downLeft();
-    for (int i = 0; i < battleField.width(); i += 10) {
+    for (int i = 0; i < battleField.width(); i += wallGPointsDistance) {
       wallPoints.add(point.right(i));
     }
     // right wall points
     point = battleField.downRight();
-    for (int i = 0; i < battleField.height(); i += 10) {
+    for (int i = 0; i < battleField.height(); i += wallGPointsDistance) {
       wallPoints.add(point.up(i));
     }
     // upper wall points
     point = battleField.upLeft();
-    for (int i = 0; i < battleField.width(); i += 10) {
+    for (int i = 0; i < battleField.width(); i += wallGPointsDistance) {
       wallPoints.add(point.right(i));
     }
     // left wall points
     point = battleField.downLeft();
-    for (int i = 0; i < battleField.height(); i += 10) {
+    for (int i = 0; i < battleField.height(); i += wallGPointsDistance) {
       wallPoints.add(point.up(i));
     }
 
@@ -207,7 +248,15 @@ public class Nexus extends BaseBot {
     }
   }
 
-  @When(NEXT_TURN)
+  @When(NEAR_TO_WALL)
+  public void avoidWall(Point wallPoint) {
+    events().send(ADD_GRAVITY_POINT,
+      wallPoint.antiGravitational()
+        .withValue(avoidingPower)
+        .during(1)
+    );
+  }
+
   protected void onNextTurn() {
     log("***********************************");
     addEnemyPoints();

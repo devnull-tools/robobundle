@@ -44,4 +44,7 @@ public interface Field {
   double diagonal();
 
   boolean contains(Point p);
+
+  Point closestWallPointTo(Point p);
+
 }
