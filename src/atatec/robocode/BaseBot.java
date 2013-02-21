@@ -93,7 +93,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   private BotStatistics statistics = new BotStatistics();
 
-  private Map<Class, ConditionalSystem> conditionalSystems;
+  private Map<Class, ConditionalCommand> conditionalSystems;
 
   private boolean roundEnded = false;
 
@@ -109,11 +109,11 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     this.body = body;
     this.radar = radar;
 
-    this.conditionalSystems = new HashMap<Class, ConditionalSystem>();
-    conditionalSystems.put(AimingSystem.class, gun.aimingSystem());
-    conditionalSystems.put(FiringSystem.class, gun.firingSystem());
-    conditionalSystems.put(ScanningSystem.class, radar.scanningSystem());
-    conditionalSystems.put(MovingSystem.class, body.movingSystem());
+    this.conditionalSystems = new HashMap<Class, ConditionalCommand>();
+    conditionalSystems.put(AimingSystem.class, gun.forAiming());
+    conditionalSystems.put(FiringSystem.class, gun.forFiring());
+    conditionalSystems.put(ScanningSystem.class, radar.forScanning());
+    conditionalSystems.put(MovingSystem.class, body.forMoving());
   }
 
   private void initializeParts() {
@@ -166,7 +166,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   /**
    * Do the robot's movements. Override this method if you want to use the default
    * behaviour of {@link #onRoundStarted()}.
-   *
+   * <p/>
    * You may manipulate any part of the robot
    */
   protected void onNextTurn() {
@@ -212,6 +212,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   @Override
   public final void onScannedRobot(ScannedRobotEvent event) {
     eventRegistry.send(ENEMY_SCANNED, new EnemyScannedEvent(this, event));
+    eventRegistry.send(ENEMY_SCANNED, event);
   }
 
   @Override
@@ -287,7 +288,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   @Override
   public final boolean isActivated(SystemPart systemPart) {
-    for (Map.Entry<Class, ConditionalSystem> entry : conditionalSystems.entrySet()) {
+    for (Map.Entry<Class, ConditionalCommand> entry : conditionalSystems.entrySet()) {
       if (entry.getKey().isAssignableFrom(systemPart.getClass())
         && entry.getValue().activated().equals(systemPart)) {
         return true;

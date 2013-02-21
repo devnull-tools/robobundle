@@ -21,74 +21,28 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.parts;
+package atatec.robocode.condition;
 
-import atatec.robocode.Bot;
-import atatec.robocode.Command;
 import atatec.robocode.Condition;
-import atatec.robocode.ConditionalSystem;
-import atatec.robocode.condition.ConditionSelector;
-import atatec.robocode.condition.Conditions;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import atatec.robocode.calc.Angle;
+import atatec.robocode.parts.Gun;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class DefaultConditionalSystem<E extends SystemPart> implements ConditionalSystem<E>, Command {
+public class GunConditions {
 
-  private final Map<Condition, E> components = new LinkedHashMap<Condition, E>();
+  private final Gun gun;
 
-  private E current;
-
-  private final Part part;
-
-  private final Bot bot;
-
-  public DefaultConditionalSystem(Bot bot, Part part) {
-    this.part = part;
-    this.bot = bot;
+  public GunConditions(Gun gun) {
+    this.gun = gun;
   }
 
-  @Override
-  public ConditionSelector<ConditionalSystem<E>> use(E systemPart) {
-    this.current = systemPart;
-    this.bot.plug(systemPart);
-    return new ConditionSelector<ConditionalSystem<E>>() {
-
-      public ConditionalSystem<E> when(Condition condition) {
-        components.put(condition, current);
-        current = null;
-        return DefaultConditionalSystem.this;
+  public Condition turnCompleted() {
+    return new Condition() {
+      @Override
+      public boolean evaluate() {
+        return Angle.ZERO.equals(gun.turnRemaining());
       }
-
-      public void inOtherCases() {
-        when(Conditions.ALWAYS);
-      }
-
     };
-  }
-
-  public E activated() {
-    if (part.isOn()) {
-      if (components.isEmpty()) {
-        return current;
-      } else {
-        for (Map.Entry<Condition, E> entry : components.entrySet()) {
-          if (entry.getKey().evaluate(bot)) {
-            return entry.getValue();
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public void execute() {
-    E activated = activated();
-    if (activated != null) {
-      activated.execute();
-    }
   }
 
 }

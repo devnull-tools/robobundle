@@ -25,7 +25,7 @@ package atatec.robocode.parts.radar;
 
 import atatec.robocode.BaseBot;
 import atatec.robocode.BattleField;
-import atatec.robocode.ConditionalSystem;
+import atatec.robocode.ConditionalCommand;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
@@ -33,22 +33,22 @@ import atatec.robocode.calc.Angle;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.parts.DefaultConditionalSystem;
+import atatec.robocode.parts.DefaultConditionalCommand;
 import atatec.robocode.parts.Radar;
 import atatec.robocode.parts.ScanningSystem;
 import atatec.robocode.parts.scanner.DefaultScanningSystem;
 import robocode.RobotDeathEvent;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class DefaultRadar extends BasePart implements Radar {
 
-  private final DefaultConditionalSystem<ScanningSystem> scanningSystem;
+  private final DefaultConditionalCommand<ScanningSystem> scanningSystem;
 
   private final BaseBot bot;
 
@@ -58,7 +58,7 @@ public class DefaultRadar extends BasePart implements Radar {
 
   public DefaultRadar(BaseBot bot) {
     this.bot = bot;
-    this.scanningSystem = new DefaultConditionalSystem<ScanningSystem>(bot, this);
+    this.scanningSystem = new DefaultConditionalCommand<ScanningSystem>(bot, this);
     this.scanningSystem.use(new DefaultScanningSystem());
   }
 
@@ -67,7 +67,7 @@ public class DefaultRadar extends BasePart implements Radar {
     bot.setRadarColor(color);
   }
 
-  public ConditionalSystem<ScanningSystem> scanningSystem() {
+  public ConditionalCommand<ScanningSystem> forScanning() {
     return scanningSystem;
   }
 
@@ -99,7 +99,7 @@ public class DefaultRadar extends BasePart implements Radar {
   }
 
   public Collection<Enemy> knownEnemies() {
-    return new ArrayList<Enemy>(enemies.values());
+    return Collections.unmodifiableCollection(enemies.values());
   }
 
   public void lockTarget(Enemy e) {

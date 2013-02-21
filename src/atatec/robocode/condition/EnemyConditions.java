@@ -21,56 +21,61 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.robots;
+package atatec.robocode.condition;
 
-import atatec.robocode.BaseBot;
-import atatec.robocode.annotation.When;
-import atatec.robocode.plugin.BulletPaint;
-import atatec.robocode.plugin.Dodger;
-import atatec.robocode.event.EnemyFireEvent;
-import atatec.robocode.event.Events;
-import atatec.robocode.parts.aiming.PredictionAimingSystem;
-import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
-import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
-import atatec.robocode.plugin.EnemyScannerInfo;
-
-import java.awt.Color;
+import atatec.robocode.Condition;
+import atatec.robocode.Enemy;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class Newton extends BaseBot {
+public class EnemyConditions {
 
-  @Override
-  public void configure() {
-    body().setColor(new Color(39, 40, 34));
-    gun().setColor(new Color(230, 219, 116));
-    radar().setColor(new Color(39, 40, 34));
+  private final Enemy enemy;
 
-    gun().forAiming()
-      .use(new PredictionAimingSystem(this));
-
-    gun().forFiring()
-      .use(new EnergyBasedFiringSystem(this));
-
-    radar().forScanning()
-      .use(new EnemyLockScanningSystem(this).lockClosestEnemy());
-
-    plug(new Dodger(this));
-    plug(new EnemyScannerInfo(this));
-    plug(new BulletPaint(this)
-      .use(new Color(255, 84, 84)).forStrong()
-      .use(new Color(253, 151, 31)).forMedium()
-      .use(new Color(54, 151, 255)).forWeak());
+  public EnemyConditions(Enemy enemy) {
+    this.enemy = enemy;
   }
 
-  @When(Events.ENEMY_FIRE)
-  public void onEnemyFire(EnemyFireEvent event) {
-    body().moveAndTurn(100 * Math.pow(-1, radar().time()),
-      event.enemy().bearing().inverse());
+  public Condition isMoving() {
+    return new Condition() {
+      @Override
+      public boolean evaluate() {
+        return enemy.isMoving();
+      }
+    };
   }
 
-  protected void onNextTurn() {
-    gun().aim().fireIfTargetLocked();
-    radar().scan();
+  public Condition isStopped() {
+    return new Condition() {
+      @Override
+      public boolean evaluate() {
+        return enemy.isStopped();
+      }
+    };
+  }
+
+  public Condition isAtLeastAt(final double distance) {
+    return new Condition() {
+      public boolean evaluate() {
+        return enemy != null && enemy.distance() > distance;
+      }
+    };
+  }
+
+  public Condition isAtMost(final double distance) {
+    return new Condition() {
+      public boolean evaluate() {
+        return enemy != null && enemy.distance() < distance;
+      }
+    };
+  }
+
+  public Condition isBetween(final double minimum, final double maximum) {
+    return new Condition() {
+      public boolean evaluate() {
+        double distance = enemy == null ? 0 : enemy.distance();
+        return distance >= minimum && distance < maximum;
+      }
+    };
   }
 
 }

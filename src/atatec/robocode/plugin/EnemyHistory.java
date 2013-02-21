@@ -21,56 +21,57 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.robots;
+package atatec.robocode.plugin;
 
-import atatec.robocode.BaseBot;
+import atatec.robocode.Bot;
+import atatec.robocode.Enemy;
 import atatec.robocode.annotation.When;
-import atatec.robocode.plugin.BulletPaint;
-import atatec.robocode.plugin.Dodger;
-import atatec.robocode.event.EnemyFireEvent;
+import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
-import atatec.robocode.parts.aiming.PredictionAimingSystem;
-import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
-import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
-import atatec.robocode.plugin.EnemyScannerInfo;
 
-import java.awt.Color;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class Newton extends BaseBot {
+public class EnemyHistory {
 
-  @Override
-  public void configure() {
-    body().setColor(new Color(39, 40, 34));
-    gun().setColor(new Color(230, 219, 116));
-    radar().setColor(new Color(39, 40, 34));
+  private Map<String, List<Enemy>> enemyHistory;
 
-    gun().forAiming()
-      .use(new PredictionAimingSystem(this));
+  private int historySize;
 
-    gun().forFiring()
-      .use(new EnergyBasedFiringSystem(this));
+  private final Bot bot;
 
-    radar().forScanning()
-      .use(new EnemyLockScanningSystem(this).lockClosestEnemy());
-
-    plug(new Dodger(this));
-    plug(new EnemyScannerInfo(this));
-    plug(new BulletPaint(this)
-      .use(new Color(255, 84, 84)).forStrong()
-      .use(new Color(253, 151, 31)).forMedium()
-      .use(new Color(54, 151, 255)).forWeak());
+  public EnemyHistory(Bot bot) {
+    this(bot, 20);
   }
 
-  @When(Events.ENEMY_FIRE)
-  public void onEnemyFire(EnemyFireEvent event) {
-    body().moveAndTurn(100 * Math.pow(-1, radar().time()),
-      event.enemy().bearing().inverse());
+  public EnemyHistory(Bot bot, int historySize) {
+    this.enemyHistory = new HashMap<String, List<Enemy>>();
+    this.bot = bot;
+    this.historySize = historySize;
   }
 
-  protected void onNextTurn() {
-    gun().aim().fireIfTargetLocked();
-    radar().scan();
+  @When(Events.ENEMY_SCANNED)
+  public void registerEnemy(EnemyScannedEvent event) {
+    Enemy enemy = event.enemy();
+    if (!enemyHistory.containsKey(enemy.name())) {
+      enemyHistory.put(enemy.name(), new LinkedList<Enemy>());
+    }
+    List<Enemy> history = enemyHistory.get(enemy.name());
+    history.add(0, enemy);
+    if(history.size() > historySize) {
+      history.remove(history.size());
+    }
+  }
+
+  public List<Enemy> historyFor(Enemy enemy) {
+    if (!enemyHistory.containsKey(enemy.name())) {
+      return Collections.emptyList();
+    }
+    return Collections.unmodifiableList(enemyHistory.get(enemy.name()));
   }
 
 }

@@ -23,7 +23,7 @@
 
 package atatec.robocode.parts;
 
-import atatec.robocode.ConditionalSystem;
+import atatec.robocode.ConditionalCommand;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 
@@ -46,7 +46,7 @@ public interface Body extends Part {
 
   double velocity();
 
-  ConditionalSystem<MovingSystem> movingSystem();
+  ConditionalCommand<MovingSystem> forMoving();
 
   void moveTo(Point point, double distance);
 }

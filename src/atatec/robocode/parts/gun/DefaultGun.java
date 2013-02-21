@@ -25,14 +25,14 @@ package atatec.robocode.parts.gun;
 
 import atatec.robocode.BaseBot;
 import atatec.robocode.Condition;
-import atatec.robocode.ConditionalSystem;
+import atatec.robocode.ConditionalCommand;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
-import atatec.robocode.condition.Conditions;
+import atatec.robocode.condition.RadarConditions;
 import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.parts.BasePart;
-import atatec.robocode.parts.DefaultConditionalSystem;
+import atatec.robocode.parts.DefaultConditionalCommand;
 import atatec.robocode.parts.FiringSystem;
 import atatec.robocode.parts.Gun;
 
@@ -43,14 +43,14 @@ public class DefaultGun extends BasePart implements Gun {
 
   private final BaseBot bot;
 
-  private final DefaultConditionalSystem<AimingSystem> aimingSystem;
+  private final DefaultConditionalCommand<AimingSystem> aimingSystem;
 
-  private final DefaultConditionalSystem<FiringSystem> firingSystem;
+  private final DefaultConditionalCommand<FiringSystem> firingSystem;
 
   public DefaultGun(BaseBot bot) {
     this.bot = bot;
-    this.aimingSystem = new DefaultConditionalSystem<AimingSystem>(bot, this);
-    this.firingSystem = new DefaultConditionalSystem<FiringSystem>(bot, this);
+    this.aimingSystem = new DefaultConditionalCommand<AimingSystem>(bot, this);
+    this.firingSystem = new DefaultConditionalCommand<FiringSystem>(bot, this);
   }
 
   @Override
@@ -70,12 +70,12 @@ public class DefaultGun extends BasePart implements Gun {
 
   @Override
   public void fireIfTargetLocked() {
-    fireIf(Conditions.targetLocked());
+    fireIf(new RadarConditions(bot.radar()).hasLockedTarget());
   }
 
   @Override
   public void fireIf(Condition condition) {
-    if (condition.evaluate(bot)) {
+    if (condition.evaluate()) {
       fire();
     }
   }
@@ -91,7 +91,7 @@ public class DefaultGun extends BasePart implements Gun {
 
   public double power() {
     FiringSystem activated = firingSystem.activated();
-    return activated != null ? activated.power() : 0;
+    return activated != null ? activated.firePower() : 0;
   }
 
   @Override
@@ -137,11 +137,11 @@ public class DefaultGun extends BasePart implements Gun {
   }
 
 
-  public ConditionalSystem<AimingSystem> aimingSystem() {
+  public ConditionalCommand<AimingSystem> forAiming() {
     return aimingSystem;
   }
 
-  public ConditionalSystem<FiringSystem> firingSystem() {
+  public ConditionalCommand<FiringSystem> forFiring() {
     return firingSystem;
   }
 

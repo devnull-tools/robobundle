@@ -24,13 +24,13 @@
 package atatec.robocode.robots;
 
 import atatec.robocode.BaseBot;
-import atatec.robocode.Bot;
 import atatec.robocode.Condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
 import atatec.robocode.calc.GravityPoint;
 import atatec.robocode.calc.Point;
+import atatec.robocode.condition.BotConditions;
 import atatec.robocode.event.EnemyFireEvent;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
@@ -41,6 +41,7 @@ import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 import atatec.robocode.plugin.Avoider;
 import atatec.robocode.plugin.BulletPaint;
 import atatec.robocode.plugin.Dodger;
+import atatec.robocode.plugin.EnemyHistory;
 import atatec.robocode.plugin.EnemyScannerInfo;
 import atatec.robocode.util.GravityPointBuilder;
 import robocode.HitRobotEvent;
@@ -48,11 +49,10 @@ import robocode.HitWallEvent;
 
 import java.awt.Color;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static atatec.robocode.condition.Conditions.all;
-import static atatec.robocode.condition.Conditions.enemyIsAtMost;
-import static atatec.robocode.condition.Conditions.headToHeadBattle;
 import static atatec.robocode.event.Events.ENEMY_FIRE;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
 import static atatec.robocode.event.Events.HIT_ROBOT;
@@ -77,19 +77,30 @@ public class Nexus extends BaseBot {
 
   private boolean isLowEnforcing = false;
 
+  private EnemyHistory enemyHistory = new EnemyHistory(this, 5);
+
   private Condition lowEnforcing = new Condition() {
     @Override
-    public boolean evaluate(Bot bot) {
+    public boolean evaluate() {
       return isLowEnforcing;
     }
   };
 
   private Condition targetInGoodDistance = new Condition() {
     @Override
-    public boolean evaluate(Bot bot) {
-      if (bot.radar().hasLockedTarget()) {
-        Enemy target = bot.radar().lockedTarget();
+    public boolean evaluate() {
+      if (radar().hasLockedTarget()) {
+        Enemy target = radar().lockedTarget();
         if (target.distance() <= distanceThreshold) {
+          return true;
+        } else {
+          // checks if the enemy is stopped for a while
+          List<Enemy> history = enemyHistory.historyFor(target);
+          for (Enemy enemy : history) {
+            if (enemy.isMoving()) {
+              return false;
+            }
+          }
           return true;
         }
       }
@@ -102,26 +113,28 @@ public class Nexus extends BaseBot {
     gun().setColor(new Color(166, 226, 46));
     radar().setColor(new Color(39, 40, 34));
 
-    gun().aimingSystem()
+    BotConditions conditions = new BotConditions(this);
+
+    gun().forAiming()
       .use(new PredictionAimingSystem(this));
 
-    gun().firingSystem()
+    gun().forFiring()
       .use(new EnergyBasedFiringSystem(this)
         .fireMaxAt(80)
         .fireMinAt(30));
 
-    radar().scanningSystem()
+    radar().forScanning()
       .use(new EnemyLockScanningSystem(this))
-      .when(headToHeadBattle())
+      .when(conditions.radar().headToHeadBattle())
 
       .use(new EnemyLockScanningSystem(this)
         .scanBattleField())
       .inOtherCases();
 
-    body().movingSystem()
+    body().forMoving()
       .use(new EnemyCircleMovingSystem(this))
       .when(
-        all(lowEnforcing, enemyIsAtMost(distanceThreshold))
+        all(lowEnforcing, conditions.enemy().isAtMost(distanceThreshold))
       )
 
       .use(new FollowEnemyMovingSystem(this))
@@ -136,6 +149,7 @@ public class Nexus extends BaseBot {
       .notifyAt(avoidDistance));
 
     plug(new EnemyScannerInfo(this));
+    plug(enemyHistory);
 
     plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()

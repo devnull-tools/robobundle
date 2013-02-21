@@ -21,56 +21,74 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.robots;
+package atatec.robocode.parts;
 
-import atatec.robocode.BaseBot;
-import atatec.robocode.annotation.When;
-import atatec.robocode.plugin.BulletPaint;
-import atatec.robocode.plugin.Dodger;
-import atatec.robocode.event.EnemyFireEvent;
-import atatec.robocode.event.Events;
-import atatec.robocode.parts.aiming.PredictionAimingSystem;
-import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
-import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
-import atatec.robocode.plugin.EnemyScannerInfo;
+import atatec.robocode.Bot;
+import atatec.robocode.Command;
+import atatec.robocode.Condition;
+import atatec.robocode.ConditionalCommand;
+import atatec.robocode.condition.ConditionSelector;
+import atatec.robocode.condition.Conditions;
 
-import java.awt.Color;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class Newton extends BaseBot {
+public class DefaultConditionalCommand<E extends Command> implements ConditionalCommand<E> {
+
+  private final Map<Condition, E> components = new LinkedHashMap<Condition, E>();
+
+  private E current;
+
+  private final Part part;
+
+  private final Bot bot;
+
+  public DefaultConditionalCommand(Bot bot, Part part) {
+    this.part = part;
+    this.bot = bot;
+  }
 
   @Override
-  public void configure() {
-    body().setColor(new Color(39, 40, 34));
-    gun().setColor(new Color(230, 219, 116));
-    radar().setColor(new Color(39, 40, 34));
+  public ConditionSelector<ConditionalCommand<E>> use(E systemPart) {
+    this.current = systemPart;
+    this.bot.plug(systemPart);
+    return new ConditionSelector<ConditionalCommand<E>>() {
 
-    gun().forAiming()
-      .use(new PredictionAimingSystem(this));
+      public ConditionalCommand<E> when(Condition condition) {
+        components.put(condition, current);
+        current = null;
+        return DefaultConditionalCommand.this;
+      }
 
-    gun().forFiring()
-      .use(new EnergyBasedFiringSystem(this));
+      public void inOtherCases() {
+        when(Conditions.ALWAYS);
+      }
 
-    radar().forScanning()
-      .use(new EnemyLockScanningSystem(this).lockClosestEnemy());
-
-    plug(new Dodger(this));
-    plug(new EnemyScannerInfo(this));
-    plug(new BulletPaint(this)
-      .use(new Color(255, 84, 84)).forStrong()
-      .use(new Color(253, 151, 31)).forMedium()
-      .use(new Color(54, 151, 255)).forWeak());
+    };
   }
 
-  @When(Events.ENEMY_FIRE)
-  public void onEnemyFire(EnemyFireEvent event) {
-    body().moveAndTurn(100 * Math.pow(-1, radar().time()),
-      event.enemy().bearing().inverse());
+  public E activated() {
+    if (part.isOn()) {
+      if (components.isEmpty()) {
+        return current;
+      } else {
+        for (Map.Entry<Condition, E> entry : components.entrySet()) {
+          if (entry.getKey().evaluate()) {
+            return entry.getValue();
+          }
+        }
+      }
+    }
+    return null;
   }
 
-  protected void onNextTurn() {
-    gun().aim().fireIfTargetLocked();
-    radar().scan();
+  @Override
+  public void execute() {
+    E activated = activated();
+    if (activated != null) {
+      activated.execute();
+    }
   }
 
 }

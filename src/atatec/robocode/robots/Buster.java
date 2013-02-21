@@ -36,16 +36,16 @@ public class Buster extends BaseBot {
 
   @Override
   protected void configure() {
-    body().movingSystem()
+    body().forMoving()
       .use(new GravitationalMovingSystem(this));
 
-    gun().aimingSystem()
+    gun().forAiming()
       .use(new PredictionAimingSystem(this));
 
-    /*gun().firingSystem()
+    /*gun().forFiring()
       .use(new EnergyBasedFiringSystem(this));*/
 
-    radar().scanningSystem()
+    radar().forScanning()
       .use(new EnemyLockScanningSystem(this));
   }
 

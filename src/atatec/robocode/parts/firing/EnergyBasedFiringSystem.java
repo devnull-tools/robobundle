@@ -55,12 +55,12 @@ public class EnergyBasedFiringSystem implements FiringSystem {
     return this;
   }
 
-  public double power() {
+  public double firePower() {
     return bestPower(bestPowerBasedOnBot(), bestPowerBasedOnEnemy());
   }
 
   public void execute() {
-    bot.gun().fire(power());
+    bot.gun().fire(firePower());
   }
 
   private double bestPowerBasedOnBot() {

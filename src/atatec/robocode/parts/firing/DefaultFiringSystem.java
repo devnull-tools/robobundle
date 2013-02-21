@@ -42,13 +42,13 @@ public class DefaultFiringSystem implements FiringSystem {
     this(bot, 1);
   }
 
-  public double power() {
+  public double firePower() {
     return power;
   }
 
   @Override
   public void execute() {
-    bot.gun().fire(power());
+    bot.gun().fire(firePower());
   }
 
 }
