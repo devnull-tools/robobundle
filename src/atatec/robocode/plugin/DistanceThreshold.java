@@ -24,6 +24,7 @@
 package atatec.robocode.plugin;
 
 import atatec.robocode.Bot;
+import atatec.robocode.Condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.annotation.When;
 import atatec.robocode.event.BulletFiredEvent;
@@ -44,23 +45,35 @@ public class DistanceThreshold {
 
   private final Bot bot;
 
+  private double minimumDistance;
   private double baseDistance;
   private double stepPoint;
 
   private Map<Bullet, String> bullets;
-
   private Map<String, AtomicLong> modifiers;
 
   public DistanceThreshold(Bot bot) {
-    this(bot, 100, 10);
-  }
-
-  public DistanceThreshold(Bot bot, double baseDistance, double stepPoint) {
     this.bot = bot;
-    this.baseDistance = baseDistance;
-    this.stepPoint = stepPoint;
+    this.baseDistance = bot.radar().battleField().diagonal();
+    this.stepPoint = 2;
+    this.minimumDistance = 50;
     this.bullets = new HashMap<Bullet, String>();
     this.modifiers = new HashMap<String, AtomicLong>();
+  }
+
+  public DistanceThreshold baseDistance(double baseDistance) {
+    this.baseDistance = baseDistance;
+    return this;
+  }
+
+  public DistanceThreshold stepPoint(double stepPoint) {
+    this.stepPoint = stepPoint;
+    return this;
+  }
+
+  public DistanceThreshold minumumDistante(double minimumDistance) {
+    this.minimumDistance = minimumDistance;
+    return this;
   }
 
   @When(Events.BULLET_FIRED)
@@ -86,7 +99,8 @@ public class DistanceThreshold {
 
   public double maximumDistanceTo(Enemy enemy) {
     if (modifiers.containsKey(enemy.name())) {
-      return baseDistance + (stepPoint * modifiers.get(enemy.name()).get());
+      return Math.max(minimumDistance,
+        baseDistance + (stepPoint * modifiers.get(enemy.name()).get()));
     }
     return baseDistance;
   }
@@ -95,8 +109,22 @@ public class DistanceThreshold {
   public void draw(Drawer drawer) {
     Collection<Enemy> enemies = bot.radar().knownEnemies();
     for (Enemy enemy : enemies) {
-      drawer.draw(Color.PINK).string(maximumDistanceTo(enemy)).at(enemy.location());
+      drawer.draw(Color.BLUE.brighter())
+        .string(maximumDistanceTo(enemy)).at(enemy.location());
     }
+  }
+
+  public Condition targetAtGoodDistance() {
+    return new Condition() {
+      @Override
+      public boolean evaluate() {
+        if (bot.radar().hasLockedTarget()) {
+          Enemy target = bot.radar().lockedTarget();
+          return target.distance() <= maximumDistanceTo(target);
+        }
+        return true;
+      }
+    };
   }
 
 }

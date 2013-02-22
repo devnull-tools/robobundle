@@ -24,6 +24,7 @@
 package atatec.robocode.plugin;
 
 import atatec.robocode.Bot;
+import atatec.robocode.Condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.annotation.When;
 import atatec.robocode.event.EnemyScannedEvent;
@@ -88,6 +89,32 @@ public class EnemyHistory {
         drawer.draw(TRANSPARENT, LIGHT_GRAY).circle().at(enemyHistory.location());
       }
     }
+  }
+
+  public boolean isEnemyStopped(Enemy target, int searchDeep) {
+    List<Enemy> history = historyFor(target);
+    int i = 0;
+    for (Enemy enemy : history) {
+      if (enemy.isMoving()) {
+        return false;
+      } else if (i++ == searchDeep) {
+        break;
+      }
+    }
+    return true;
+  }
+
+  public Condition targetStopedFor(final int searchDeep) {
+    return new Condition() {
+      @Override
+      public boolean evaluate() {
+        if (bot.radar().hasLockedTarget()) {
+          Enemy target = bot.radar().lockedTarget();
+          return isEnemyStopped(target, searchDeep);
+        }
+        return false;
+      }
+    };
   }
 
 }

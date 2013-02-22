@@ -50,10 +50,12 @@ import robocode.HitWallEvent;
 
 import java.awt.Color;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static atatec.robocode.condition.Conditions.all;
+import static atatec.robocode.condition.Conditions.any;
+import static atatec.robocode.event.Events.BULLET_FIRED;
+import static atatec.robocode.event.Events.BULLET_NOT_FIRED;
 import static atatec.robocode.event.Events.ENEMY_FIRE;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
 import static atatec.robocode.event.Events.HIT_ROBOT;
@@ -73,7 +75,7 @@ public class Nexus extends BaseBot {
   private int wallGPointsDistance = 40;
   private int avoidDistance = 80;
 
-  private int considerStopped = 15;
+  private int minimumStoppedTurns = 15;
 
   private int fireSkipToChangeTarget = 50;
 
@@ -92,37 +94,12 @@ public class Nexus extends BaseBot {
     }
   };
 
-  private Condition targetInGoodDistance = new Condition() {
-    @Override
-    public boolean evaluate() {
-      if (radar().hasLockedTarget()) {
-        Enemy target = radar().lockedTarget();
-        if (target.distance() <= distanceThreshold.maximumDistanceTo(target)) {
-          return true;
-        } else {
-          // checks if the enemy is stopped for a while
-          List<Enemy> history = enemyHistory.historyFor(target);
-          int i = 0;
-          for (Enemy enemy : history) {
-            if (enemy.isMoving()) {
-              return false;
-            } else if (i++ >= considerStopped) {
-              break;
-            }
-          }
-          return true;
-        }
-      }
-      return false;
-    }
-  };
+  private BotConditions conditions = new BotConditions(this);
 
   protected void configure() {
     body().setColor(new Color(39, 40, 34));
     gun().setColor(new Color(166, 226, 46));
     radar().setColor(new Color(39, 40, 34));
-
-    BotConditions conditions = new BotConditions(this);
 
     gun().forAiming()
       .use(new PredictionAimingSystem(this));
@@ -305,13 +282,27 @@ public class Nexus extends BaseBot {
     addEnemyPoints();
     radar().scan();
     body().move();
-    gun().aim();
-    if (targetInGoodDistance.evaluate()) {
-      gun().fire();
-      fireSkip = 0;
-    } else if (++fireSkip > fireSkipToChangeTarget && radar().enemiesCount() > 1) {
+    gun().aim().fireIf(
+      all(
+        conditions.radar().hasLockedTarget(),
+        any(
+          distanceThreshold.targetAtGoodDistance(),
+          enemyHistory.targetStopedFor(minimumStoppedTurns)
+        )
+      )
+    );
+  }
+
+  @When(BULLET_NOT_FIRED)
+  public void registerBulletNotFired() {
+    if (++fireSkip > fireSkipToChangeTarget && radar().enemiesCount() > 1) {
       radar().unlockTarget();
     }
+  }
+
+  @When(BULLET_FIRED)
+  public void registerBulletFired() {
+    fireSkip = 0;
   }
 
   private void addEnemyPoints() {
