@@ -49,7 +49,9 @@ public class Chronos extends BaseBot {
 
     gun().forAiming()
       .use(new PredictionAimingSystem(this))
-      .when(conditions.enemy().isMoving())
+      .when(
+        conditions.target().isMoving()
+      )
 
       .use(new DirectAimingSystem(this))
       .inOtherCases();
@@ -62,7 +64,7 @@ public class Chronos extends BaseBot {
 
     body().forMoving()
       .use(new EnemyCircleMovingSystem(this))
-      .when(conditions.enemy().isAtMost(400))
+      .when(conditions.target().isAtMost(400))
 
       .use(new FollowEnemyMovingSystem(this))
       .inOtherCases();

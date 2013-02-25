@@ -24,84 +24,23 @@
 package atatec.robocode.condition;
 
 import atatec.robocode.Condition;
+import atatec.robocode.Enemy;
+import atatec.robocode.parts.Radar;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class Conditions {
+public abstract class TargetCondition implements Condition {
 
-  public static final Condition ALWAYS = new Condition() {
+  private final Radar radar;
 
-    @Override
-    public boolean evaluate() {
-      return true;
-    }
-  };
-
-  public static final Condition NEVER = new Condition() {
-
-      @Override
-      public boolean evaluate() {
-        return false;
-      }
-    };
-
-  public static Condition all(final Condition... conditions) {
-    return new Condition() {
-      @Override
-      public boolean evaluate() {
-        for (Condition condition : conditions) {
-          if (!condition.evaluate()) {
-            return false;
-          }
-        }
-        return true;
-      }
-    };
+  public TargetCondition(Radar radar) {
+    this.radar = radar;
   }
 
-  public static Condition none(final Condition... conditions) {
-    return new Condition() {
-      @Override
-      public boolean evaluate() {
-        for (Condition condition : conditions) {
-          if (condition.evaluate()) {
-            return false;
-          }
-        }
-        return true;
-      }
-    };
+  @Override
+  public boolean evaluate() {
+    return radar.hasLockedTarget() && evaluate(radar.lockedTarget());
   }
 
-  public static Condition any(final Condition... conditions) {
-    return new Condition() {
-      @Override
-      public boolean evaluate() {
-        for (Condition condition : conditions) {
-          if (condition.evaluate()) {
-            return true;
-          }
-        }
-        return false;
-      }
-    };
-  }
-
-  public static Condition adapt(final robocode.Condition robocodeCondition) {
-    return new Condition() {
-      @Override
-      public boolean evaluate() {
-        return robocodeCondition.test();
-      }
-    };
-  }
-
-  public static robocode.Condition adapt(final Condition condition) {
-    return new robocode.Condition() {
-      @Override
-      public boolean test() {
-        return condition.evaluate();
-      }
-    };
-  }
+  protected abstract boolean evaluate(Enemy enemy);
 
 }

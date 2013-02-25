@@ -25,53 +25,54 @@ package atatec.robocode.condition;
 
 import atatec.robocode.Condition;
 import atatec.robocode.Enemy;
+import atatec.robocode.parts.Radar;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class EnemyConditions {
+public class TargetConditions {
 
-  private final Enemy enemy;
+  private final Radar radar;
 
-  public EnemyConditions(Enemy enemy) {
-    this.enemy = enemy;
+  public TargetConditions(Radar radar) {
+    this.radar = radar;
   }
 
   public Condition isMoving() {
-    return new Condition() {
+    return new TargetCondition(radar) {
       @Override
-      public boolean evaluate() {
+      public boolean evaluate(Enemy enemy) {
         return enemy.isMoving();
       }
     };
   }
 
   public Condition isStopped() {
-    return new Condition() {
+    return new TargetCondition(radar) {
       @Override
-      public boolean evaluate() {
+      public boolean evaluate(Enemy enemy) {
         return enemy.isStopped();
       }
     };
   }
 
   public Condition isAtLeastAt(final double distance) {
-    return new Condition() {
-      public boolean evaluate() {
+    return new TargetCondition(radar) {
+      public boolean evaluate(Enemy enemy) {
         return enemy != null && enemy.distance() > distance;
       }
     };
   }
 
   public Condition isAtMost(final double distance) {
-    return new Condition() {
-      public boolean evaluate() {
+    return new TargetCondition(radar) {
+      public boolean evaluate(Enemy enemy) {
         return enemy != null && enemy.distance() < distance;
       }
     };
   }
 
   public Condition isBetween(final double minimum, final double maximum) {
-    return new Condition() {
-      public boolean evaluate() {
+    return new TargetCondition(radar) {
+      public boolean evaluate(Enemy enemy) {
         double distance = enemy == null ? 0 : enemy.distance();
         return distance >= minimum && distance < maximum;
       }

@@ -28,16 +28,16 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 
 /**
- * Interface that defines an enemy bot.
+ * Interface that defines an target bot.
  *
  * @author Marcelo Varella Barca Guimarães
  */
 public interface Enemy {
 
   /**
-   * Returns the enemy's position on the {@link Field battlefield}
+   * Returns the target's position on the {@link Field battlefield}
    *
-   * @return the enemy's position on the battlefield
+   * @return the target's position on the battlefield
    */
   Position position();
 

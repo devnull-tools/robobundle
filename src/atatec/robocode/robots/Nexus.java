@@ -120,7 +120,7 @@ public class Nexus extends BaseBot {
     body().forMoving()
       .use(new EnemyCircleMovingSystem(this))
       .when(
-        all(lowEnforcing, conditions.enemy().isAtMost(400))
+        all(lowEnforcing, conditions.target().isAtMost(400))
       )
 
       .use(new FollowEnemyMovingSystem(this))

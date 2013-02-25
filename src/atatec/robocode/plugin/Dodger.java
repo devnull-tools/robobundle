@@ -55,7 +55,7 @@ public class Dodger {
 
   @When(Events.BULLET_HIT)
   public void onBulletHit(BulletHitEvent event) {
-    // removes the last enemy registry because if the bullet hits the target, its energy
+    // removes the last target registry because if the bullet hits the target, its energy
     // will drop a bit and may cause a wrong interpretation of a bullet being fired
     if(lastEnemy != null && event.getName().equals(lastEnemy.name())) {
       lastEnemy = null;

@@ -34,8 +34,8 @@ public class BotConditions {
     this.bot = bot;
   }
 
-  public EnemyConditions enemy() {
-    return new EnemyConditions(bot.radar().lockedTarget());
+  public TargetConditions target() {
+    return new TargetConditions(bot.radar());
   }
 
   public RadarConditions radar() {
