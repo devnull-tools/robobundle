@@ -28,62 +28,141 @@ import atatec.robocode.util.GravityPointBuilder;
 import static atatec.robocode.calc.BotMath.areEquals;
 import static atatec.robocode.calc.BotMath.toBigecimal;
 
-/** @author Marcelo Varella Barca Guimarães */
+/**
+ * A class that defines a point with two dimensions (x, y).
+ * <p/>
+ * All instances of this class are immutable.
+ *
+ * @author Marcelo Varella Barca Guimarães
+ */
 public class Point {
 
+  /** Holds the (0,0) point. */
   public static final Point ORIGIN = new Point(0, 0);
 
   private final double x, y;
 
+  /**
+   * Creates a new point with the given coordinates
+   *
+   * @param x the <code>x</code> coordinate
+   * @param y the <code>y</code> coordinate
+   */
   public Point(double x, double y) {
     this.x = x;
     this.y = y;
   }
 
-  public double x() {
+  /**
+   * Returns the <code>x</code> coordinate
+   *
+   * @return the <code>x</code> coordinate
+   */
+  public final double x() {
     return x;
   }
 
-  public double y() {
+  /**
+   * Returns the <code>y</code> coordinate
+   *
+   * @return the <code>y</code> coordinate
+   */
+  public final double y() {
     return y;
   }
 
+  /**
+   * Returns a new point to the left of this.
+   *
+   * @param amount the distance to this point
+   *
+   * @return a new point to the left of this.
+   */
   public Point left(double amount) {
     return new Point(x - amount, y);
   }
 
+  /**
+   * Returns a new point to the right of this.
+   *
+   * @param amount the distance to this point
+   *
+   * @return a new point to the right of this.
+   */
   public Point right(double amount) {
     return new Point(x + amount, y);
   }
 
+  /**
+   * Returns a new point above this.
+   *
+   * @param amount the distance to this point
+   *
+   * @return a new point above this.
+   */
   public Point up(double amount) {
     return new Point(x, y + amount);
   }
 
+  /**
+   * Returns a new point bellow this.
+   *
+   * @param amount the distance to this point
+   *
+   * @return a new point bellow this.
+   */
   public Point down(double amount) {
     return new Point(x, y - amount);
   }
 
-  public java.awt.Point toAwtPoint() {
-    return new java.awt.Point((int) x, (int) y);
-  }
-
+  /**
+   * Sums this point's coordinates with another point's coordinates.
+   *
+   * @param other the other point
+   *
+   * @return a point (x + other.x, y + other.y)
+   */
   public Point plus(Point other) {
     return new Point(x + other.x, y + other.y);
   }
 
+  /**
+   * Subtracts this point's coordinates with another point's coordinates.
+   *
+   * @param other the other point
+   *
+   * @return a point (x - other.x, y - other.y)
+   */
   public Point minus(Point other) {
     return new Point(x - other.x, y - other.y);
   }
 
+  /**
+   * Computes the bearing to another point.
+   *
+   * @param other the other point to compute the bearing
+   *
+   * @return the bearing to the given point
+   */
   public Position bearingTo(Point other) {
     return new Position(this, other);
   }
 
+  /**
+   * Starts to create a {@link GravityPoint gravity point} using this point's location.
+   *
+   * @return a builder for creating the gravity point.
+   */
   public GravityPointBuilder gravitational() {
     return GravityPointBuilder.gravityPoint().at(this);
   }
 
+  /**
+   * Starts to create an {@link GravityPoint anti-gravity point} using this point's
+   * location.
+   *
+   * @return a builder for creating the anti-gravity point.
+   */
   public GravityPointBuilder antiGravitational() {
     return GravityPointBuilder.antiGravityPoint().at(this);
   }

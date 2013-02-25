@@ -24,6 +24,11 @@
 package atatec.robocode.condition;
 
 import atatec.robocode.Bot;
+import atatec.robocode.Condition;
+import atatec.robocode.Enemy;
+import atatec.robocode.calc.Point;
+
+import java.util.Collection;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class BotConditions {
@@ -52,6 +57,31 @@ public class BotConditions {
 
   public StatisticsConditions statistics() {
     return new StatisticsConditions(bot.statistics());
+  }
+
+  public Condition nextToWall(final double distance) {
+    return new Condition() {
+      @Override
+      public boolean evaluate() {
+        Point wall = bot.radar().battleField().closestWallPointTo(bot.location());
+        return wall.bearingTo(bot.location()).distance() <= distance;
+      }
+    };
+  }
+
+  public Condition nextToEnemy(final double distance) {
+    return new Condition() {
+      @Override
+      public boolean evaluate() {
+        Collection<Enemy> enemies = bot.radar().knownEnemies();
+        for (Enemy enemy : enemies) {
+          if (enemy.distance() <= distance) {
+            return true;
+          }
+        }
+        return false;
+      }
+    };
   }
 
 }

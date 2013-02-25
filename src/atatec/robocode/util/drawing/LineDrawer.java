@@ -51,8 +51,8 @@ public class LineDrawer {
 
   private void draw() {
     g.drawLine(
-      origin.toAwtPoint().x, origin.toAwtPoint().y,
-      dest.toAwtPoint().x, dest.toAwtPoint().y
+      (int) origin.x(), (int) origin.y(),
+      (int) dest.x(), (int) dest.y()
     );
   }
 

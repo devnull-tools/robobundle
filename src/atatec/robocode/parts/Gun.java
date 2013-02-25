@@ -29,9 +29,24 @@ import atatec.robocode.calc.Point;
 
 import java.awt.Color;
 
-/** @author Marcelo Varella Barca Guimarães */
+/**
+ * Interface that defines a robot gun.
+ * <p/>
+ * A gun can use an {@link AimingSystem} to point the gun to the right direction and a
+ * {@link FiringSystem} to fire the gun using the best power. The behaviour of any system
+ * can be changed at runtime based on giving {@link Condition conditions}.
+ *
+ * @author Marcelo Varella Barca Guimarães
+ */
 public interface Gun extends Part {
 
+  /**
+   * Points the gun to aim on the given point.
+   *
+   * @param point the point that the gun should aim
+   *
+   * @return a reference to this object.
+   */
   Gun aimTo(Point point);
 
   void fire(double power);

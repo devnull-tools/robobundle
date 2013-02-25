@@ -50,8 +50,8 @@ public class MarkerDrawer {
   }
 
   private void draw() {
-    int x = location.toAwtPoint().x;
-    int y = location.toAwtPoint().y;
+    int x = (int) location.x();
+    int y = (int) location.y();
     int lineSize = size / 2;
     g.drawLine(x - lineSize, y - lineSize, x + lineSize, y + lineSize);
     g.drawLine(x - lineSize, y + lineSize, x + lineSize, y - lineSize);

@@ -38,11 +38,11 @@ public class Conditions {
 
   public static final Condition NEVER = new Condition() {
 
-      @Override
-      public boolean evaluate() {
-        return false;
-      }
-    };
+    @Override
+    public boolean evaluate() {
+      return false;
+    }
+  };
 
   public static Condition all(final Condition... conditions) {
     return new Condition() {
@@ -82,6 +82,15 @@ public class Conditions {
           }
         }
         return false;
+      }
+    };
+  }
+
+  public static Condition not(final Condition condition) {
+    return new Condition() {
+      @Override
+      public boolean evaluate() {
+        return !condition.evaluate();
       }
     };
   }

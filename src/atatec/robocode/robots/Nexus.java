@@ -35,7 +35,6 @@ import atatec.robocode.event.EnemyFireEvent;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
 import atatec.robocode.parts.movement.EnemyCircleMovingSystem;
-import atatec.robocode.parts.movement.FollowEnemyMovingSystem;
 import atatec.robocode.parts.movement.GravitationalMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 import atatec.robocode.plugin.Avoider;
@@ -54,6 +53,7 @@ import java.util.Set;
 
 import static atatec.robocode.condition.Conditions.all;
 import static atatec.robocode.condition.Conditions.any;
+import static atatec.robocode.condition.Conditions.not;
 import static atatec.robocode.event.Events.BULLET_FIRED;
 import static atatec.robocode.event.Events.BULLET_NOT_FIRED;
 import static atatec.robocode.event.Events.ENEMY_FIRE;
@@ -96,6 +96,15 @@ public class Nexus extends BaseBot {
 
   private BotConditions conditions = new BotConditions(this);
 
+  private Condition gravityMovingLocked = new Condition() {
+    @Override
+    public boolean evaluate() {
+      return lockGravityMoving-- > 0;
+    }
+  };
+
+  private int lockGravityMoving = 0;
+
   protected void configure() {
     body().setColor(new Color(39, 40, 34));
     gun().setColor(new Color(166, 226, 46));
@@ -118,16 +127,22 @@ public class Nexus extends BaseBot {
       .inOtherCases();
 
     body().forMoving()
-      .use(new EnemyCircleMovingSystem(this))
-      .when(
-        all(lowEnforcing, conditions.target().isAtMost(400))
-      )
-
-      .use(new FollowEnemyMovingSystem(this))
-      .when(lowEnforcing)
-
       .use(new GravitationalMovingSystem(this)
         .lowEnforcingAt(lowEnforcingValue))
+      .when(
+        any(
+          gravityMovingLocked,
+          all(
+            not(lowEnforcing),
+            any(
+              conditions.nextToEnemy(avoidDistance),
+              conditions.nextToWall(avoidDistance)
+            )
+          )
+        )
+      )
+
+      .use(new EnemyCircleMovingSystem(this))
       .inOtherCases();
 
     enemyHistory = new EnemyHistory(this);
@@ -170,18 +185,21 @@ public class Nexus extends BaseBot {
     Enemy enemy = event.enemy();
     log("Enemy %s probably fired a bullet at %s. Adding anti-gravity pull.",
       enemy.name(), enemy.position());
+    int duration = (int) enemy.distance() / 3;
     events().send(ADD_GRAVITY_POINT,
       antiGravityPoint()
         .at(enemy.location())
         .withValue(200)
-        .during((int) enemy.distance() / 3)
+        .during(duration)
     );
     events().send(ADD_GRAVITY_POINT,
       antiGravityPoint()
         .at(location())
         .withValue(1000)
-        .during((int) enemy.distance() / 3)
+        .during(duration)
     );
+    //locks gravity moving to avoid bullet
+    lockGravityMoving = 3;
   }
 
   @When(HIT_ROBOT)
