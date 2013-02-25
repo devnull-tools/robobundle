@@ -69,14 +69,12 @@ public class DefaultConditionalCommand<E extends Command> implements Conditional
   }
 
   public E activated() {
-    if (part.isOn()) {
-      if (components.isEmpty()) {
-        return current;
-      } else {
-        for (Map.Entry<Condition, E> entry : components.entrySet()) {
-          if (entry.getKey().evaluate()) {
-            return entry.getValue();
-          }
+    if (components.isEmpty()) {
+      return current;
+    } else {
+      for (Map.Entry<Condition, E> entry : components.entrySet()) {
+        if (entry.getKey().evaluate()) {
+          return entry.getValue();
         }
       }
     }

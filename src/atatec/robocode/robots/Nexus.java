@@ -107,7 +107,7 @@ public class Nexus extends BaseBot {
 
   protected void configure() {
     body().setColor(new Color(39, 40, 34));
-    gun().setColor(new Color(166, 226, 46));
+    gun().setColor(new Color(249, 38, 114));
     radar().setColor(new Color(39, 40, 34));
 
     gun().forAiming()
@@ -130,17 +130,17 @@ public class Nexus extends BaseBot {
       .use(new GravitationalMovingSystem(this)
         .lowEnforcingAt(lowEnforcingValue))
       .when(
-        any(
-          all(
-            conditions.radar().headToHeadBattle(),
-            gravityMovingLocked
-          ),
-          all(
-            not(lowEnforcing),
-            any(
-              not(conditions.radar().headToHeadBattle()),
-              conditions.nextToEnemy(avoidDistance),
-              conditions.nextToWall(avoidDistance)
+        all(
+          not(lowEnforcing),
+          any(
+            not(conditions.radar().headToHeadBattle()),
+            all(
+              conditions.radar().headToHeadBattle(),
+              any(
+                gravityMovingLocked,
+                conditions.nextToEnemy(avoidDistance),
+                conditions.nextToWall(avoidDistance)
+              )
             )
           )
         )

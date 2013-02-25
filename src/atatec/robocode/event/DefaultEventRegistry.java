@@ -25,8 +25,6 @@ package atatec.robocode.event;
 
 import atatec.robocode.Bot;
 import atatec.robocode.annotation.When;
-import atatec.robocode.parts.OnOffSystem;
-import atatec.robocode.parts.SystemPart;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -85,18 +83,7 @@ public class DefaultEventRegistry implements EventRegistry {
 
     public void send(Object... args) {
       for (ListenerMapping mapping : listeners) {
-        Object listener = mapping.listener;
-        if (listener instanceof OnOffSystem) {
-          if (((OnOffSystem) listener).isOn()) {
-            mapping.send(args);
-          }
-        } else if (listener instanceof SystemPart) {
-          if (bot.isActivated((SystemPart) listener)) {
-            mapping.send(args);
-          }
-        } else {
-          mapping.send(args);
-        }
+        mapping.send(args);
       }
     }
 

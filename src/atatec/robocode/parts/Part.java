@@ -28,7 +28,7 @@ import atatec.robocode.calc.Angle;
 import java.awt.Color;
 
 /** @author Marcelo Varella Barca Guimarães */
-public interface Part extends OnOffSystem {
+public interface Part {
 
   void turn(Angle angle);
 
