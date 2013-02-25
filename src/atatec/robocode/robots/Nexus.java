@@ -131,10 +131,14 @@ public class Nexus extends BaseBot {
         .lowEnforcingAt(lowEnforcingValue))
       .when(
         any(
-          gravityMovingLocked,
+          all(
+            conditions.radar().headToHeadBattle(),
+            gravityMovingLocked
+          ),
           all(
             not(lowEnforcing),
             any(
+              not(conditions.radar().headToHeadBattle()),
               conditions.nextToEnemy(avoidDistance),
               conditions.nextToWall(avoidDistance)
             )
@@ -198,7 +202,7 @@ public class Nexus extends BaseBot {
         .withValue(1000)
         .during(duration)
     );
-    //locks gravity moving to avoid bullet
+    //locks gravity moving to avoid the bullet
     lockGravityMoving = 3;
   }
 
