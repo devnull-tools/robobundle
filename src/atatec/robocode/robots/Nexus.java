@@ -32,6 +32,7 @@ import atatec.robocode.calc.GravityPoint;
 import atatec.robocode.calc.Point;
 import atatec.robocode.condition.BotConditions;
 import atatec.robocode.event.EnemyFireEvent;
+import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
 import atatec.robocode.parts.movement.EnemyCircleMovingSystem;
@@ -39,24 +40,32 @@ import atatec.robocode.parts.movement.GravitationalMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 import atatec.robocode.plugin.Avoider;
 import atatec.robocode.plugin.BulletPaint;
-import atatec.robocode.plugin.DistanceThreshold;
+import atatec.robocode.plugin.BulletStatistics;
 import atatec.robocode.plugin.Dodger;
 import atatec.robocode.plugin.EnemyHistory;
 import atatec.robocode.plugin.EnemyScannerInfo;
+import atatec.robocode.util.Drawer;
 import atatec.robocode.util.GravityPointBuilder;
 import robocode.HitRobotEvent;
 import robocode.HitWallEvent;
 
 import java.awt.Color;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static atatec.robocode.condition.Conditions.all;
 import static atatec.robocode.condition.Conditions.any;
 import static atatec.robocode.condition.Conditions.not;
 import static atatec.robocode.event.Events.BULLET_FIRED;
+import static atatec.robocode.event.Events.BULLET_HIT;
+import static atatec.robocode.event.Events.BULLET_HIT_BULLET;
+import static atatec.robocode.event.Events.BULLET_MISSED;
 import static atatec.robocode.event.Events.BULLET_NOT_FIRED;
+import static atatec.robocode.event.Events.DRAW;
 import static atatec.robocode.event.Events.ENEMY_FIRE;
+import static atatec.robocode.event.Events.ENEMY_SCANNED;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
 import static atatec.robocode.event.Events.HIT_ROBOT;
 import static atatec.robocode.event.Events.HIT_WALL;
@@ -75,9 +84,9 @@ public class Nexus extends BaseBot {
   private int wallGPointsDistance = 40;
   private int avoidDistance = 80;
 
-  private int minimumStoppedTurns = 15;
-
   private int fireSkipToChangeTarget = 50;
+
+  private int maxMissesInARow = 5;
 
   private double avoidingPower = 3000;
 
@@ -85,7 +94,7 @@ public class Nexus extends BaseBot {
 
   private EnemyHistory enemyHistory;
 
-  private DistanceThreshold distanceThreshold;
+  private BulletStatistics statistics;
 
   private Condition lowEnforcing = new Condition() {
     @Override
@@ -95,6 +104,21 @@ public class Nexus extends BaseBot {
   };
 
   private BotConditions conditions = new BotConditions(this);
+
+  private Condition lockEasiestEnemy = new Condition() {
+
+    @Override
+    public boolean evaluate() {
+      Enemy lastSeen = radar().lastSeenEnemy();
+      if (lastSeen != null && radar().hasLockedTarget()) {
+        double lastSeenStr = strengthOf(lastSeen);
+        double lockedStr = strengthOf(radar().locked());
+        return lastSeenStr < lockedStr;
+      }
+      return true;
+    }
+
+  };
 
   private Condition gravityMovingLocked = new Condition() {
     @Override
@@ -123,7 +147,9 @@ public class Nexus extends BaseBot {
       .when(conditions.radar().headToHeadBattle())
 
       .use(new EnemyLockScanningSystem(this)
-        .scanBattleField())
+        .scanBattleField()
+        .addLockCondition(lockEasiestEnemy)
+      )
       .inOtherCases();
 
     body().forMoving()
@@ -150,7 +176,7 @@ public class Nexus extends BaseBot {
       .inOtherCases();
 
     enemyHistory = new EnemyHistory(this);
-    distanceThreshold = new DistanceThreshold(this);
+    statistics = new BulletStatistics(this);
 
     plug(new Dodger(this));
     plug(new Avoider(this)
@@ -158,7 +184,7 @@ public class Nexus extends BaseBot {
 
     plug(new EnemyScannerInfo(this));
     plug(enemyHistory);
-    plug(distanceThreshold);
+    plug(statistics);
 
     plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()
@@ -182,6 +208,19 @@ public class Nexus extends BaseBot {
         .withValue(300)
         .during(10)
     );
+  }
+
+  int enemies = 0;
+
+  @When(ENEMY_SCANNED)
+  public void enemyScanned(EnemyScannedEvent event) {
+    if (enemies < radar().enemiesCount()) {
+      radar().unlock();
+    }
+    enemies = radar().enemiesCount();
+    if (event.enemy().energy() < 10) {
+      radar().lock(event.enemy());
+    }
   }
 
   @When(ENEMY_FIRE)
@@ -297,28 +336,20 @@ public class Nexus extends BaseBot {
     );
   }
 
-  private int fireSkip = 0;
-
   protected void onNextTurn() {
     log("***********************************");
     addEnemyPoints();
     radar().scan();
     body().move();
-    gun().aim().fireIf(
-      all(
-        conditions.radar().hasLockedTarget(),
-        any(
-          distanceThreshold.targetAtGoodDistance(),
-          enemyHistory.targetStopedFor(minimumStoppedTurns)
-        )
-      )
-    );
+    gun().aim().fireIfTargetLocked();
   }
+
+  private int fireSkip = 0;
 
   @When(BULLET_NOT_FIRED)
   public void registerBulletNotFired() {
-    if (++fireSkip > fireSkipToChangeTarget && radar().enemiesCount() > 1) {
-      radar().unlockTarget();
+    if (++fireSkip > fireSkipToChangeTarget && !radar().isHeadToHead()) {
+      radar().unlock();
     }
   }
 
@@ -330,7 +361,7 @@ public class Nexus extends BaseBot {
   private void addEnemyPoints() {
     for (Enemy enemy : radar().knownEnemies()) {
       GravityPoint point;
-      if (enemy.equals(radar().lockedTarget())) {
+      if (enemy.equals(radar().locked())) {
         point = enemy.location().gravitational().withValue(enemy.distance() * 2);
       } else {
         point = enemy.location().antiGravitational().withValue(enemy.distance() / 2);
@@ -341,5 +372,44 @@ public class Nexus extends BaseBot {
     }
   }
 
+  private double strengthOf(Enemy enemy) {
+    double patternStr = 1.0;
+    List<Enemy> history = enemyHistory.historyFor(enemy);
+    Enemy last = null;
+    for (Enemy hist : history) {
+      if (last != null) {
+        //when enemy is stopped, the patterStr will not be increased
+        patternStr += location().viewAngle(hist.location(), last.location()).radians()
+          * Math.abs(hist.distance() - last.distance());
+      }
+      last = hist;
+    }
+    return (2 - statistics.of(enemy).accuracy())
+      * (patternStr * enemy.distance() * enemy.energy());
+  }
+
+  private int misses = 0;
+
+  @When({BULLET_HIT, BULLET_HIT_BULLET})
+  public void hit() {
+    misses = 0;
+  }
+
+  @When(BULLET_MISSED)
+  public void miss() {
+    if (misses++ > maxMissesInARow && !radar().isHeadToHead()) {
+      radar().unlock();
+      misses = 0;
+    }
+  }
+
+  @When(DRAW)
+  public void draw(Drawer drawer) {
+    Collection<Enemy> enemies = radar().knownEnemies();
+    for (Enemy enemy : enemies) {
+      double str = strengthOf(enemy);
+      drawer.draw(Color.PINK).string("%.4f", str).at(enemy.location());
+    }
+  }
 
 }

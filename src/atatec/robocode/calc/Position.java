@@ -41,8 +41,12 @@ public class Position {
   public Position(Point p1, Point p2) {
     this.distance = distance(p1, p2);
     Point p3 = new Point(p1.x(), p1.y() + 10);
-    Triangle t = new Triangle(distance, distance(p1, p3), distance(p3, p2));
+    /*Triangle t = new Triangle(distance, distance(p1, p3), distance(p3, p2));
     Angle angle = t.angle(Triangle.ID.C);
+    if (Double.isNaN(angle.radians())) {
+      angle = Angle.ZERO;
+    }*/
+    Angle angle = p1.viewAngle(p2, p3);
     //using robocode convention
     this.angle = (p2.x() >= p1.x() ? angle : angle.inverse());
   }

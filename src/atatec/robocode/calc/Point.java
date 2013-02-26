@@ -27,6 +27,8 @@ import atatec.robocode.util.GravityPointBuilder;
 
 import static atatec.robocode.calc.BotMath.areEquals;
 import static atatec.robocode.calc.BotMath.toBigecimal;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 /**
  * A class that defines a point with two dimensions (x, y).
@@ -146,6 +148,24 @@ public class Point {
    */
   public Position bearingTo(Point other) {
     return new Position(this, other);
+  }
+
+  public Angle viewAngle(Point p2, Point p3) {
+    Angle angle;
+    double a = distance(this, p2);
+    double b = distance(this, p3);
+    double c = distance(p2, p3);
+    //cosine rule
+    double cosGama = (Math.pow(a, 2) + Math.pow(b, 2) - Math.pow(c, 2)) / (2 * a * b);
+    angle = new Angle(Math.acos(cosGama));
+    if (Double.isNaN(angle.radians())) {
+      angle = Angle.ZERO;
+    }
+    return angle;
+  }
+
+  private double distance(Point p1, Point p2) {
+    return sqrt(pow(p1.x() - p2.x(), 2) + pow(p1.y() - p2.y(), 2));
   }
 
   /**

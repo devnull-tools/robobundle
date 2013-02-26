@@ -118,17 +118,4 @@ public class GravitationalMovingSystem implements MovingSystem {
     }
   }
 
-  @When(Events.DRAW)
-  public void drawTemporaryGravityPoints(Drawer drawer) {
-    bot.log("Drawing %d temporary gravity points", temporaryPoints.size());
-    for (TemporaryGravityPoint gravityPoint : temporaryPoints) {
-      if (!gravityPoint.expired()) {
-        GravityPoint point = gravityPoint.point();
-        drawer.draw(Color.ORANGE).marker().at(point);
-        drawer.draw(Color.ORANGE).string(gravityPoint.duration()).at(point);
-        drawer.draw(Color.ORANGE).string("%.2f", point.value()).at(point.up(15));
-      }
-    }
-  }
-
 }

@@ -35,8 +35,6 @@ import atatec.robocode.parts.Gun;
 import atatec.robocode.parts.MovingSystem;
 import atatec.robocode.parts.Radar;
 import atatec.robocode.parts.ScanningSystem;
-import atatec.robocode.parts.Statistics;
-import atatec.robocode.parts.SystemPart;
 import atatec.robocode.parts.body.DefaultBody;
 import atatec.robocode.parts.gun.DefaultGun;
 import atatec.robocode.parts.radar.DefaultRadar;
@@ -91,8 +89,6 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   private EventRegistry eventRegistry = new DefaultEventRegistry(this);
 
-  private BotStatistics statistics = new BotStatistics();
-
   private Map<Class, ConditionalCommand> conditionalSystems;
 
   private boolean roundEnded = false;
@@ -116,7 +112,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     conditionalSystems.put(MovingSystem.class, body.forMoving());
   }
 
-  private void initializeParts() {
+  protected void initializeParts() {
     initialize(new DefaultGun(this), new DefaultBody(this), new DefaultRadar(this));
   }
 
@@ -136,12 +132,14 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     setAdjustRadarForRobotTurn(true);
 
     initializeParts();
-    configure();
 
     events().register(body);
     events().register(gun);
     events().register(radar);
     events().register(this);
+
+    configure();
+
     events().send(ROUND_STARTED);
 
     onRoundStarted();
@@ -198,7 +196,6 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     if (getGunHeat() == 0) {
       Bullet bullet = super.setFireBullet(power);
       if (bullet != null) {
-        statistics.shots++;
         eventRegistry.send(BULLET_FIRED, new BulletFiredEvent(bullet));
       }
     }
@@ -217,25 +214,21 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   @Override
   public final void onBulletHit(BulletHitEvent event) {
-    statistics.hits++;
     eventRegistry.send(BULLET_HIT, event);
   }
 
   @Override
   public final void onBulletHitBullet(BulletHitBulletEvent event) {
-    statistics.missed++;
     eventRegistry.send(BULLET_HIT_BULLET, event);
   }
 
   @Override
   public final void onBulletMissed(BulletMissedEvent event) {
-    statistics.missed++;
     eventRegistry.send(BULLET_MISSED, event);
   }
 
   @Override
   public final void onHitByBullet(HitByBulletEvent event) {
-    statistics.taken++;
     eventRegistry.send(HIT_BY_BULLET, event);
   }
 
@@ -280,59 +273,5 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   public final void plug(Object behaviour) {
     eventRegistry.register(behaviour);
   }
-
-  @Override
-  public final Statistics statistics() {
-    return statistics;
-  }
-
-  @Override
-  public final boolean isActivated(SystemPart systemPart) {
-    for (Map.Entry<Class, ConditionalCommand> entry : conditionalSystems.entrySet()) {
-      if (entry.getKey().isAssignableFrom(systemPart.getClass())
-        && entry.getValue().activated().equals(systemPart)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private class BotStatistics implements Statistics {
-
-    private long hits;
-
-    private long missed;
-
-    private long shots;
-
-    private long taken;
-
-    @Override
-    public double accuracy() {
-      long bullets = hits + missed;
-      return bullets > 0 ? hits == 0 ? 0 : bullets / hits : 1;
-    }
-
-    @Override
-    public long bulletsFired() {
-      return shots;
-    }
-
-    @Override
-    public long bulletsHited() {
-      return hits;
-    }
-
-    @Override
-    public long bulletsMissed() {
-      return missed;
-    }
-
-    @Override
-    public long bulletsTaken() {
-      return taken;
-    }
-  }
-
 
 }

@@ -109,7 +109,7 @@ public class EnemyHistory {
       @Override
       public boolean evaluate() {
         if (bot.radar().hasLockedTarget()) {
-          Enemy target = bot.radar().lockedTarget();
+          Enemy target = bot.radar().locked();
           return isEnemyStopped(target, searchDeep);
         }
         return false;

@@ -44,7 +44,7 @@ public class DefaultBody extends BasePart implements Body {
 
   public DefaultBody(BaseBot bot) {
     this.bot = bot;
-    this.movingSystem = new DefaultConditionalCommand<MovingSystem>(bot, this);
+    this.movingSystem = new DefaultConditionalCommand<MovingSystem>(bot);
   }
 
   @Override

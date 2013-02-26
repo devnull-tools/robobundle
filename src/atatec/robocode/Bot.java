@@ -28,8 +28,6 @@ import atatec.robocode.event.EventRegistry;
 import atatec.robocode.parts.Body;
 import atatec.robocode.parts.Gun;
 import atatec.robocode.parts.Radar;
-import atatec.robocode.parts.Statistics;
-import atatec.robocode.parts.SystemPart;
 
 /**
  * Interface that defines a robot.
@@ -93,16 +91,6 @@ public interface Bot {
    * @return the event registry
    */
   EventRegistry events();
-
-  /**
-   * Returns the robot's statistics.
-   *
-   * @return the robot's statistics.
-   */
-  Statistics statistics();
-
-  /** Checks if the given component is activated */
-  boolean isActivated(SystemPart systemPart);
 
   /** Executes the pending movements */
   void execute();

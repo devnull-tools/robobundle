@@ -24,6 +24,7 @@
 package atatec.robocode.parts.scanner;
 
 import atatec.robocode.Bot;
+import atatec.robocode.Condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Angle;
@@ -31,9 +32,12 @@ import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.parts.ScanningSystem;
 import robocode.RobotDeathEvent;
 
-import static atatec.robocode.event.Events.CHANGE_TARGET;
+import java.util.LinkedList;
+import java.util.List;
+
 import static atatec.robocode.event.Events.ENEMY_SCANNED;
 import static atatec.robocode.event.Events.ROBOT_DEATH;
+import static atatec.robocode.event.Events.TARGET_UNLOCKED;
 
 /** @author Marcelo Varella Barca Guimarães */
 public class EnemyLockScanningSystem implements ScanningSystem {
@@ -41,12 +45,19 @@ public class EnemyLockScanningSystem implements ScanningSystem {
   private final Bot bot;
 
   private Angle turnAmount = Angle.TWO_PI;
-  private boolean changeTarget = true;
+  private boolean changeTarget = true; //always change target on first scan
   private boolean scanBattleField;
-  private boolean lockClosestEnemy;
+
+  private List<Condition> lockConditions = new LinkedList<Condition>();
 
   public EnemyLockScanningSystem(Bot bot) {
     this.bot = bot;
+  }
+
+  public EnemyLockScanningSystem addLockCondition(Condition condition) {
+    this.bot.plug(condition);
+    this.lockConditions.add(condition);
+    return this;
   }
 
   @Override
@@ -59,53 +70,51 @@ public class EnemyLockScanningSystem implements ScanningSystem {
     return this;
   }
 
-  public EnemyLockScanningSystem lockClosestEnemy() {
-    lockClosestEnemy = true;
-    return this;
-  }
-
   @When(ENEMY_SCANNED)
   public void onEnemyScanned(EnemyScannedEvent event) {
     Enemy enemy = event.enemy();
     bot.log("Enemy spotted at %s", enemy.position());
-    if (canLock(enemy)) {
+    if (canLock()) {
       bot.log("Locking %s", enemy.name());
-      bot.radar().lockTarget(enemy);
+      bot.radar().lock(enemy);
       changeTarget = false;
     }
     if (!scanBattleField) {
+      // this will keep the radar on the target enemy
       turnAmount = turnAmount.inverse();
     }
   }
 
   @When(ROBOT_DEATH)
   public void onRobotDeath(RobotDeathEvent event) {
-    if (event.getName().equals(bot.radar().lockedTarget().name())) {
-      changeTarget();
+    if (bot.radar().hasLockedTarget()) {
+      if (event.getName().equals(bot.radar().locked().name())) {
+        changeTarget();
+      }
     }
   }
 
-  @When(CHANGE_TARGET)
+  @When(TARGET_UNLOCKED)
   public void changeTarget() {
     changeTarget = true;
-    bot.radar().unlockTarget();
+    if (bot.radar().hasLockedTarget()) {
+      bot.radar().unlock();
+    }
   }
 
-  private boolean canLock(Enemy enemy) {
-    Enemy lockedEnemy = bot.radar().lockedTarget();
-    if (lockedEnemy == null) {
-      return true;
-    }
+  private boolean canLock() {
     if (changeTarget) {
-      return true;
+      for (Condition condition : lockConditions) {
+        if (condition.evaluate()) {
+          return true;
+        }
+      }
+    } else if (bot.radar().hasLockedTarget()) {
+      // locks the target if is the same last seen
+      return bot.radar().locked().name().equals(bot.radar().lastSeenEnemy().name());
     }
-    if (lockedEnemy.name().equals(enemy.name())) {
-      return true;
-    }
-    if (lockClosestEnemy && lockedEnemy.distance() > enemy.distance()) {
-      return true;
-    }
-    return false;
+    //always lock if there is no condition
+    return lockConditions.isEmpty();
   }
 
 }

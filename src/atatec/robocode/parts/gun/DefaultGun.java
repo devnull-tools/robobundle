@@ -49,8 +49,8 @@ public class DefaultGun extends BasePart implements Gun {
 
   public DefaultGun(BaseBot bot) {
     this.bot = bot;
-    this.aimingSystem = new DefaultConditionalCommand<AimingSystem>(bot, this);
-    this.firingSystem = new DefaultConditionalCommand<FiringSystem>(bot, this);
+    this.aimingSystem = new DefaultConditionalCommand<AimingSystem>(bot);
+    this.firingSystem = new DefaultConditionalCommand<FiringSystem>(bot);
   }
 
   @Override

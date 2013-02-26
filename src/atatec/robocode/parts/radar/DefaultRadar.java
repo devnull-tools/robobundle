@@ -54,11 +54,13 @@ public class DefaultRadar extends BasePart implements Radar {
 
   private Enemy target;
 
+  private Enemy lastSeen;
+
   private Map<String, Enemy> enemies = new HashMap<String, Enemy>();
 
   public DefaultRadar(BaseBot bot) {
     this.bot = bot;
-    this.scanningSystem = new DefaultConditionalCommand<ScanningSystem>(bot, this);
+    this.scanningSystem = new DefaultConditionalCommand<ScanningSystem>(bot);
     this.scanningSystem.use(new DefaultScanningSystem());
   }
 
@@ -77,6 +79,11 @@ public class DefaultRadar extends BasePart implements Radar {
   }
 
   @Override
+  public boolean isHeadToHead() {
+    return enemiesCount() == 1;
+  }
+
+  @Override
   public Field battleField() {
     return new BattleField(bot);
   }
@@ -90,8 +97,12 @@ public class DefaultRadar extends BasePart implements Radar {
     scanningSystem.execute();
   }
 
-  public Enemy lockedTarget() {
+  public Enemy locked() {
     return target;
+  }
+
+  public Enemy lastSeenEnemy() {
+    return lastSeen;
   }
 
   public boolean hasLockedTarget() {
@@ -102,13 +113,14 @@ public class DefaultRadar extends BasePart implements Radar {
     return Collections.unmodifiableCollection(enemies.values());
   }
 
-  public void lockTarget(Enemy e) {
+  public void lock(Enemy e) {
     this.target = e;
   }
 
   @Override
-  public void unlockTarget() {
+  public void unlock() {
     this.target = null;
+    this.bot.events().send(Events.TARGET_UNLOCKED);
   }
 
   @Override
@@ -138,8 +150,8 @@ public class DefaultRadar extends BasePart implements Radar {
 
   @When(Events.ENEMY_SCANNED)
   public void onEnemyScanned(EnemyScannedEvent event) {
-    Enemy enemy = event.enemy();
-    enemies.put(enemy.name(), enemy);
+    lastSeen = event.enemy();
+    enemies.put(lastSeen.name(), lastSeen);
   }
 
   @When(Events.ROBOT_DEATH)

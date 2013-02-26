@@ -28,12 +28,12 @@ public interface Statistics {
 
   double accuracy();
 
-  long bulletsFired();
+  int fired();
 
-  long bulletsHited();
+  int hit();
 
-  long bulletsMissed();
+  int missed();
 
-  long bulletsTaken();
+  int taken();
 
 }

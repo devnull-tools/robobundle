@@ -38,7 +38,7 @@ public abstract class TargetCondition implements Condition {
 
   @Override
   public boolean evaluate() {
-    return radar.hasLockedTarget() && evaluate(radar.lockedTarget());
+    return radar.hasLockedTarget() && evaluate(radar.locked());
   }
 
   protected abstract boolean evaluate(Enemy enemy);

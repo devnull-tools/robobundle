@@ -40,7 +40,7 @@ public class RadarConditions {
     return new Condition() {
       @Override
       public boolean evaluate() {
-        return radar.enemiesCount() == 1;
+        return radar.isHeadToHead();
       }
     };
   }

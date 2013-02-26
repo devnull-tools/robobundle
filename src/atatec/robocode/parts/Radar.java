@@ -32,21 +32,25 @@ import java.util.Collection;
 /** @author Marcelo Varella Barca Guimarães */
 public interface Radar extends Part {
 
-  Enemy lockedTarget();
+  Enemy locked();
+
+  void lock(Enemy enemy);
+
+  void unlock();
+
+  Enemy lastSeenEnemy();
 
   boolean hasLockedTarget();
 
   Collection<Enemy> knownEnemies();
-
-  void lockTarget(Enemy enemy);
-
-  void unlockTarget();
 
   ConditionalCommand<ScanningSystem> forScanning();
 
   void scan();
 
   int enemiesCount();
+
+  boolean isHeadToHead();
 
   Field battleField();
 

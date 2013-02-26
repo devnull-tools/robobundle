@@ -55,11 +55,13 @@ public class DefaultEventRegistry implements EventRegistry {
 
   @Override
   public void register(final Object listener) {
-    String eventName;
+    String[] eventNames;
     for (Method method : listener.getClass().getMethods()) {
       if (method.isAnnotationPresent(When.class)) {
-        eventName = method.getAnnotation(When.class).value();
-        getMapping(eventName).add(listener, method);
+        eventNames = method.getAnnotation(When.class).value();
+        for (String eventName : eventNames) {
+          getMapping(eventName).add(listener, method);
+        }
       }
     }
   }
@@ -115,10 +117,12 @@ public class DefaultEventRegistry implements EventRegistry {
       try {
         method.invoke(listener, args);
       } catch (IllegalAccessException e) {
+        e.printStackTrace();
         bot.log("Error while invoking %s:%n\t%s - %s",
           method, e.getClass(), e.getMessage());
       } catch (InvocationTargetException e) {
         Throwable cause = e.getCause();
+        cause.printStackTrace();
         bot.log("Error while invoking %s:%n\t%s - %s",
           method, cause.getClass(), cause.getMessage());
       }

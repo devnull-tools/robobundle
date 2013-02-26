@@ -54,7 +54,7 @@ public class PredictionAimingSystem implements AimingSystem {
     double myX = bot.location().x();
     double myY = bot.location().y();
     if (bot.radar().hasLockedTarget()) {
-      Enemy enemy = bot.radar().lockedTarget();
+      Enemy enemy = bot.radar().locked();
       double enemyX = enemy.location().x();
       double enemyY = enemy.location().y();
       Angle enemyHeading = enemy.heading();

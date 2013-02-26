@@ -59,7 +59,7 @@ public class EnemyScannerInfo {
 
   private void paintEnemy(Drawer drawer, Enemy enemy) {
     Point location = enemy.location();
-    if(enemy == bot.radar().lockedTarget()) {
+    if(enemy == bot.radar().locked()) {
       drawer.draw(GREEN).circle().at(location);
       drawer.draw(ORANGE).string(enemy.name()).at(bot.location().down(18));
     } else {

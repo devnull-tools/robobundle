@@ -55,10 +55,6 @@ public class BotConditions {
     return new BodyConditions(bot.body());
   }
 
-  public StatisticsConditions statistics() {
-    return new StatisticsConditions(bot.statistics());
-  }
-
   public Condition nextToWall(final double distance) {
     return new Condition() {
       @Override

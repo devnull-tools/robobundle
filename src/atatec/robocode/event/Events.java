@@ -43,10 +43,10 @@ public final class Events {
   public static final String ROUND_STARTED = "ROUND_STARTED";
   public static final String ROUND_ENDED = "ROUND_ENDED";
   public static final String DEATH = "DEATH";
-  public static final String CHANGE_TARGET = "CHANGE_TARGET";
   public static final String NEAR_TO_WALL = "NEAR_TO_WALL";
   public static final String NEAR_TO_ENEMY = "NEAR_TO_ENEMY";
   public static final String BULLET_NOT_FIRED = "BULLET_NOT_FIRED";
+  public static final String TARGET_UNLOCKED = "TARGET_UNLOCKED";
 
   private Events() {
   }

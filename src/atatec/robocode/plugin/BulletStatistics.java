@@ -24,107 +24,104 @@
 package atatec.robocode.plugin;
 
 import atatec.robocode.Bot;
-import atatec.robocode.Condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.annotation.When;
 import atatec.robocode.event.BulletFiredEvent;
 import atatec.robocode.event.Events;
-import atatec.robocode.util.Drawer;
+import atatec.robocode.parts.Statistics;
 import robocode.Bullet;
 import robocode.BulletHitEvent;
 import robocode.BulletMissedEvent;
+import robocode.HitByBulletEvent;
 
-import java.awt.Color;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 /** @author Marcelo Varella Barca Guimarães */
-public class DistanceThreshold {
+public class BulletStatistics {
 
   private final Bot bot;
 
-  private double minimumDistance;
-  private double baseDistance;
-  private double stepPoint;
+  private Map<String, BulletStatistic> statisticsMap;
 
   private Map<Bullet, String> bullets;
-  private Map<String, AtomicLong> modifiers;
 
-  public DistanceThreshold(Bot bot) {
+  public BulletStatistics(Bot bot) {
     this.bot = bot;
-    this.baseDistance = bot.radar().battleField().diagonal();
-    this.stepPoint = 2;
-    this.minimumDistance = 50;
+    this.statisticsMap = new HashMap<String, BulletStatistic>();
     this.bullets = new HashMap<Bullet, String>();
-    this.modifiers = new HashMap<String, AtomicLong>();
   }
 
-  public DistanceThreshold baseDistance(double baseDistance) {
-    this.baseDistance = baseDistance;
-    return this;
-  }
-
-  public DistanceThreshold stepPoint(double stepPoint) {
-    this.stepPoint = stepPoint;
-    return this;
-  }
-
-  public DistanceThreshold minumumDistante(double minimumDistance) {
-    this.minimumDistance = minimumDistance;
-    return this;
+  public Statistics of(Enemy enemy) {
+    if (!statisticsMap.containsKey(enemy.name())) {
+      statisticsMap.put(enemy.name(), new BulletStatistic());
+    }
+    return statisticsMap.get(enemy.name());
   }
 
   @When(Events.BULLET_FIRED)
   public void registerBulletFired(BulletFiredEvent event) {
-    String name = bot.radar().lockedTarget().name();
-    bullets.put(event.bullet(), name);
-    if (!modifiers.containsKey(name)) {
-      modifiers.put(name, new AtomicLong());
+    if (bot.radar().hasLockedTarget()) {
+      String name = bot.radar().locked().name();
+      bullets.put(event.bullet(), name);
+      if (!statisticsMap.containsKey(name)) {
+        statisticsMap.put(name, new BulletStatistic());
+      }
+      statisticsMap.get(name).fires++;
     }
   }
 
   @When(Events.BULLET_MISSED)
   public void registerBulletMissed(BulletMissedEvent event) {
     String name = bullets.get(event.getBullet());
-    modifiers.get(name).decrementAndGet();
+    statisticsMap.get(name).misses++;
   }
 
   @When(Events.BULLET_HIT)
   public void registerBulletHit(BulletHitEvent event) {
     String name = bullets.get(event.getBullet());
-    modifiers.get(name).incrementAndGet();
+    statisticsMap.get(name).hits++;
   }
 
-  public double maximumDistanceTo(Enemy enemy) {
-    if (modifiers.containsKey(enemy.name())) {
-      return Math.max(minimumDistance,
-        baseDistance + (stepPoint * modifiers.get(enemy.name()).get()));
-    }
-    return baseDistance;
+  @When(Events.HIT_BY_BULLET)
+  public void registerBulletToked(HitByBulletEvent event) {
+    statisticsMap.get(event.getName()).taken++;
   }
 
-  @When(Events.DRAW)
-  public void draw(Drawer drawer) {
-    Collection<Enemy> enemies = bot.radar().knownEnemies();
-    for (Enemy enemy : enemies) {
-      drawer.draw(Color.BLUE.brighter())
-        .string(maximumDistanceTo(enemy)).at(enemy.location());
-    }
-  }
+  private class BulletStatistic implements Statistics {
 
-  public Condition targetAtGoodDistance() {
-    return new Condition() {
-      @Override
-      public boolean evaluate() {
-        if (bot.radar().hasLockedTarget()) {
-          Enemy target = bot.radar().lockedTarget();
-          return target.distance() <= maximumDistanceTo(target);
-        }
-        return true;
+    private int fires;
+    private int hits;
+    private int misses;
+    private int taken;
+
+    @Override
+    public double accuracy() {
+      if(fires > 0) {
+        return hits == 0 ? 0 : (double) hits / fires;
       }
-    };
+      return 0;
+    }
+
+    @Override
+    public int fired() {
+      return fires;
+    }
+
+    @Override
+    public int hit() {
+      return hits;
+    }
+
+    @Override
+    public int missed() {
+      return misses;
+    }
+
+    @Override
+    public int taken() {
+      return taken;
+    }
   }
 
 }

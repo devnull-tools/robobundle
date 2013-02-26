@@ -40,12 +40,9 @@ public class DefaultConditionalCommand<E extends Command> implements Conditional
 
   private E current;
 
-  private final Part part;
-
   private final Bot bot;
 
-  public DefaultConditionalCommand(Bot bot, Part part) {
-    this.part = part;
+  public DefaultConditionalCommand(Bot bot) {
     this.bot = bot;
   }
 
@@ -56,6 +53,7 @@ public class DefaultConditionalCommand<E extends Command> implements Conditional
     return new ConditionSelector<ConditionalCommand<E>>() {
 
       public ConditionalCommand<E> when(Condition condition) {
+        bot.plug(condition);
         components.put(condition, current);
         current = null;
         return DefaultConditionalCommand.this;

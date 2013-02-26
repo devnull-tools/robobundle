@@ -45,7 +45,7 @@ public class DirectAimingSystem implements AimingSystem {
   }
 
   public void execute() {
-    Enemy enemy = bot.radar().lockedTarget();
+    Enemy enemy = bot.radar().locked();
     if (enemy != null) {
       enemyLocation = enemy.location();
       Angle angle = enemy.bearing()
