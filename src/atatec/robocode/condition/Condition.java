@@ -24,10 +24,8 @@
 package atatec.robocode.condition;
 
 /** @author Marcelo Varella Barca Guimarães */
-public interface ConditionSelector<E> {
+public interface Condition {
 
-  E when(Condition condition);
-
-  void inOtherCases();
+  public boolean evaluate();
 
 }

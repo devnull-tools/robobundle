@@ -21,11 +21,11 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode;
+package atatec.robocode.condition;
 
 /** @author Marcelo Varella Barca Guimarães */
-public interface Condition {
+public interface Function<Arg, Result> {
 
-  public boolean evaluate();
+  Result eval(Arg argument);
 
 }

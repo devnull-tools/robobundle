@@ -23,11 +23,28 @@
 
 package atatec.robocode.condition;
 
+import atatec.robocode.Bot;
+import atatec.robocode.Enemy;
+
 /** @author Marcelo Varella Barca Guimarães */
-public interface ConditionSelector<E> {
+public class StrengthBasedLockCondition implements LockCondition {
 
-  E when(Condition condition);
+  private final Bot bot;
+  private final Function<Enemy, Double> strengthFunction;
 
-  void inOtherCases();
+  public StrengthBasedLockCondition(Bot bot, Function<Enemy, Double> strengthFunction) {
+    this.bot = bot;
+    this.strengthFunction = strengthFunction;
+  }
+
+  @Override
+  public boolean canLock(Enemy enemy) {
+    if (bot.radar().hasLockedTarget()) {
+      double lastSeenStr = strengthFunction.eval(enemy);
+      double lockedStr = strengthFunction.eval(bot.radar().locked());
+      return lastSeenStr < lockedStr;
+    }
+    return true;
+  }
 
 }

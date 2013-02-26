@@ -58,4 +58,7 @@ public interface Enemy {
   boolean isMoving();
 
   boolean isStopped();
+
+  long when();
+
 }

@@ -24,7 +24,7 @@
 package atatec.robocode.plugin;
 
 import atatec.robocode.Bot;
-import atatec.robocode.Condition;
+import atatec.robocode.condition.Condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.annotation.When;
 import atatec.robocode.event.EnemyScannedEvent;

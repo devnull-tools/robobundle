@@ -24,10 +24,10 @@
 package atatec.robocode.parts.scanner;
 
 import atatec.robocode.Bot;
-import atatec.robocode.Condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Angle;
+import atatec.robocode.condition.LockCondition;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.parts.ScanningSystem;
 import robocode.RobotDeathEvent;
@@ -48,13 +48,13 @@ public class EnemyLockScanningSystem implements ScanningSystem {
   private boolean changeTarget = true; //always change target on first scan
   private boolean scanBattleField;
 
-  private List<Condition> lockConditions = new LinkedList<Condition>();
+  private List<LockCondition> lockConditions = new LinkedList<LockCondition>();
 
   public EnemyLockScanningSystem(Bot bot) {
     this.bot = bot;
   }
 
-  public EnemyLockScanningSystem addLockCondition(Condition condition) {
+  public EnemyLockScanningSystem addLockCondition(LockCondition condition) {
     this.bot.plug(condition);
     this.lockConditions.add(condition);
     return this;
@@ -74,7 +74,7 @@ public class EnemyLockScanningSystem implements ScanningSystem {
   public void onEnemyScanned(EnemyScannedEvent event) {
     Enemy enemy = event.enemy();
     bot.log("Enemy spotted at %s", enemy.position());
-    if (canLock()) {
+    if (canLock(enemy)) {
       bot.log("Locking %s", enemy.name());
       bot.radar().lock(enemy);
       changeTarget = false;
@@ -102,10 +102,10 @@ public class EnemyLockScanningSystem implements ScanningSystem {
     }
   }
 
-  private boolean canLock() {
+  private boolean canLock(Enemy enemy) {
     if (changeTarget) {
-      for (Condition condition : lockConditions) {
-        if (condition.evaluate()) {
+      for (LockCondition condition : lockConditions) {
+        if (condition.canLock(enemy)) {
           return true;
         }
       }

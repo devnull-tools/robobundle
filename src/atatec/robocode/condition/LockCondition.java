@@ -23,11 +23,11 @@
 
 package atatec.robocode.condition;
 
+import atatec.robocode.Enemy;
+
 /** @author Marcelo Varella Barca Guimarães */
-public interface ConditionSelector<E> {
+public interface LockCondition {
 
-  E when(Condition condition);
-
-  void inOtherCases();
+  boolean canLock(Enemy enemy);
 
 }

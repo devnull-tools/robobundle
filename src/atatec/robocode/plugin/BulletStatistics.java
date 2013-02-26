@@ -52,40 +52,39 @@ public class BulletStatistics {
     this.bullets = new HashMap<Bullet, String>();
   }
 
-  public Statistics of(Enemy enemy) {
-    if (!statisticsMap.containsKey(enemy.name())) {
-      statisticsMap.put(enemy.name(), new BulletStatistic());
+  private BulletStatistic get(String name) {
+    if (!statisticsMap.containsKey(name)) {
+      statisticsMap.put(name, new BulletStatistic());
     }
-    return statisticsMap.get(enemy.name());
+    return statisticsMap.get(name);
+  }
+
+  public Statistics of(Enemy enemy) {
+    return get(enemy.name());
   }
 
   @When(Events.BULLET_FIRED)
   public void registerBulletFired(BulletFiredEvent event) {
     if (bot.radar().hasLockedTarget()) {
-      String name = bot.radar().locked().name();
-      bullets.put(event.bullet(), name);
-      if (!statisticsMap.containsKey(name)) {
-        statisticsMap.put(name, new BulletStatistic());
-      }
-      statisticsMap.get(name).fires++;
+      get(event.bullet().getName()).fires++;
     }
   }
 
   @When(Events.BULLET_MISSED)
   public void registerBulletMissed(BulletMissedEvent event) {
     String name = bullets.get(event.getBullet());
-    statisticsMap.get(name).misses++;
+    get(name).misses++;
   }
 
   @When(Events.BULLET_HIT)
   public void registerBulletHit(BulletHitEvent event) {
     String name = bullets.get(event.getBullet());
-    statisticsMap.get(name).hits++;
+    get(name).hits++;
   }
 
   @When(Events.HIT_BY_BULLET)
   public void registerBulletToked(HitByBulletEvent event) {
-    statisticsMap.get(event.getName()).taken++;
+    get(event.getName()).taken++;
   }
 
   private class BulletStatistic implements Statistics {
@@ -97,7 +96,7 @@ public class BulletStatistics {
 
     @Override
     public double accuracy() {
-      if(fires > 0) {
+      if (fires > 0) {
         return hits == 0 ? 0 : (double) hits / fires;
       }
       return 0;

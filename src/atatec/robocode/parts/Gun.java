@@ -23,7 +23,7 @@
 
 package atatec.robocode.parts;
 
-import atatec.robocode.Condition;
+import atatec.robocode.condition.Condition;
 import atatec.robocode.ConditionalCommand;
 import atatec.robocode.calc.Point;
 

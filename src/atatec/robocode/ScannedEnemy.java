@@ -39,6 +39,7 @@ public class ScannedEnemy extends BaseEnemy {
   private final Angle heading;
   private final Angle bearing;
   private final Point location;
+  private final long time;
 
   public ScannedEnemy(Bot bot, ScannedRobotEvent event) {
     this.position = new Position(
@@ -56,6 +57,7 @@ public class ScannedEnemy extends BaseEnemy {
     double enemyX = botLocation.x() + distance * absoluteBearing.sin();
     double enemyY = botLocation.y() + distance * absoluteBearing.cos();
     this.location = new Point(enemyX, enemyY);
+    this.time = event.getTime();
   }
 
   @Override
@@ -96,6 +98,11 @@ public class ScannedEnemy extends BaseEnemy {
   @Override
   public Point location() {
     return location;
+  }
+
+  @Override
+  public long when() {
+    return time;
   }
 
 }

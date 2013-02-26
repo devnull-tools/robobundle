@@ -24,7 +24,6 @@
 package atatec.robocode.condition;
 
 import atatec.robocode.Bot;
-import atatec.robocode.Condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.calc.Point;
 

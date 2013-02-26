@@ -24,7 +24,7 @@
 package atatec.robocode.parts.gun;
 
 import atatec.robocode.BaseBot;
-import atatec.robocode.Condition;
+import atatec.robocode.condition.Condition;
 import atatec.robocode.ConditionalCommand;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;

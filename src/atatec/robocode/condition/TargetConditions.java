@@ -23,7 +23,6 @@
 
 package atatec.robocode.condition;
 
-import atatec.robocode.Condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.parts.Radar;
 

@@ -23,8 +23,6 @@
 
 package atatec.robocode.condition;
 
-import atatec.robocode.Condition;
-
 /** @author Marcelo Varella Barca Guimarães */
 public class Conditions {
 

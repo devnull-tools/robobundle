@@ -24,13 +24,15 @@
 package atatec.robocode.robots;
 
 import atatec.robocode.BaseBot;
-import atatec.robocode.Condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
 import atatec.robocode.calc.GravityPoint;
 import atatec.robocode.calc.Point;
 import atatec.robocode.condition.BotConditions;
+import atatec.robocode.condition.Condition;
+import atatec.robocode.condition.Function;
+import atatec.robocode.condition.StrengthBasedLockCondition;
 import atatec.robocode.event.EnemyFireEvent;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
@@ -44,13 +46,11 @@ import atatec.robocode.plugin.BulletStatistics;
 import atatec.robocode.plugin.Dodger;
 import atatec.robocode.plugin.EnemyHistory;
 import atatec.robocode.plugin.EnemyScannerInfo;
-import atatec.robocode.util.Drawer;
 import atatec.robocode.util.GravityPointBuilder;
 import robocode.HitRobotEvent;
 import robocode.HitWallEvent;
 
 import java.awt.Color;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,7 +63,6 @@ import static atatec.robocode.event.Events.BULLET_HIT;
 import static atatec.robocode.event.Events.BULLET_HIT_BULLET;
 import static atatec.robocode.event.Events.BULLET_MISSED;
 import static atatec.robocode.event.Events.BULLET_NOT_FIRED;
-import static atatec.robocode.event.Events.DRAW;
 import static atatec.robocode.event.Events.ENEMY_FIRE;
 import static atatec.robocode.event.Events.ENEMY_SCANNED;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
@@ -72,6 +71,7 @@ import static atatec.robocode.event.Events.HIT_WALL;
 import static atatec.robocode.event.Events.NEAR_TO_ENEMY;
 import static atatec.robocode.event.Events.NEAR_TO_WALL;
 import static atatec.robocode.event.Events.ROUND_STARTED;
+import static atatec.robocode.event.Events.TARGET_UNLOCKED;
 import static atatec.robocode.parts.movement.GravitationalMovingSystem.ADD_GRAVITY_POINT;
 import static atatec.robocode.parts.movement.GravitationalMovingSystem.LOW_ENFORCING;
 import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
@@ -86,15 +86,16 @@ public class Nexus extends BaseBot {
 
   private int fireSkipToChangeTarget = 50;
 
+  private int hitByBulletUntilUnlock = 3;
+
   private int maxMissesInARow = 5;
 
   private double avoidingPower = 3000;
 
   private boolean isLowEnforcing = false;
 
-  private EnemyHistory enemyHistory;
-
-  private BulletStatistics statistics;
+  private EnemyHistory enemyHistory = new EnemyHistory(this);
+  private BulletStatistics statistics = new BulletStatistics(this);
 
   private Condition lowEnforcing = new Condition() {
     @Override
@@ -105,19 +106,23 @@ public class Nexus extends BaseBot {
 
   private BotConditions conditions = new BotConditions(this);
 
-  private Condition lockEasiestEnemy = new Condition() {
-
+  private Function<Enemy, Double> enemyStrength = new Function<Enemy, Double>() {
     @Override
-    public boolean evaluate() {
-      Enemy lastSeen = radar().lastSeenEnemy();
-      if (lastSeen != null && radar().hasLockedTarget()) {
-        double lastSeenStr = strengthOf(lastSeen);
-        double lockedStr = strengthOf(radar().locked());
-        return lastSeenStr < lockedStr;
+    public Double eval(Enemy enemy) {
+      double patternStr = 1.0;
+      List<Enemy> history = enemyHistory.historyFor(enemy);
+      Enemy last = null;
+      for (Enemy hist : history) {
+        if (last != null) {
+          //when enemy is stopped, the patterStr will not be increased
+          patternStr += location().viewAngle(hist.location(), last.location()).radians()
+            * Math.abs(hist.distance() - last.distance());
+        }
+        last = hist;
       }
-      return true;
+      return (2 - statistics.of(enemy).accuracy()) + Math.pow(statistics.of(enemy).taken(), 2)
+        * (patternStr * enemy.energy() * Math.pow(enemy.distance(), 2));
     }
-
   };
 
   private Condition gravityMovingLocked = new Condition() {
@@ -148,7 +153,7 @@ public class Nexus extends BaseBot {
 
       .use(new EnemyLockScanningSystem(this)
         .scanBattleField()
-        .addLockCondition(lockEasiestEnemy)
+        .addLockCondition(new StrengthBasedLockCondition(this, enemyStrength))
       )
       .inOtherCases();
 
@@ -175,8 +180,6 @@ public class Nexus extends BaseBot {
       .use(new EnemyCircleMovingSystem(this))
       .inOtherCases();
 
-    enemyHistory = new EnemyHistory(this);
-    statistics = new BulletStatistics(this);
 
     plug(new Dodger(this));
     plug(new Avoider(this)
@@ -199,6 +202,8 @@ public class Nexus extends BaseBot {
     isLowEnforcing = false;
   }
 
+  int hitsByBullet = 0;
+
   @When(HIT_BY_BULLET)
   public void hitByBullet() {
     events().send(ADD_GRAVITY_POINT,
@@ -208,6 +213,10 @@ public class Nexus extends BaseBot {
         .withValue(300)
         .during(10)
     );
+    if (++hitsByBullet == hitByBulletUntilUnlock) {
+      radar().unlock();
+      hitsByBullet = 0;
+    }
   }
 
   int enemies = 0;
@@ -221,6 +230,11 @@ public class Nexus extends BaseBot {
     if (event.enemy().energy() < 10) {
       radar().lock(event.enemy());
     }
+  }
+
+  @When(TARGET_UNLOCKED)
+  public void resetEnemyCount() {
+    enemies = 0;
   }
 
   @When(ENEMY_FIRE)
@@ -258,7 +272,7 @@ public class Nexus extends BaseBot {
     events().send(ADD_GRAVITY_POINT,
       antiGravityPoint()
         .at(point)
-        .withValue(3000)
+        .withValue(avoidingPower)
         .during(1)
     );
   }
@@ -372,22 +386,6 @@ public class Nexus extends BaseBot {
     }
   }
 
-  private double strengthOf(Enemy enemy) {
-    double patternStr = 1.0;
-    List<Enemy> history = enemyHistory.historyFor(enemy);
-    Enemy last = null;
-    for (Enemy hist : history) {
-      if (last != null) {
-        //when enemy is stopped, the patterStr will not be increased
-        patternStr += location().viewAngle(hist.location(), last.location()).radians()
-          * Math.abs(hist.distance() - last.distance());
-      }
-      last = hist;
-    }
-    return (2 - statistics.of(enemy).accuracy())
-      * (patternStr * enemy.distance() * enemy.energy());
-  }
-
   private int misses = 0;
 
   @When({BULLET_HIT, BULLET_HIT_BULLET})
@@ -400,15 +398,6 @@ public class Nexus extends BaseBot {
     if (misses++ > maxMissesInARow && !radar().isHeadToHead()) {
       radar().unlock();
       misses = 0;
-    }
-  }
-
-  @When(DRAW)
-  public void draw(Drawer drawer) {
-    Collection<Enemy> enemies = radar().knownEnemies();
-    for (Enemy enemy : enemies) {
-      double str = strengthOf(enemy);
-      drawer.draw(Color.PINK).string("%.4f", str).at(enemy.location());
     }
   }
 

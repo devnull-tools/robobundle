@@ -23,7 +23,6 @@
 
 package atatec.robocode.condition;
 
-import atatec.robocode.Condition;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.parts.Gun;
 
