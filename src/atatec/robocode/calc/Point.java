@@ -150,7 +150,18 @@ public class Point {
     return new Position(this, other);
   }
 
-  public Angle viewAngle(Point p2, Point p3) {
+  /**
+   * Calculates the distance from this point to the given point
+   *
+   * @param other the point to calculate the distance
+   *
+   * @return the distance between this point and the given one.
+   */
+  public double distanceTo(Point other) {
+    return distance(this, other);
+  }
+
+  public Angle angleOfView(Point p2, Point p3) {
     Angle angle;
     double a = distance(this, p2);
     double b = distance(this, p3);
@@ -164,7 +175,7 @@ public class Point {
     return angle;
   }
 
-  private double distance(Point p1, Point p2) {
+  private static double distance(Point p1, Point p2) {
     return sqrt(pow(p1.x() - p2.x(), 2) + pow(p1.y() - p2.y(), 2));
   }
 

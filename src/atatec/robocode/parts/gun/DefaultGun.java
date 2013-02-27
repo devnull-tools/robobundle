@@ -24,17 +24,17 @@
 package atatec.robocode.parts.gun;
 
 import atatec.robocode.BaseBot;
-import atatec.robocode.condition.Condition;
 import atatec.robocode.ConditionalCommand;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
-import atatec.robocode.calc.Position;
+import atatec.robocode.condition.Condition;
 import atatec.robocode.condition.RadarConditions;
 import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.parts.BasePart;
 import atatec.robocode.parts.DefaultConditionalCommand;
 import atatec.robocode.parts.FiringSystem;
 import atatec.robocode.parts.Gun;
+import robocode.util.Utils;
 
 import java.awt.Color;
 
@@ -148,8 +148,9 @@ public class DefaultGun extends BasePart implements Gun {
   @Override
   public Gun aimTo(Point point) {
     bot.log("Aiming gun to %s", point);
-    Position position = bot.location().bearingTo(point);
-    Angle angle = position.angle().minus(bot.gun().heading());
+    Point diff = point.minus(bot.location());
+    double theta = Utils.normalAbsoluteAngle(Math.atan2(diff.x(), diff.y()));
+    Angle angle = new Angle(Utils.normalRelativeAngle(theta - bot.gun().heading().radians()));
     turn(angle);
     return this;
   }

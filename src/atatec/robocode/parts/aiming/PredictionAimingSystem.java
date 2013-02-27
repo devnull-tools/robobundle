@@ -33,8 +33,6 @@ import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.util.Drawer;
 import robocode.Rules;
 
-import java.awt.geom.Point2D;
-
 import static atatec.robocode.event.Events.DRAW;
 import static java.awt.Color.RED;
 
@@ -50,23 +48,20 @@ public class PredictionAimingSystem implements AimingSystem {
 
   public void execute() {
     double bulletSpeed = Rules.getBulletSpeed(bot.gun().power());
-    double myX = bot.location().x();
-    double myY = bot.location().y();
+    Point botLocation = bot.location();
     if (bot.radar().hasLockedTarget()) {
       Enemy enemy = bot.radar().locked();
-      double enemyX = enemy.location().x();
-      double enemyY = enemy.location().y();
       Angle enemyHeading = enemy.heading();
       double enemyVelocity = enemy.velocity();
 
       double deltaTime = 0;
       Field battleField = bot.radar().battleField();
-      double predictedX = enemyX, predictedY = enemyY;
-      while ((++deltaTime) * bulletSpeed <
-        Point2D.Double.distance(myX, myY, predictedX, predictedY)) {
-        predictedX += enemyHeading.sin() * enemyVelocity;
-        predictedY += enemyHeading.cos() * enemyVelocity;
-        predictedLocation = new Point(predictedX, predictedY);
+      predictedLocation = enemy.location();
+      while ((++deltaTime) * bulletSpeed < botLocation.bearingTo(predictedLocation).distance()) {
+        predictedLocation = predictedLocation.plus(new Point(
+          enemyHeading.sin() * enemyVelocity,
+          enemyHeading.cos() * enemyVelocity
+        ));
         // check bounds
         if (battleField.isOnField(predictedLocation)) {
           // out of bounds
@@ -74,9 +69,10 @@ public class PredictionAimingSystem implements AimingSystem {
           break;
         }
       }
+      predictedLocation = battleField.normalize(predictedLocation);
       bot.gun().aimTo(predictedLocation);
-      //double theta = Utils.normalAbsoluteAngle(Math.atan2(predictedX - myX, predictedY - myY));
-      //bot.gun().turn(new Angle(Utils.normalRelativeAngle(theta - bot.gun().heading().radians())));
+    } else {
+      predictedLocation = null;
     }
   }
 

@@ -23,9 +23,6 @@
 
 package atatec.robocode.calc;
 
-import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
-
 /** @author Marcelo Guimarães */
 public class Position {
 
@@ -39,14 +36,9 @@ public class Position {
   }
 
   public Position(Point p1, Point p2) {
-    this.distance = distance(p1, p2);
+    this.distance = p1.distanceTo(p2);
     Point p3 = new Point(p1.x(), p1.y() + 10);
-    /*Triangle t = new Triangle(distance, distance(p1, p3), distance(p3, p2));
-    Angle angle = t.angle(Triangle.ID.C);
-    if (Double.isNaN(angle.radians())) {
-      angle = Angle.ZERO;
-    }*/
-    Angle angle = p1.viewAngle(p2, p3);
+    Angle angle = p1.angleOfView(p2, p3);
     //using robocode convention
     this.angle = (p2.x() >= p1.x() ? angle : angle.inverse());
   }
@@ -57,10 +49,6 @@ public class Position {
 
   public Angle angle() {
     return angle;
-  }
-
-  private double distance(Point p1, Point p2) {
-    return sqrt(pow(p1.x() - p2.x(), 2) + pow(p1.y() - p2.y(), 2));
   }
 
   public String toString() {

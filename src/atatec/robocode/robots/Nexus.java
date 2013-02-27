@@ -80,7 +80,7 @@ import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 /** @author Marcelo Guimarães */
 public class Nexus extends BaseBot {
 
-  private double lowEnforcingValue = 0.4;
+  private double lowEnforcingValue = 0.8;
   private int wallGPointsDistance = 40;
   private int avoidDistance = 80;
 
@@ -114,7 +114,7 @@ public class Nexus extends BaseBot {
       for (Enemy hist : history) {
         if (last != null) {
           //when enemy is stopped, the patterStr will not be increased
-          patternStr += location().viewAngle(hist.location(), last.location()).radians()
+          patternStr += location().angleOfView(hist.location(), last.location()).radians()
             * Math.abs(hist.distance() - last.distance());
         }
         last = hist;
