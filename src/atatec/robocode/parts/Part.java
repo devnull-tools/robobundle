@@ -27,7 +27,7 @@ import atatec.robocode.calc.Angle;
 
 import java.awt.Color;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public interface Part {
 
   void turn(Angle angle);

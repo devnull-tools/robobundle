@@ -41,7 +41,7 @@ import java.util.Map;
 import static atatec.robocode.util.Drawer.Mode.TRANSPARENT;
 import static java.awt.Color.LIGHT_GRAY;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class EnemyHistory {
 
   private Map<String, List<Enemy>> enemyHistory;

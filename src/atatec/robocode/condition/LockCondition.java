@@ -25,7 +25,7 @@ package atatec.robocode.condition;
 
 import atatec.robocode.Enemy;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public interface LockCondition {
 
   boolean canLock(Enemy enemy);

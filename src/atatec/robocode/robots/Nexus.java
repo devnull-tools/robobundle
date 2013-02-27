@@ -77,7 +77,7 @@ import static atatec.robocode.parts.movement.GravitationalMovingSystem.LOW_ENFOR
 import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class Nexus extends BaseBot {
 
   private double lowEnforcingValue = 0.4;
@@ -95,7 +95,6 @@ public class Nexus extends BaseBot {
   private boolean isLowEnforcing = false;
 
   private EnemyHistory enemyHistory = new EnemyHistory(this);
-  private BulletStatistics statistics = new BulletStatistics(this);
 
   private Condition lowEnforcing = new Condition() {
     @Override
@@ -120,7 +119,7 @@ public class Nexus extends BaseBot {
         }
         last = hist;
       }
-      return (2 - statistics.of(enemy).accuracy()) + Math.pow(statistics.of(enemy).taken(), 2)
+      return (2 - statistics().of(enemy).accuracy()) + Math.pow(statistics().of(enemy).taken(), 2)
         * (patternStr * enemy.energy() * Math.pow(enemy.distance(), 2));
     }
   };
@@ -133,6 +132,14 @@ public class Nexus extends BaseBot {
   };
 
   private int lockGravityMoving = 0;
+
+  private BulletStatistics statistics() {
+    String entryName = "statistics";
+    if (!storage().hasValueFor(entryName)) {
+      storage().store(entryName, new BulletStatistics(this));
+    }
+    return storage().retrieve(entryName);
+  }
 
   protected void configure() {
     body().setColor(new Color(39, 40, 34));
@@ -187,7 +194,7 @@ public class Nexus extends BaseBot {
 
     plug(new EnemyScannerInfo(this));
     plug(enemyHistory);
-    plug(statistics);
+    plug(statistics());
 
     plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()
@@ -256,7 +263,7 @@ public class Nexus extends BaseBot {
         .during(duration)
     );
     //locks gravity moving to avoid the bullet
-    lockGravityMoving = 3;
+    lockGravityMoving = 5;
   }
 
   @When(HIT_ROBOT)
@@ -378,7 +385,7 @@ public class Nexus extends BaseBot {
       if (enemy.equals(radar().locked())) {
         point = enemy.location().gravitational().withValue(enemy.distance() * 2);
       } else {
-        point = enemy.location().antiGravitational().withValue(enemy.distance() / 2);
+        point = enemy.location().antiGravitational().withValue(-enemy.distance() / 2);
       }
       events().send(ADD_GRAVITY_POINT,
         point.during(1)

@@ -34,7 +34,7 @@ import static java.awt.Color.GREEN;
 import static java.awt.Color.ORANGE;
 import static java.awt.Color.YELLOW;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class EnemyScannerInfo {
 
   private final Bot bot;

@@ -28,7 +28,7 @@ import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.parts.FiringSystem;
 import atatec.robocode.parts.MovingSystem;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class Systems {
 
   private Systems() {

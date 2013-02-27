@@ -28,7 +28,7 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 import robocode.ScannedRobotEvent;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class ScannedEnemy extends BaseEnemy {
 
   private final String name;

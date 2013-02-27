@@ -23,7 +23,7 @@
 
 package atatec.robocode.event;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public final class Events {
 
   public static final String ENEMY_SCANNED = "ENEMY_SCANNED";
@@ -42,6 +42,7 @@ public final class Events {
   public static final String ENEMY_FIRE = "ENEMY_FIRE";
   public static final String ROUND_STARTED = "ROUND_STARTED";
   public static final String ROUND_ENDED = "ROUND_ENDED";
+  public static final String BATTLE_ENDED = "BATTLE_ENDED";
   public static final String DEATH = "DEATH";
   public static final String NEAR_TO_WALL = "NEAR_TO_WALL";
   public static final String NEAR_TO_ENEMY = "NEAR_TO_ENEMY";

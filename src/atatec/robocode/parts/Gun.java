@@ -36,7 +36,7 @@ import java.awt.Color;
  * {@link FiringSystem} to fire the gun using the best power. The behaviour of any system
  * can be changed at runtime based on giving {@link Condition conditions}.
  *
- * @author Marcelo Varella Barca Guimarães
+ * @author Marcelo Guimarães
  */
 public interface Gun extends Part {
 

@@ -25,7 +25,7 @@ package atatec.robocode.event;
 
 import robocode.Bullet;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class BulletFiredEvent {
 
   private final Bullet bullet;

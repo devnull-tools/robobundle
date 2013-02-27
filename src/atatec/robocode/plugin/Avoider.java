@@ -34,7 +34,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class Avoider {
 
   private final Bot bot;

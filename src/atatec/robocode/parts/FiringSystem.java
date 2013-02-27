@@ -23,7 +23,7 @@
 
 package atatec.robocode.parts;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public interface FiringSystem extends SystemPart {
 
   double firePower();

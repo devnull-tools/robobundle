@@ -40,7 +40,7 @@ import java.util.Iterator;
 
 import static java.lang.Math.random;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class GravitationalMovingSystem implements MovingSystem {
 
   public static final String LOW_ENFORCING = "GravitationalMovingSystem.LOW_ENFORCING";
@@ -108,13 +108,22 @@ public class GravitationalMovingSystem implements MovingSystem {
   }
 
   private boolean isLowEnforcing() {
-    return bot.location().bearingTo(forcePoint).distance() <= 0.05;
+    return bot.location().bearingTo(forcePoint).distance() <= lowEnforcing;
   }
 
   @When(Events.DRAW)
   public void drawForcePoint(Drawer drawer) {
     if (forcePoint != null) {
       drawer.draw(Color.MAGENTA).circle().at(forcePoint);
+    }
+  }
+
+  @When(Events.DRAW)
+  public void drawTemporaryGravityPoints(Drawer drawer) {
+    for (TemporaryGravityPoint temporaryPoint : temporaryPoints) {
+      if (!temporaryPoint.expired()) {
+        drawer.draw(Color.ORANGE).cross().at(temporaryPoint.point());
+      }
     }
   }
 

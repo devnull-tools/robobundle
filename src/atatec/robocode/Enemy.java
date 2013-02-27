@@ -30,7 +30,7 @@ import atatec.robocode.calc.Position;
 /**
  * Interface that defines an target bot.
  *
- * @author Marcelo Varella Barca Guimarães
+ * @author Marcelo Guimarães
  */
 public interface Enemy {
 

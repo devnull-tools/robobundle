@@ -26,7 +26,7 @@ package atatec.robocode.condition;
 import atatec.robocode.Bot;
 import atatec.robocode.Enemy;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class StrengthBasedLockCondition implements LockCondition {
 
   private final Bot bot;

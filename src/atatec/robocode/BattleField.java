@@ -27,7 +27,7 @@ import atatec.robocode.calc.BotMath;
 import atatec.robocode.calc.Point;
 import robocode.Robot;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class BattleField implements Field {
 
   private final double height;

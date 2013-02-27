@@ -26,7 +26,7 @@ package atatec.robocode.calc;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public final class BotMath {
 
   public static BigDecimal toBigecimal(double a) {

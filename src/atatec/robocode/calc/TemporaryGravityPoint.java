@@ -23,7 +23,7 @@
 
 package atatec.robocode.calc;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class TemporaryGravityPoint {
 
   private int duration;

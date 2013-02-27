@@ -25,7 +25,7 @@ package atatec.robocode.parts.aiming;
 
 import atatec.robocode.parts.AimingSystem;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class DefaultAimingSystem implements AimingSystem {
 
   @Override

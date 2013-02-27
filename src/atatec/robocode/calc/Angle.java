@@ -28,7 +28,7 @@ import robocode.util.Utils;
 import static atatec.robocode.calc.BotMath.areEquals;
 import static atatec.robocode.calc.BotMath.toBigecimal;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class Angle {
 
   public static final Angle ZERO = new Angle(0);

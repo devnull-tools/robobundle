@@ -26,7 +26,7 @@ package atatec.robocode.parts.firing;
 import atatec.robocode.Bot;
 import atatec.robocode.parts.FiringSystem;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class DefaultFiringSystem implements FiringSystem {
 
   private final Bot bot;

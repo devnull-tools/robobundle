@@ -23,7 +23,7 @@
 
 package atatec.robocode;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public abstract class BaseEnemy implements Enemy {
 
   @Override

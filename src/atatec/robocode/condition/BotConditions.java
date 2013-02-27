@@ -29,7 +29,7 @@ import atatec.robocode.calc.Point;
 
 import java.util.Collection;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class BotConditions {
 
   private final Bot bot;

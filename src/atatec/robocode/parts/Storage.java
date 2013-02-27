@@ -21,70 +21,17 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.util;
-
-import atatec.robocode.util.drawing.CircleDrawer;
-import atatec.robocode.util.drawing.CrossDrawer;
-import atatec.robocode.util.drawing.MarkerDrawer;
-import atatec.robocode.util.drawing.StringDrawer;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
+package atatec.robocode.parts;
 
 /** @author Marcelo Guimarães */
-public class Drawer {
+public interface Storage {
 
-  public enum Mode {
-    TRANSPARENT
-  }
+  <E> E retrieve(String name);
 
-  private final Graphics2D g;
+  void store(String name, Object value);
 
-  public Drawer(Graphics2D g) {
-    this.g = g;
-  }
+  void remove(String name);
 
-  public Graphics2D graphics() {
-    return g;
-  }
-
-  public ShapeSelector draw(Mode mode, Color color) {
-    switch (mode) {
-      case TRANSPARENT:
-        color = new Color(
-          color.getRed(),
-          color.getGreen(),
-          color.getBlue(),
-          120
-        );
-        break;
-    }
-    return draw(color);
-  }
-
-  public ShapeSelector draw(Color color) {
-    g.setColor(color);
-    return new ShapeSelector();
-  }
-
-  public class ShapeSelector {
-
-    public CircleDrawer circle() {
-      return new CircleDrawer(g);
-    }
-
-    public CrossDrawer cross() {
-      return new CrossDrawer(g);
-    }
-
-    public MarkerDrawer marker() {
-      return new MarkerDrawer(g);
-    }
-
-    public StringDrawer string(Object message, Object... args) {
-      return new StringDrawer(g, String.format(message.toString(), args));
-    }
-
-  }
+  boolean hasValueFor(String name);
 
 }

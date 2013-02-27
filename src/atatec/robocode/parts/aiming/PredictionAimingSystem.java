@@ -39,7 +39,7 @@ import java.awt.geom.Point2D;
 import static atatec.robocode.event.Events.DRAW;
 import static java.awt.Color.RED;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class PredictionAimingSystem implements AimingSystem {
 
   private final Bot bot;

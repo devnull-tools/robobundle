@@ -35,7 +35,7 @@ import static java.lang.Math.sqrt;
  * <p/>
  * All instances of this class are immutable.
  *
- * @author Marcelo Varella Barca Guimarães
+ * @author Marcelo Guimarães
  */
 public class Point {
 

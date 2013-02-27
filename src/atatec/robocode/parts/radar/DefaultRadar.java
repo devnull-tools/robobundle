@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class DefaultRadar extends BasePart implements Radar {
 
   private final DefaultConditionalCommand<ScanningSystem> scanningSystem;

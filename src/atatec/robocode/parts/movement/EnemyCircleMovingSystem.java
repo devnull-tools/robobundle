@@ -31,7 +31,7 @@ import atatec.robocode.parts.MovingSystem;
 import static java.lang.Math.cos;
 import static java.lang.Math.random;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class EnemyCircleMovingSystem implements MovingSystem {
 
   private static final double MOVEMENT_LENGTH = 75;

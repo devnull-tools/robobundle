@@ -26,7 +26,7 @@ package atatec.robocode.calc;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class Position {
 
   private final double distance;

@@ -29,7 +29,7 @@ import atatec.robocode.Field;
 
 import java.util.Collection;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public interface Radar extends Part {
 
   Enemy locked();

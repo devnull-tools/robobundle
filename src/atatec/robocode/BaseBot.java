@@ -28,18 +28,17 @@ import atatec.robocode.event.BulletFiredEvent;
 import atatec.robocode.event.DefaultEventRegistry;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.EventRegistry;
-import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.parts.Body;
-import atatec.robocode.parts.FiringSystem;
+import atatec.robocode.parts.DefaultStorage;
 import atatec.robocode.parts.Gun;
-import atatec.robocode.parts.MovingSystem;
 import atatec.robocode.parts.Radar;
-import atatec.robocode.parts.ScanningSystem;
+import atatec.robocode.parts.Storage;
 import atatec.robocode.parts.body.DefaultBody;
 import atatec.robocode.parts.gun.DefaultGun;
 import atatec.robocode.parts.radar.DefaultRadar;
 import atatec.robocode.util.Drawer;
 import robocode.AdvancedRobot;
+import robocode.BattleEndedEvent;
 import robocode.Bullet;
 import robocode.BulletHitBulletEvent;
 import robocode.BulletHitEvent;
@@ -54,9 +53,10 @@ import robocode.ScannedRobotEvent;
 import robocode.WinEvent;
 
 import java.awt.Graphics2D;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import static atatec.robocode.event.Events.BATTLE_ENDED;
 import static atatec.robocode.event.Events.BULLET_FIRED;
 import static atatec.robocode.event.Events.BULLET_HIT;
 import static atatec.robocode.event.Events.BULLET_HIT_BULLET;
@@ -77,7 +77,7 @@ import static atatec.robocode.event.Events.WIN;
 /**
  * A base class that provides a default abstraction to creating first class robots.
  *
- * @author Marcelo Varella Barca Guimarães
+ * @author Marcelo Guimarães
  */
 public abstract class BaseBot extends AdvancedRobot implements Bot {
 
@@ -89,47 +89,39 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   private EventRegistry eventRegistry = new DefaultEventRegistry(this);
 
-  private Map<Class, ConditionalCommand> conditionalSystems;
-
   private boolean roundEnded = false;
 
-  /**
-   * Initializes the bot using the given parts
-   *
-   * @param gun   the gun to use
-   * @param body  the body to use
-   * @param radar the radar to use
-   */
-  protected final void initialize(Gun gun, Body body, Radar radar) {
-    this.gun = gun;
-    this.body = body;
-    this.radar = radar;
+  private static Map<String, Storage> persistentStorage =
+    new ConcurrentHashMap<String, Storage>();
 
-    this.conditionalSystems = new HashMap<Class, ConditionalCommand>();
-    conditionalSystems.put(AimingSystem.class, gun.forAiming());
-    conditionalSystems.put(FiringSystem.class, gun.forFiring());
-    conditionalSystems.put(ScanningSystem.class, radar.forScanning());
-    conditionalSystems.put(MovingSystem.class, body.forMoving());
-  }
-
+  /** Initializes {@link Gun}, {@link Radar} and {@link Body} */
   protected void initializeParts() {
-    initialize(new DefaultGun(this), new DefaultBody(this), new DefaultRadar(this));
+    this.gun = new DefaultGun(this);
+    this.body = new DefaultBody(this);
+    this.radar = new DefaultRadar(this);
   }
 
   /** Configures the bot behaviours. All configuration must be done here. */
   protected abstract void configure();
 
   /**
-   * Sets up the bot default configurations. Every part is adjusted to turn independently
-   * and the {@link Radar}, {@link Gun} and {@link Body}.
+   * Sets up the bot and put it to battle.
    * <p/>
-   * This method calls {@link #configure()} and, at the end, calls {@link
-   * #onRoundStarted()}
+   * Every part is adjusted to turn independently, than the {@link #initializeParts()} is
+   * called. After it, the bot parts and the bot itself are {@link #plug(Object)
+   * registered} and the {@link #configure()} method is called.
+   * <p/>
+   * When the configuration is done, a {@link atatec.robocode.event.Events#ROUND_STARTED}
+   * event is send and the {@link #onRoundStarted()} is called.
    */
   public final void run() {
     setAdjustGunForRobotTurn(true);
     setAdjustRadarForGunTurn(true);
     setAdjustRadarForRobotTurn(true);
+
+    if (!persistentStorage.containsKey(getName())) {
+      persistentStorage.put(getName(), new DefaultStorage());
+    }
 
     initializeParts();
 
@@ -171,22 +163,32 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   }
 
+  @Override
+  public Storage storage() {
+    return persistentStorage.get(getName());
+  }
+
+  @Override
   public final Point location() {
     return new Point(getX(), getY());
   }
 
+  @Override
   public final Gun gun() {
     return gun;
   }
 
+  @Override
   public final Body body() {
     return body;
   }
 
+  @Override
   public final Radar radar() {
     return radar;
   }
 
+  @Override
   public final EventRegistry events() {
     return eventRegistry;
   }
@@ -201,9 +203,15 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     }
   }
 
+  @Override
   public final void log(Object message, Object... params) {
     out.printf(message.toString(), params);
     out.println();
+  }
+
+  @Override
+  public void log(Throwable throwable) {
+    throwable.printStackTrace(out);
   }
 
   @Override
@@ -267,6 +275,12 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   public final void onRoundEnded(RoundEndedEvent event) {
     roundEnded = true;
     eventRegistry.send(ROUND_ENDED, event);
+  }
+
+  @Override
+  public final void onBattleEnded(BattleEndedEvent event) {
+    eventRegistry.send(BATTLE_ENDED);
+    persistentStorage.clear();
   }
 
   @Override

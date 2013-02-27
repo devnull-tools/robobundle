@@ -25,7 +25,7 @@ package atatec.robocode.condition;
 
 import atatec.robocode.parts.Body;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class BodyConditions extends PartConditions<Body> {
 
   public BodyConditions(Body body) {

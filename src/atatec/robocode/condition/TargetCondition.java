@@ -26,7 +26,7 @@ package atatec.robocode.condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.parts.Radar;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public abstract class TargetCondition implements Condition {
 
   private final Radar radar;

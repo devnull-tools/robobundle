@@ -21,70 +21,42 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.util;
+package atatec.robocode.parts;
 
-import atatec.robocode.util.drawing.CircleDrawer;
-import atatec.robocode.util.drawing.CrossDrawer;
-import atatec.robocode.util.drawing.MarkerDrawer;
-import atatec.robocode.util.drawing.StringDrawer;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.util.HashMap;
+import java.util.Map;
 
 /** @author Marcelo Guimarães */
-public class Drawer {
+public class DefaultStorage implements Storage {
 
-  public enum Mode {
-    TRANSPARENT
+  private Map<String, Object> map;
+
+  public DefaultStorage(Map<String, Object> map) {
+    this.map = map;
   }
 
-  private final Graphics2D g;
-
-  public Drawer(Graphics2D g) {
-    this.g = g;
+  public DefaultStorage() {
+    this(new HashMap<String, Object>());
   }
 
-  public Graphics2D graphics() {
-    return g;
+  @Override
+  public <E> E retrieve(String name) {
+    return (E) map.get(name);
   }
 
-  public ShapeSelector draw(Mode mode, Color color) {
-    switch (mode) {
-      case TRANSPARENT:
-        color = new Color(
-          color.getRed(),
-          color.getGreen(),
-          color.getBlue(),
-          120
-        );
-        break;
-    }
-    return draw(color);
+  @Override
+  public void store(String name, Object value) {
+    map.put(name, value);
   }
 
-  public ShapeSelector draw(Color color) {
-    g.setColor(color);
-    return new ShapeSelector();
+  @Override
+  public void remove(String name) {
+    map.remove(name);
   }
 
-  public class ShapeSelector {
-
-    public CircleDrawer circle() {
-      return new CircleDrawer(g);
-    }
-
-    public CrossDrawer cross() {
-      return new CrossDrawer(g);
-    }
-
-    public MarkerDrawer marker() {
-      return new MarkerDrawer(g);
-    }
-
-    public StringDrawer string(Object message, Object... args) {
-      return new StringDrawer(g, String.format(message.toString(), args));
-    }
-
+  @Override
+  public boolean hasValueFor(String name) {
+    return map.containsKey(name);
   }
 
 }

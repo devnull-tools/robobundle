@@ -33,7 +33,7 @@ import robocode.HitRobotEvent;
 
 import static java.lang.Math.random;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class FleeEnemyMovingSystem implements MovingSystem {
 
   private static final double MOVEMENT_LENGTH = -100;

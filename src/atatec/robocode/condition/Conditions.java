@@ -23,7 +23,7 @@
 
 package atatec.robocode.condition;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class Conditions {
 
   public static final Condition ALWAYS = new Condition() {

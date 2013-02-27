@@ -36,7 +36,7 @@ import atatec.robocode.plugin.EnemyScannerInfo;
 
 import java.awt.Color;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class Newton extends BaseBot {
 
   @Override

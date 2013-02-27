@@ -23,7 +23,7 @@
 
 package atatec.robocode.event;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public interface EventRegistry {
 
   void register(Object listener);

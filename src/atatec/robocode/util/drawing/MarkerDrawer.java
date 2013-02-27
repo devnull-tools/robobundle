@@ -27,7 +27,7 @@ import atatec.robocode.calc.Point;
 
 import java.awt.Graphics2D;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class MarkerDrawer {
 
   private final Graphics2D g;

@@ -39,7 +39,7 @@ import static atatec.robocode.event.Events.ENEMY_SCANNED;
 import static atatec.robocode.event.Events.ROBOT_DEATH;
 import static atatec.robocode.event.Events.TARGET_UNLOCKED;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class EnemyLockScanningSystem implements ScanningSystem {
 
   private final Bot bot;

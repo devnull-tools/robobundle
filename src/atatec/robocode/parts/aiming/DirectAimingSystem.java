@@ -34,7 +34,7 @@ import atatec.robocode.util.Drawer;
 import static atatec.robocode.event.Events.DRAW;
 import static java.awt.Color.RED;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class DirectAimingSystem implements AimingSystem {
 
   private final Bot bot;

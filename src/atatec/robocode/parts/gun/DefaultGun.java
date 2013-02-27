@@ -38,7 +38,7 @@ import atatec.robocode.parts.Gun;
 
 import java.awt.Color;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class DefaultGun extends BasePart implements Gun {
 
   private final BaseBot bot;

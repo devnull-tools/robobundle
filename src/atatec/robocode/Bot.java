@@ -28,6 +28,7 @@ import atatec.robocode.event.EventRegistry;
 import atatec.robocode.parts.Body;
 import atatec.robocode.parts.Gun;
 import atatec.robocode.parts.Radar;
+import atatec.robocode.parts.Storage;
 
 /**
  * Interface that defines a robot.
@@ -36,7 +37,7 @@ import atatec.robocode.parts.Radar;
  * and a {@link Radar}. The bot has also a pluggable system and a event driven module
  * designed for better composition of features.
  *
- * @author Marcelo Varella Barca Guimarães
+ * @author Marcelo Guimarães
  * @see atatec.robocode.annotation.When
  */
 public interface Bot {
@@ -70,12 +71,26 @@ public interface Bot {
   Radar radar();
 
   /**
-   * Logs a message in the bot's output stream
+   * Returns the robot's storage
+   *
+   * @return the robot's storage
+   */
+  Storage storage();
+
+  /**
+   * Logs a message in the robot's output stream
    *
    * @param message the message to log
    * @param params  the parameters to the message (if it is a format)
    */
   void log(Object message, Object... params);
+
+  /**
+   * Logs an exception in the robot's output stream
+   *
+   * @param throwable the exception to log
+   */
+  void log(Throwable throwable);
 
   /**
    * Plugs a component that will listen to events through methods annotated with {@link
@@ -91,8 +106,5 @@ public interface Bot {
    * @return the event registry
    */
   EventRegistry events();
-
-  /** Executes the pending movements */
-  void execute();
 
 }

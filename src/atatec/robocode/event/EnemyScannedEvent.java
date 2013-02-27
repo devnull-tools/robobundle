@@ -28,7 +28,7 @@ import atatec.robocode.Enemy;
 import atatec.robocode.ScannedEnemy;
 import robocode.ScannedRobotEvent;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class EnemyScannedEvent {
 
   private final Enemy enemy;

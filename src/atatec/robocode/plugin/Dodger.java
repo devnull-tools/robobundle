@@ -31,7 +31,7 @@ import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
 import robocode.BulletHitEvent;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class Dodger {
 
   private final Bot bot;

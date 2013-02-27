@@ -26,7 +26,7 @@ package atatec.robocode.condition;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.parts.Radar;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class RadarConditions {
 
   private final Radar radar;

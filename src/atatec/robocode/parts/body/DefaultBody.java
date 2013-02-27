@@ -35,7 +35,7 @@ import atatec.robocode.parts.MovingSystem;
 
 import java.awt.Color;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class DefaultBody extends BasePart implements Body {
 
   private final DefaultConditionalCommand<MovingSystem> movingSystem;

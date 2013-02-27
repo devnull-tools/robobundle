@@ -26,7 +26,7 @@ package atatec.robocode.util;
 import atatec.robocode.calc.GravityPoint;
 import atatec.robocode.calc.Point;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class GravityPointBuilder {
 
   private Point point;

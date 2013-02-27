@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class DefaultEventRegistry implements EventRegistry {
 
   private final Bot bot;
@@ -120,11 +120,13 @@ public class DefaultEventRegistry implements EventRegistry {
         e.printStackTrace();
         bot.log("Error while invoking %s:%n\t%s - %s",
           method, e.getClass(), e.getMessage());
+        bot.log(e);
       } catch (InvocationTargetException e) {
         Throwable cause = e.getCause();
         cause.printStackTrace();
         bot.log("Error while invoking %s:%n\t%s - %s",
           method, cause.getClass(), cause.getMessage());
+        bot.log(e.getCause());
       }
     }
 

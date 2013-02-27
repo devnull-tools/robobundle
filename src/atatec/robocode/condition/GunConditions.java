@@ -26,7 +26,7 @@ package atatec.robocode.condition;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.parts.Gun;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class GunConditions {
 
   private final Gun gun;

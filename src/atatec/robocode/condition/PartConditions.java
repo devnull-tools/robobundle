@@ -26,7 +26,7 @@ package atatec.robocode.condition;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.parts.Part;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class PartConditions<E extends Part> {
 
   protected final E part;

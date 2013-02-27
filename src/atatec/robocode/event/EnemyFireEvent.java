@@ -25,7 +25,7 @@ package atatec.robocode.event;
 
 import atatec.robocode.Enemy;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class EnemyFireEvent {
 
   private final Enemy enemy;

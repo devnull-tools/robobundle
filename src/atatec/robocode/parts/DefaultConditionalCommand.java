@@ -33,7 +33,7 @@ import atatec.robocode.condition.Conditions;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class DefaultConditionalCommand<E extends Command> implements ConditionalCommand<E> {
 
   private final Map<Condition, E> components = new LinkedHashMap<Condition, E>();

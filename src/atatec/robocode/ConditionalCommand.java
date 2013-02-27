@@ -25,7 +25,7 @@ package atatec.robocode;
 
 import atatec.robocode.condition.ConditionSelector;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public interface ConditionalCommand<E extends Command> extends Command {
 
   ConditionSelector<ConditionalCommand<E>> use(E systemPart);

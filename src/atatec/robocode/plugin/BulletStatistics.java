@@ -37,7 +37,7 @@ import robocode.HitByBulletEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public class BulletStatistics {
 
   private final Bot bot;

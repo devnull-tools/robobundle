@@ -25,7 +25,7 @@ package atatec.robocode.parts;
 
 import atatec.robocode.calc.Angle;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public abstract class BasePart implements Part {
 
   @Override

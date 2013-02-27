@@ -23,7 +23,7 @@
 
 package atatec.robocode.condition;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public interface ConditionSelector<E> {
 
   E when(Condition condition);

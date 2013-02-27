@@ -25,7 +25,7 @@ package atatec.robocode;
 
 import atatec.robocode.calc.Point;
 
-/** @author Marcelo Varella Barca Guimarães */
+/** @author Marcelo Guimarães */
 public interface Field {
   double height();
 
