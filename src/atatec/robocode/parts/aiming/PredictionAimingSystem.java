@@ -32,7 +32,6 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.util.Drawer;
 import robocode.Rules;
-import robocode.util.Utils;
 
 import java.awt.geom.Point2D;
 
@@ -62,28 +61,22 @@ public class PredictionAimingSystem implements AimingSystem {
 
       double deltaTime = 0;
       Field battleField = bot.radar().battleField();
-      double battleFieldHeight = battleField.height(),
-        battleFieldWidth = battleField.width();
       double predictedX = enemyX, predictedY = enemyY;
       while ((++deltaTime) * bulletSpeed <
         Point2D.Double.distance(myX, myY, predictedX, predictedY)) {
         predictedX += enemyHeading.sin() * enemyVelocity;
         predictedY += enemyHeading.cos() * enemyVelocity;
-        if (predictedX < 18.0
-          || predictedY < 18.0
-          || predictedX > battleFieldWidth - 18.0
-          || predictedY > battleFieldHeight - 18.0) {
-          predictedX = Math.min(Math.max(18.0, predictedX),
-            battleFieldWidth - 18.0);
-          predictedY = Math.min(Math.max(18.0, predictedY),
-            battleFieldHeight - 18.0);
+        predictedLocation = new Point(predictedX, predictedY);
+        // check bounds
+        if (battleField.isOnField(predictedLocation)) {
+          // out of bounds
+          predictedLocation = battleField.normalize(predictedLocation);
           break;
         }
       }
-      double theta = Utils.normalAbsoluteAngle(Math.atan2(predictedX - myX, predictedY - myY));
-
-      bot.gun().turn(new Angle(Utils.normalRelativeAngle(theta - bot.gun().heading().radians())));
-      predictedLocation = new Point(predictedX, predictedY);
+      bot.gun().aimTo(predictedLocation);
+      //double theta = Utils.normalAbsoluteAngle(Math.atan2(predictedX - myX, predictedY - myY));
+      //bot.gun().turn(new Angle(Utils.normalRelativeAngle(theta - bot.gun().heading().radians())));
     }
   }
 

@@ -43,8 +43,10 @@ public interface Field {
 
   double diagonal();
 
-  boolean contains(Point p);
+  boolean isOnField(Point p);
 
   Point closestWallPointTo(Point p);
+
+  Point normalize(Point p);
 
 }

@@ -60,6 +60,7 @@ public class DefaultEventRegistry implements EventRegistry {
       if (method.isAnnotationPresent(When.class)) {
         eventNames = method.getAnnotation(When.class).value();
         for (String eventName : eventNames) {
+          bot.log("Registering %s to %s.", method, eventName);
           getMapping(eventName).add(listener, method);
         }
       }

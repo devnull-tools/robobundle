@@ -23,7 +23,6 @@
 
 package atatec.robocode;
 
-import atatec.robocode.calc.BotMath;
 import atatec.robocode.calc.Point;
 import robocode.Robot;
 
@@ -33,6 +32,8 @@ public class BattleField implements Field {
   private final double height;
 
   private final double width;
+
+  private final double botSize = 18.0;
 
   public BattleField(Robot robot) {
     height = robot.getBattleFieldHeight();
@@ -71,7 +72,7 @@ public class BattleField implements Field {
 
   @Override
   public Point downLeft() {
-    return new Point(0, 0);
+    return new Point(botSize, botSize);
   }
 
   @Override
@@ -80,30 +81,40 @@ public class BattleField implements Field {
   }
 
   @Override
-  public boolean contains(Point p) {
-    return (p.x() > 0 && p.y() > 0) &&
-      BotMath.compare(p.x(), width) <= 0 && BotMath.compare(p.y(), height) <= 0;
+  public boolean isOnField(Point p) {
+    return p.x() < 0
+      || p.y() < 0
+      || p.x() > width
+      || p.y() > height;
   }
 
   @Override
-  public Point closestWallPointTo(Point p) {
-    if (contains(p)) {
-      Point a, b;
-      if (p.x() < width / 2) {
-        // on left side
-        a = new Point(0, p.y());
-      } else {
-        // on right side
-        a = new Point(width, p.y());
-      }
-      if (p.y() < height / 2) {
-        b = new Point(p.x(), 0);
-      } else {
-        b = new Point(p.x(), height);
-      }
-      return p.bearingTo(a).distance() < p.bearingTo(b).distance() ? a : b;
+  public Point normalize(Point p) {
+    if (isOnField(p)) {
+      return p;
     }
-    return null;
+    double x = Math.min(Math.max(botSize, p.x()), width - botSize);
+    double y = Math.min(Math.max(botSize, p.y()), height - botSize);
+    return new Point(x, y);
+  }
+
+  @Override
+  public Point closestWallPointTo(Point point) {
+    Point p = normalize(point);
+    Point a, b;
+    if (p.x() < width / 2) {
+      // on left side
+      a = new Point(0, p.y());
+    } else {
+      // on right side
+      a = new Point(width, p.y());
+    }
+    if (p.y() < height / 2) {
+      b = new Point(p.x(), 0);
+    } else {
+      b = new Point(p.x(), height);
+    }
+    return p.bearingTo(a).distance() < p.bearingTo(b).distance() ? a : b;
   }
 
 }
