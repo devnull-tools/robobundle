@@ -24,18 +24,31 @@
 package atatec.robocode.event;
 
 import atatec.robocode.Enemy;
+import robocode.Rules;
 
 /** @author Marcelo Guimarães */
 public class EnemyFireEvent {
 
   private final Enemy enemy;
+  private final double bulletPower;
+  private final double bulletSpeed;
 
-  public EnemyFireEvent(Enemy enemy) {
+  public EnemyFireEvent(Enemy enemy, double bulletPower) {
     this.enemy = enemy;
+    this.bulletPower = bulletPower;
+    this.bulletSpeed = Rules.getBulletSpeed(bulletPower);
   }
 
   public Enemy enemy() {
     return enemy;
+  }
+
+  public double bulletPower() {
+    return bulletPower;
+  }
+
+  public double bulletSpeed() {
+    return bulletSpeed;
   }
 
 }

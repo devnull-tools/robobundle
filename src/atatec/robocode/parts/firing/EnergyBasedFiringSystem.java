@@ -75,7 +75,7 @@ public class EnergyBasedFiringSystem implements FiringSystem {
   }
 
   private double bestPowerBasedOnEnemy() {
-    Enemy enemy = bot.radar().locked();
+    Enemy enemy = bot.radar().target();
     if(enemy == null) {
       return Double.MAX_VALUE;
     }

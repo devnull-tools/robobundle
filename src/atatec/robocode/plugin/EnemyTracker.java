@@ -24,13 +24,15 @@
 package atatec.robocode.plugin;
 
 import atatec.robocode.Bot;
-import atatec.robocode.condition.Condition;
 import atatec.robocode.Enemy;
+import atatec.robocode.EnemyHistory;
 import atatec.robocode.annotation.When;
+import atatec.robocode.condition.Condition;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
 import atatec.robocode.util.Drawer;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,7 +44,7 @@ import static atatec.robocode.util.Drawer.Mode.TRANSPARENT;
 import static java.awt.Color.LIGHT_GRAY;
 
 /** @author Marcelo Guimarães */
-public class EnemyHistory {
+public class EnemyTracker {
 
   private Map<String, List<Enemy>> enemyHistory;
 
@@ -50,11 +52,11 @@ public class EnemyHistory {
 
   private final Bot bot;
 
-  public EnemyHistory(Bot bot) {
+  public EnemyTracker(Bot bot) {
     this(bot, 20);
   }
 
-  public EnemyHistory(Bot bot, int historySize) {
+  public EnemyTracker(Bot bot, int historySize) {
     this.enemyHistory = new HashMap<String, List<Enemy>>();
     this.bot = bot;
     this.historySize = historySize;
@@ -67,50 +69,65 @@ public class EnemyHistory {
       enemyHistory.put(enemy.name(), new LinkedList<Enemy>());
     }
     List<Enemy> history = enemyHistory.get(enemy.name());
-    history.add(0, enemy);
+    history.add(enemy);
     if (history.size() > historySize) {
-      history.remove(history.size() - 1);
+      history.remove(0);
     }
   }
 
-  public List<Enemy> historyFor(Enemy enemy) {
-    if (!enemyHistory.containsKey(enemy.name())) {
-      return Collections.emptyList();
-    }
-    return Collections.unmodifiableList(enemyHistory.get(enemy.name()));
+  public EnemyHistory historyFor(final Enemy enemy) {
+    return new EnemyHistory() {
+
+      @Override
+      public List<Enemy> fromOldest() {
+        if (!enemyHistory.containsKey(enemy.name())) {
+          return Collections.emptyList();
+        }
+        return Collections.unmodifiableList(enemyHistory.get(enemy.name()));
+      }
+
+      @Override
+      public List<Enemy> fromLatest() {
+        if (!enemyHistory.containsKey(enemy.name())) {
+          return Collections.emptyList();
+        }
+        List<Enemy> list = new ArrayList<Enemy>(enemyHistory.get(enemy.name()));
+        Collections.reverse(list);
+        return Collections.unmodifiableList(list);
+      }
+    };
   }
 
   @When(Events.DRAW)
   public void drawHistory(Drawer drawer) {
     Collection<Enemy> enemies = bot.radar().knownEnemies();
     for (Enemy enemy : enemies) {
-      List<Enemy> history = historyFor(enemy);
-      for (Enemy enemyHistory : history) {
+      int i = 0;
+      for (Enemy enemyHistory : historyFor(enemy).fromLatest()) {
         drawer.draw(TRANSPARENT, LIGHT_GRAY).circle().at(enemyHistory.location());
+        if (++i == 10) {
+          break;
+        }
       }
     }
   }
 
-  public boolean isEnemyStopped(Enemy target, int searchDeep) {
-    List<Enemy> history = historyFor(target);
-    int i = 0;
-    for (Enemy enemy : history) {
-      if (enemy.isMoving()) {
+  public boolean isEnemyStopped(Enemy enemy) {
+    for (Enemy enemyHistory : historyFor(enemy).fromOldest()) {
+      if (enemyHistory.isMoving()) {
         return false;
-      } else if (i++ == searchDeep) {
-        break;
       }
     }
     return true;
   }
 
-  public Condition targetStopedFor(final int searchDeep) {
+  public Condition targetStoped() {
     return new Condition() {
       @Override
       public boolean evaluate() {
         if (bot.radar().hasLockedTarget()) {
-          Enemy target = bot.radar().locked();
-          return isEnemyStopped(target, searchDeep);
+          Enemy target = bot.radar().target();
+          return isEnemyStopped(target);
         }
         return false;
       }

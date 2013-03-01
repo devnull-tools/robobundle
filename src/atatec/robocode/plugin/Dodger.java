@@ -29,6 +29,8 @@ import atatec.robocode.annotation.When;
 import atatec.robocode.event.EnemyFireEvent;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
+import atatec.robocode.event.TargetLockedEvent;
+import atatec.robocode.event.TargetUnlockedEvent;
 import robocode.BulletHitEvent;
 
 /** @author Marcelo Guimarães */
@@ -36,28 +38,47 @@ public class Dodger {
 
   private final Bot bot;
 
+  private Enemy target;
   private Enemy lastEnemy;
 
   public Dodger(Bot bot) {
     this.bot = bot;
   }
 
+  @When(Events.TARGET_LOCKED)
+  public void onTargetLocked(TargetLockedEvent event) {
+    target = event.target();
+  }
+
+  @When(Events.TARGET_UNLOCKED)
+  public void onTargetOnlocked(TargetUnlockedEvent event) {
+    target = null;
+  }
+
   @When(Events.ENEMY_SCANNED)
   public void onEnemyScanned(EnemyScannedEvent event) {
     Enemy enemy = event.enemy();
     if (lastEnemy != null && lastEnemy.name().equals(enemy.name())) {
-      if (lastEnemy.energy() > enemy.energy()) { //assumes a bullet fired
-        bot.events().send(Events.ENEMY_FIRE, new EnemyFireEvent(enemy));
-      }
+      checkFire(enemy, lastEnemy);
+    } else if (target != null && enemy.name().equals(target.name())) {
+      checkFire(enemy, target);
     }
     lastEnemy = enemy;
+  }
+
+  private void checkFire(Enemy enemy, Enemy lastSeen) {
+    if (lastSeen.energy() > enemy.energy()) { //assumes a bullet fired
+      bot.events().send(
+        Events.ENEMY_FIRE, new EnemyFireEvent(enemy, lastSeen.energy() - enemy.energy())
+      );
+    }
   }
 
   @When(Events.BULLET_HIT)
   public void onBulletHit(BulletHitEvent event) {
     // removes the last target registry because if the bullet hits the target, its energy
     // will drop a bit and may cause a wrong interpretation of a bullet being fired
-    if(lastEnemy != null && event.getName().equals(lastEnemy.name())) {
+    if (lastEnemy != null && event.getName().equals(lastEnemy.name())) {
       lastEnemy = null;
     }
   }

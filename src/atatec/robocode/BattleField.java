@@ -82,10 +82,10 @@ public class BattleField implements Field {
 
   @Override
   public boolean isOnField(Point p) {
-    return p.x() < 0
+    return !(p.x() < 0
       || p.y() < 0
       || p.x() > width
-      || p.y() > height;
+      || p.y() > height);
   }
 
   @Override

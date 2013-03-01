@@ -21,25 +21,20 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.condition;
+package atatec.robocode.parts.aiming;
 
+import atatec.robocode.Bot;
 import atatec.robocode.Enemy;
-import atatec.robocode.parts.Radar;
+import atatec.robocode.calc.Angle;
 
 /** @author Marcelo Guimarães */
-public abstract class TargetCondition implements Condition {
+public interface PatternCodec {
 
-  private final Radar radar;
+  char encode(Enemy enemy);
 
-  public TargetCondition(Radar radar) {
-    this.radar = radar;
-  }
-
-  @Override
-  public boolean evaluate() {
-    return radar.hasLockedTarget() && evaluate(radar.target());
-  }
-
-  protected abstract boolean evaluate(Enemy enemy);
+  Angle calculateTurnAngle(Bot bot,
+                           Enemy target,
+                           StringBuilder history,
+                           int matchIndex, int endIndex);
 
 }

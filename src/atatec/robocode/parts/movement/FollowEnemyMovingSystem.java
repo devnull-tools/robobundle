@@ -46,7 +46,7 @@ public class FollowEnemyMovingSystem implements MovingSystem {
 
   public void execute() {
     double ahead = MOVEMENT_LENGTH * random();
-    Enemy target = bot.radar().locked();
+    Enemy target = bot.radar().target();
     if (target != null) {
       bot.body().moveAndTurn(ahead, target.bearing().plus(Angle.inDegrees(22.5)));
     }

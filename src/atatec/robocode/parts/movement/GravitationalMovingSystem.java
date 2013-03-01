@@ -84,7 +84,7 @@ public class GravitationalMovingSystem implements MovingSystem {
       GravityPoint point = temporaryGravityPoint.pull();
       if (temporaryGravityPoint.expired()) {
         iterator.remove();
-      } else {
+      } else if (!temporaryGravityPoint.delayed()) {
         gPoints.add(point);
       }
     }
@@ -121,7 +121,7 @@ public class GravitationalMovingSystem implements MovingSystem {
   @When(Events.DRAW)
   public void drawTemporaryGravityPoints(Drawer drawer) {
     for (TemporaryGravityPoint temporaryPoint : temporaryPoints) {
-      if (!temporaryPoint.expired()) {
+      if (!temporaryPoint.expired() && !temporaryPoint.delayed()) {
         drawer.draw(Color.ORANGE).cross().at(temporaryPoint.point());
       }
     }

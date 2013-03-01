@@ -50,7 +50,7 @@ public class PredictionAimingSystem implements AimingSystem {
     double bulletSpeed = Rules.getBulletSpeed(bot.gun().power());
     Point botLocation = bot.location();
     if (bot.radar().hasLockedTarget()) {
-      Enemy enemy = bot.radar().locked();
+      Enemy enemy = bot.radar().target();
       Angle enemyHeading = enemy.heading();
       double enemyVelocity = enemy.velocity();
 
@@ -63,7 +63,7 @@ public class PredictionAimingSystem implements AimingSystem {
           enemyHeading.cos() * enemyVelocity
         ));
         // check bounds
-        if (battleField.isOnField(predictedLocation)) {
+        if (!battleField.isOnField(predictedLocation)) {
           // out of bounds
           predictedLocation = battleField.normalize(predictedLocation);
           break;

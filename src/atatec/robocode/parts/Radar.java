@@ -32,7 +32,7 @@ import java.util.Collection;
 /** @author Marcelo Guimarães */
 public interface Radar extends Part {
 
-  Enemy locked();
+  Enemy target();
 
   void lock(Enemy enemy);
 

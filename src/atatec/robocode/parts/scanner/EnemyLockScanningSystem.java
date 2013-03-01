@@ -88,7 +88,7 @@ public class EnemyLockScanningSystem implements ScanningSystem {
   @When(ROBOT_DEATH)
   public void onRobotDeath(RobotDeathEvent event) {
     if (bot.radar().hasLockedTarget()) {
-      if (event.getName().equals(bot.radar().locked().name())) {
+      if (event.getName().equals(bot.radar().target().name())) {
         changeTarget();
       }
     }
@@ -111,7 +111,7 @@ public class EnemyLockScanningSystem implements ScanningSystem {
       }
     } else if (bot.radar().hasLockedTarget()) {
       // locks the target if is the same last seen
-      return bot.radar().locked().name().equals(bot.radar().lastSeenEnemy().name());
+      return bot.radar().target().name().equals(bot.radar().lastSeenEnemy().name());
     }
     //always lock if there is no condition
     return lockConditions.isEmpty();

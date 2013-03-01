@@ -25,6 +25,12 @@ package atatec.robocode.condition;
 
 import atatec.robocode.Bot;
 import atatec.robocode.Enemy;
+import atatec.robocode.annotation.When;
+import atatec.robocode.event.Events;
+import atatec.robocode.util.Drawer;
+
+import java.awt.Color;
+import java.util.Collection;
 
 /** @author Marcelo Guimarães */
 public class StrengthBasedLockCondition implements LockCondition {
@@ -41,10 +47,19 @@ public class StrengthBasedLockCondition implements LockCondition {
   public boolean canLock(Enemy enemy) {
     if (bot.radar().hasLockedTarget()) {
       double lastSeenStr = strengthFunction.eval(enemy);
-      double lockedStr = strengthFunction.eval(bot.radar().locked());
+      double lockedStr = strengthFunction.eval(bot.radar().target());
       return lastSeenStr < lockedStr;
     }
     return true;
+  }
+
+  @When(Events.DRAW)
+  public void drawStrength(Drawer drawer) {
+    Collection<Enemy> enemies = bot.radar().knownEnemies();
+    for (Enemy enemy : enemies) {
+      drawer.draw(Color.LIGHT_GRAY
+      ).string("%.4f", strengthFunction.eval(enemy)).at(enemy.location());
+    }
   }
 
 }

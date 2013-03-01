@@ -32,6 +32,8 @@ import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
+import atatec.robocode.event.TargetLockedEvent;
+import atatec.robocode.event.TargetUnlockedEvent;
 import atatec.robocode.parts.BasePart;
 import atatec.robocode.parts.DefaultConditionalCommand;
 import atatec.robocode.parts.Radar;
@@ -97,7 +99,7 @@ public class DefaultRadar extends BasePart implements Radar {
     scanningSystem.execute();
   }
 
-  public Enemy locked() {
+  public Enemy target() {
     return target;
   }
 
@@ -115,12 +117,13 @@ public class DefaultRadar extends BasePart implements Radar {
 
   public void lock(Enemy e) {
     this.target = e;
+    this.bot.events().send(Events.TARGET_LOCKED, new TargetLockedEvent(target));
   }
 
   @Override
   public void unlock() {
     this.target = null;
-    this.bot.events().send(Events.TARGET_UNLOCKED);
+    this.bot.events().send(Events.TARGET_UNLOCKED, new TargetUnlockedEvent(target));
   }
 
   @Override

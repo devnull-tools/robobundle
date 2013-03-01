@@ -27,11 +27,17 @@ package atatec.robocode.calc;
 public class TemporaryGravityPoint {
 
   private int duration;
+  private int delay = 0;
   private GravityPoint point;
 
   public TemporaryGravityPoint(GravityPoint point, int duration) {
     this.duration = duration;
     this.point = point;
+  }
+
+  public TemporaryGravityPoint delay(int turns) {
+    this.delay = turns;
+    return this;
   }
 
   public GravityPoint point() {
@@ -42,7 +48,14 @@ public class TemporaryGravityPoint {
     return duration;
   }
 
+  public boolean delayed() {
+    return delay > 0;
+  }
+
   public GravityPoint pull() {
+    if (--delay > 0) {
+      return new GravityPoint(point(), 0);
+    }
     duration--;
     return point;
   }

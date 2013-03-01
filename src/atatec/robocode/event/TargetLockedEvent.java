@@ -21,25 +21,21 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.condition;
+package atatec.robocode.event;
 
 import atatec.robocode.Enemy;
-import atatec.robocode.parts.Radar;
 
 /** @author Marcelo Guimarães */
-public abstract class TargetCondition implements Condition {
+public class TargetLockedEvent {
+  
+  private final Enemy target;
 
-  private final Radar radar;
-
-  public TargetCondition(Radar radar) {
-    this.radar = radar;
+  public TargetLockedEvent(Enemy target) {
+    this.target = target;
   }
-
-  @Override
-  public boolean evaluate() {
-    return radar.hasLockedTarget() && evaluate(radar.target());
+  
+  public Enemy target(){
+    return target;
   }
-
-  protected abstract boolean evaluate(Enemy enemy);
-
+  
 }

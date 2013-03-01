@@ -21,25 +21,48 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.condition;
+package atatec.robocode.calc;
 
-import atatec.robocode.Enemy;
-import atatec.robocode.parts.Radar;
+import atatec.robocode.Field;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** @author Marcelo Guimarães */
-public abstract class TargetCondition implements Condition {
+public class BulletTrajectory {
 
-  private final Radar radar;
+  private final Field battleField;
+  private Point from;
+  private double distanceBetweenPoints = 5;
 
-  public TargetCondition(Radar radar) {
-    this.radar = radar;
+  public BulletTrajectory(Field battleField) {
+    this.battleField = battleField;
   }
 
-  @Override
-  public boolean evaluate() {
-    return radar.hasLockedTarget() && evaluate(radar.target());
+  public BulletTrajectory from(Point from) {
+    this.from = from;
+    return this;
   }
 
-  protected abstract boolean evaluate(Enemy enemy);
+  public BulletTrajectory distancing(double distanceBetweenPoints) {
+    this.distanceBetweenPoints = distanceBetweenPoints;
+    return this;
+  }
+
+  public List<Point> to(Point target) {
+    Position bearing = from.bearingTo(target);
+    List<Point> points = new ArrayList<Point>(100);
+    points.add(from);
+    Point point = from;
+    while (battleField.isOnField(point)) {
+      point = new Point(
+        point.x() + distanceBetweenPoints * bearing.angle().absolute().sin(),
+        point.y() + distanceBetweenPoints * bearing.angle().absolute().cos()
+      );
+      points.add(point);
+    }
+
+    return points;
+  }
 
 }

@@ -45,7 +45,7 @@ public class FleeEnemyMovingSystem implements MovingSystem {
   }
 
   public void execute() {
-    Enemy target = bot.radar().locked();
+    Enemy target = bot.radar().target();
     if (target != null) {
       double distance = MOVEMENT_LENGTH * random();
       Angle angle = target.bearing().plus(Angle.inDegrees(22.5));
