@@ -32,6 +32,7 @@ import atatec.robocode.event.Events;
 import atatec.robocode.event.TargetLockedEvent;
 import atatec.robocode.event.TargetUnlockedEvent;
 import robocode.BulletHitEvent;
+import robocode.Rules;
 
 /** @author Marcelo Guimarães */
 public class Dodger {
@@ -67,9 +68,11 @@ public class Dodger {
   }
 
   private void checkFire(Enemy enemy, Enemy lastSeen) {
-    if (lastSeen.energy() > enemy.energy()) { //assumes a bullet fired
+    double bulletPower = lastSeen.energy() - enemy.energy();
+    //assumes a bullet fired based on the energy differences
+    if (bulletPower >= Rules.MIN_BULLET_POWER && bulletPower <= Rules.MAX_BULLET_POWER) {
       bot.events().send(
-        Events.ENEMY_FIRE, new EnemyFireEvent(enemy, lastSeen.energy() - enemy.energy())
+        Events.ENEMY_FIRE, new EnemyFireEvent(enemy, bulletPower)
       );
     }
   }

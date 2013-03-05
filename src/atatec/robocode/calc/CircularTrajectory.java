@@ -21,20 +21,52 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.parts.aiming;
+package atatec.robocode.calc;
 
-import atatec.robocode.Bot;
-import atatec.robocode.Enemy;
-import atatec.robocode.calc.Angle;
+import java.util.ArrayList;
+import java.util.List;
 
 /** @author Marcelo Guimarães */
-public interface PatternCodec {
+public class CircularTrajectory {
 
-  char encode(Enemy enemy);
+  private Point center;
+  private int direction = 1;
+  private double distanceBetweenPoints = 5;
 
-  Angle calculateTurnAngle(Bot bot,
-                           Enemy target,
-                           StringBuilder history,
-                           int matchIndex, int endIndex);
+  public CircularTrajectory() {
+  }
+
+  public CircularTrajectory at(Point origin) {
+    this.center = origin;
+    return this;
+  }
+
+  public CircularTrajectory reversed() {
+    this.direction = -1;
+    return this;
+  }
+
+  public CircularTrajectory distancing(double distance) {
+    this.distanceBetweenPoints = distance;
+    return this;
+  }
+
+  public List<Point> from(Point from) {
+    List<Point> points = new ArrayList<Point>(100);
+    points.add(from);
+    double radius = center.distanceTo(from);
+    Angle t = center.bearingTo(from).angle();
+    double perimeter = Math.PI * 2 * radius;
+    int numberOfPoints = (int) (perimeter / distanceBetweenPoints);
+    double angleStep = direction * (Math.PI * 2) / numberOfPoints;
+    while (--numberOfPoints > 0) {
+      points.add(new Point(
+        center.x() + (radius * t.sin()),
+        center.y() + (radius * t.cos())
+      ));
+      t = t.plus(angleStep);
+    }
+    return points;
+  }
 
 }

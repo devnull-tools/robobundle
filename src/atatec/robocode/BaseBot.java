@@ -284,8 +284,9 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   }
 
   @Override
-  public final void plug(Object behaviour) {
-    eventRegistry.register(behaviour);
+  public final <E> E plug(E plugin) {
+    eventRegistry.register(plugin);
+    return plugin;
   }
 
 }

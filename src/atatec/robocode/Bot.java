@@ -96,9 +96,11 @@ public interface Bot {
    * Plugs a component that will listen to events through methods annotated with {@link
    * atatec.robocode.annotation.When}
    *
+   * @return the given plugin
+   *
    * @see #events()
    */
-  void plug(Object plugin);
+  <E> E plug(E plugin);
 
   /**
    * Returns the event registry for registering listeners and sending events.

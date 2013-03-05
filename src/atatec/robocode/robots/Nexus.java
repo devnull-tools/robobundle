@@ -134,15 +134,13 @@ public class Nexus extends BaseBot {
         .fireMaxAt(80)
         .fireMinAt(30));
 
-    StrengthBasedLockCondition weakestEnemy = new StrengthBasedLockCondition(this, enemyStrength);
-
     radar().forScanning()
       .use(new EnemyLockScanningSystem(this))
       .when(conditions.radar().headToHeadBattle())
 
       .use(new EnemyLockScanningSystem(this)
         .scanBattleField()
-        .addLockCondition(weakestEnemy)
+        .addLockCondition(plug(new StrengthBasedLockCondition(this, enemyStrength)))
       )
       .inOtherCases();
 
@@ -155,7 +153,6 @@ public class Nexus extends BaseBot {
     plug(new EnemyScannerInfo(this));
     plug(enemyTracker);
     plug(statistics());
-    plug(weakestEnemy);
 
     plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()
