@@ -46,7 +46,6 @@ import atatec.robocode.plugin.BulletStatistics;
 import atatec.robocode.plugin.Dodger;
 import atatec.robocode.plugin.EnemyScannerInfo;
 import atatec.robocode.plugin.EnemyTracker;
-import atatec.robocode.util.GravityPointBuilder;
 import robocode.HitRobotEvent;
 import robocode.HitWallEvent;
 
@@ -162,13 +161,6 @@ public class Nexus extends BaseBot {
 
   @When(HIT_BY_BULLET)
   public void hitByBullet() {
-    events().send(ADD_GRAVITY_POINT,
-      GravityPointBuilder
-        .antiGravityPoint()
-        .at(location())
-        .strong()
-        .during(10)
-    );
     if (++hitsByBullet == hitByBulletUntilUnlock) {
       radar().unset();
       hitsByBullet = 0;
@@ -297,15 +289,15 @@ public class Nexus extends BaseBot {
   }
 
   @When(NEAR_TO_WALL)
-  public void avoidWall(Point wallPoint) {
+  public void onNearToWall(Point wallPoint) {
     events().send(ADD_GRAVITY_POINT,
       wallPoint.antiGravitational()
-        .strong()
+        .withValue(1000)
         .during(1)
     );
     events().send(ADD_GRAVITY_POINT,
       radar().battleField().center().gravitational()
-        .normal()
+        .withValue(1000)
         .during(1)
     );
   }
