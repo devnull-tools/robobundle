@@ -37,7 +37,7 @@ import java.util.List;
 
 import static atatec.robocode.event.Events.ENEMY_SCANNED;
 import static atatec.robocode.event.Events.ROBOT_DEATH;
-import static atatec.robocode.event.Events.TARGET_UNLOCKED;
+import static atatec.robocode.event.Events.TARGET_UNSET;
 
 /** @author Marcelo Guimarães */
 public class EnemyLockScanningSystem implements ScanningSystem {
@@ -76,7 +76,7 @@ public class EnemyLockScanningSystem implements ScanningSystem {
     bot.log("Enemy spotted at %s", enemy.position());
     if (canLock(enemy)) {
       bot.log("Locking %s", enemy.name());
-      bot.radar().lock(enemy);
+      bot.radar().set(enemy);
       changeTarget = false;
     }
     if (!scanBattleField) {
@@ -87,18 +87,18 @@ public class EnemyLockScanningSystem implements ScanningSystem {
 
   @When(ROBOT_DEATH)
   public void onRobotDeath(RobotDeathEvent event) {
-    if (bot.radar().hasLockedTarget()) {
+    if (bot.radar().hasTargetSet()) {
       if (event.getName().equals(bot.radar().target().name())) {
         changeTarget();
       }
     }
   }
 
-  @When(TARGET_UNLOCKED)
+  @When(TARGET_UNSET)
   public void changeTarget() {
     changeTarget = true;
-    if (bot.radar().hasLockedTarget()) {
-      bot.radar().unlock();
+    if (bot.radar().hasTargetSet()) {
+      bot.radar().unset();
     }
   }
 
@@ -109,7 +109,7 @@ public class EnemyLockScanningSystem implements ScanningSystem {
           return true;
         }
       }
-    } else if (bot.radar().hasLockedTarget()) {
+    } else if (bot.radar().hasTargetSet()) {
       // locks the target if is the same last seen
       return bot.radar().target().name().equals(bot.radar().lastSeenEnemy().name());
     }

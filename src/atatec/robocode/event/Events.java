@@ -47,8 +47,9 @@ public final class Events {
   public static final String NEAR_TO_WALL = "NEAR_TO_WALL";
   public static final String NEAR_TO_ENEMY = "NEAR_TO_ENEMY";
   public static final String BULLET_NOT_FIRED = "BULLET_NOT_FIRED";
-  public static final String TARGET_UNLOCKED = "TARGET_UNLOCKED";
-  public static final String TARGET_LOCKED = "TARGET_LOCKED";
+  public static final String TARGET_UNSET = "TARGET_UNSET";
+  public static final String TARGET_SET = "TARGET_SET";
+  public static final String GUN_AIMED = "GUN_AIMED"; //gun aimed successfully
 
   private Events() {
   }

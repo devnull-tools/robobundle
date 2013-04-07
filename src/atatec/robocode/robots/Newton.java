@@ -69,7 +69,7 @@ public class Newton extends BaseBot {
   }
 
   protected void onNextTurn() {
-    gun().aim().fireIfTargetLocked();
+    gun().aim().fireIfTargetSet();
     radar().scan();
   }
 

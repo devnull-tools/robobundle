@@ -44,7 +44,7 @@ public class EnemyCircleMovingSystem implements MovingSystem {
 
   public void execute() {
     double ahead = cos(bot.radar().time() >> 4) * MOVEMENT_LENGTH * random();
-    if (bot.radar().hasLockedTarget()) {
+    if (bot.radar().hasTargetSet()) {
       Enemy enemy = bot.radar().target();
       Angle heading = bot.body().heading();
       Angle angle = enemy.bearing().plus(Angle.PI_OVER_TWO);

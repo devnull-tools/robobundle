@@ -53,7 +53,7 @@ public interface Gun extends Part {
 
   Gun aim();
 
-  void fireIfTargetLocked();
+  void fireIfTargetSet();
 
   void fireIf(Condition condition);
 

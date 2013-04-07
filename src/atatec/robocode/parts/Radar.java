@@ -34,13 +34,13 @@ public interface Radar extends Part {
 
   Enemy target();
 
-  void lock(Enemy enemy);
+  void set(Enemy enemy);
 
-  void unlock();
+  void unset();
 
   Enemy lastSeenEnemy();
 
-  boolean hasLockedTarget();
+  boolean hasTargetSet();
 
   Collection<Enemy> knownEnemies();
 

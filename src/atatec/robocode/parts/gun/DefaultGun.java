@@ -29,6 +29,8 @@ import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.condition.Condition;
 import atatec.robocode.condition.RadarConditions;
+import atatec.robocode.event.Events;
+import atatec.robocode.exception.SystemException;
 import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.parts.BasePart;
 import atatec.robocode.parts.DefaultConditionalCommand;
@@ -64,13 +66,18 @@ public class DefaultGun extends BasePart implements Gun {
   }
 
   public Gun aim() {
-    aimingSystem.execute();
+    try {
+      aimingSystem.execute();
+      bot.events().send(Events.GUN_AIMED);
+    } catch (SystemException e) {
+      bot.log(e);
+    }
     return this;
   }
 
   @Override
-  public void fireIfTargetLocked() {
-    fireIf(new RadarConditions(bot.radar()).hasLockedTarget());
+  public void fireIfTargetSet() {
+    fireIf(new RadarConditions(bot.radar()).hasTargetSet());
   }
 
   @Override

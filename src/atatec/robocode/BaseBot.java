@@ -94,11 +94,16 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   private static Map<String, Storage> persistentStorage =
     new ConcurrentHashMap<String, Storage>();
 
-  /** Initializes {@link Gun}, {@link Radar} and {@link Body} */
-  protected void initializeParts() {
-    this.gun = new DefaultGun(this);
-    this.body = new DefaultBody(this);
-    this.radar = new DefaultRadar(this);
+  protected Gun createGun() {
+    return new DefaultGun(this);
+  }
+
+  protected Body createBody() {
+    return new DefaultBody(this);
+  }
+
+  protected Radar createRadar() {
+    return new DefaultRadar(this);
   }
 
   /** Configures the bot behaviours. All configuration must be done here. */
@@ -107,9 +112,9 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   /**
    * Sets up the bot and put it to battle.
    * <p/>
-   * Every part is adjusted to turn independently, than the {@link #initializeParts()} is
-   * called. After it, the bot parts and the bot itself are {@link #plug(Object)
-   * registered} and the {@link #configure()} method is called.
+   * Every part is adjusted to turn independently. After that, the bot parts and the bot
+   * itself are {@link #plug(Object) registered} and the {@link #configure()} method is
+   * called.
    * <p/>
    * When the configuration is done, a {@link atatec.robocode.event.Events#ROUND_STARTED}
    * event is send and the {@link #onRoundStarted()} is called.
@@ -123,7 +128,9 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
       persistentStorage.put(getName(), new DefaultStorage());
     }
 
-    initializeParts();
+    this.gun = createGun();
+    this.body = createBody();
+    this.radar = createRadar();
 
     events().register(body);
     events().register(gun);
@@ -216,8 +223,10 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   @Override
   public final void onScannedRobot(ScannedRobotEvent event) {
-    eventRegistry.send(ENEMY_SCANNED, new EnemyScannedEvent(this, event));
+    ScannedEnemy enemy = new ScannedEnemy(this, event);
+    eventRegistry.send(ENEMY_SCANNED, enemy);
     eventRegistry.send(ENEMY_SCANNED, event);
+    eventRegistry.send(ENEMY_SCANNED, new EnemyScannedEvent(enemy));
   }
 
   @Override

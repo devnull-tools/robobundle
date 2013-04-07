@@ -49,7 +49,7 @@ public class PredictionAimingSystem implements AimingSystem {
   public void execute() {
     double bulletSpeed = Rules.getBulletSpeed(bot.gun().power());
     Point botLocation = bot.location();
-    if (bot.radar().hasLockedTarget()) {
+    if (bot.radar().hasTargetSet()) {
       Enemy enemy = bot.radar().target();
       Angle enemyHeading = enemy.heading();
       double enemyVelocity = enemy.velocity();

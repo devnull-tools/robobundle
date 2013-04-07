@@ -45,9 +45,9 @@ public class StrengthBasedLockCondition implements LockCondition {
 
   @Override
   public boolean canLock(Enemy enemy) {
-    if (bot.radar().hasLockedTarget()) {
-      double lastSeenStr = strengthFunction.eval(enemy);
-      double lockedStr = strengthFunction.eval(bot.radar().target());
+    if (bot.radar().hasTargetSet()) {
+      double lastSeenStr = strengthFunction.evaluate(enemy);
+      double lockedStr = strengthFunction.evaluate(bot.radar().target());
       return lastSeenStr < lockedStr;
     }
     return true;
@@ -58,7 +58,7 @@ public class StrengthBasedLockCondition implements LockCondition {
     Collection<Enemy> enemies = bot.radar().knownEnemies();
     for (Enemy enemy : enemies) {
       drawer.draw(Color.LIGHT_GRAY
-      ).string("%.4f", strengthFunction.eval(enemy)).at(enemy.location());
+      ).string("%.4f", strengthFunction.evaluate(enemy)).at(enemy.location());
     }
   }
 

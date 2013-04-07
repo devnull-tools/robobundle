@@ -21,21 +21,24 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.event;
-
-import atatec.robocode.Enemy;
+package atatec.robocode.exception;
 
 /** @author Marcelo Guimarães */
-public class TargetUnlockedEvent {
+public class AimException extends SystemException {
 
-  private final Enemy target;
-
-  public TargetUnlockedEvent(Enemy target) {
-    this.target = target;
+  public AimException() {
   }
 
-  public Enemy target() {
-    return target;
+  public AimException(String message) {
+    super(message);
+  }
+
+  public AimException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  public AimException(Throwable cause) {
+    super(cause);
   }
 
 }

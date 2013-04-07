@@ -27,44 +27,32 @@ import atatec.robocode.Bot;
 import atatec.robocode.Enemy;
 import atatec.robocode.annotation.When;
 import atatec.robocode.event.EnemyFireEvent;
-import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
-import atatec.robocode.event.TargetLockedEvent;
-import atatec.robocode.event.TargetUnlockedEvent;
 import robocode.BulletHitEvent;
 import robocode.Rules;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** @author Marcelo Guimarães */
 public class Dodger {
 
   private final Bot bot;
 
-  private Enemy target;
-  private Enemy lastEnemy;
+  private final Map<String, Enemy> energyMap;
 
   public Dodger(Bot bot) {
     this.bot = bot;
-  }
-
-  @When(Events.TARGET_LOCKED)
-  public void onTargetLocked(TargetLockedEvent event) {
-    target = event.target();
-  }
-
-  @When(Events.TARGET_UNLOCKED)
-  public void onTargetOnlocked(TargetUnlockedEvent event) {
-    target = null;
+    this.energyMap = new HashMap<String, Enemy>();
   }
 
   @When(Events.ENEMY_SCANNED)
-  public void onEnemyScanned(EnemyScannedEvent event) {
-    Enemy enemy = event.enemy();
-    if (lastEnemy != null && lastEnemy.name().equals(enemy.name())) {
-      checkFire(enemy, lastEnemy);
-    } else if (target != null && enemy.name().equals(target.name())) {
-      checkFire(enemy, target);
+  public void onEnemyScanned(Enemy enemy) {
+    String name = enemy.name();
+    if (energyMap.containsKey(name)) {
+      checkFire(enemy, energyMap.get(name));
     }
-    lastEnemy = enemy;
+    energyMap.put(name, enemy);
   }
 
   private void checkFire(Enemy enemy, Enemy lastSeen) {
@@ -81,9 +69,7 @@ public class Dodger {
   public void onBulletHit(BulletHitEvent event) {
     // removes the last target registry because if the bullet hits the target, its energy
     // will drop a bit and may cause a wrong interpretation of a bullet being fired
-    if (lastEnemy != null && event.getName().equals(lastEnemy.name())) {
-      lastEnemy = null;
-    }
+    energyMap.remove(event.getName());
   }
 
 }

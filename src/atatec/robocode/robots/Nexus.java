@@ -51,8 +51,10 @@ import robocode.HitRobotEvent;
 import robocode.HitWallEvent;
 
 import java.awt.Color;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static atatec.robocode.event.Events.BULLET_FIRED;
@@ -62,13 +64,14 @@ import static atatec.robocode.event.Events.BULLET_MISSED;
 import static atatec.robocode.event.Events.BULLET_NOT_FIRED;
 import static atatec.robocode.event.Events.ENEMY_FIRE;
 import static atatec.robocode.event.Events.ENEMY_SCANNED;
+import static atatec.robocode.event.Events.GUN_AIMED;
 import static atatec.robocode.event.Events.HIT_BY_BULLET;
 import static atatec.robocode.event.Events.HIT_ROBOT;
 import static atatec.robocode.event.Events.HIT_WALL;
 import static atatec.robocode.event.Events.NEAR_TO_ENEMY;
 import static atatec.robocode.event.Events.NEAR_TO_WALL;
 import static atatec.robocode.event.Events.ROUND_STARTED;
-import static atatec.robocode.event.Events.TARGET_UNLOCKED;
+import static atatec.robocode.event.Events.TARGET_UNSET;
 import static atatec.robocode.parts.movement.GravitationalMovingSystem.ADD_GRAVITY_POINT;
 import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
@@ -85,9 +88,9 @@ public class Nexus extends BaseBot {
 
   private int maxMissesInARow = 5;
 
-  private double avoidingPower = 2500;
+  private double avoidingPower = 250;
 
-  private int movementLength = 10;
+  private int movementLength = 5;
 
   private EnemyTracker enemyTracker = new EnemyTracker(this, 150);
 
@@ -95,23 +98,18 @@ public class Nexus extends BaseBot {
 
   private Function<Enemy, Double> enemyStrength = new Function<Enemy, Double>() {
     @Override
-    public Double eval(Enemy enemy) {
-      double patternStr = 1.0;
-      List<Enemy> history = enemyTracker.historyFor(enemy).fromOldest();
-      Enemy last = null;
-      Point location = location();
-      for (Enemy hist : history) {
-        if (last != null) {
-          //when enemy is stopped, the patterStr will not be increased
-          patternStr += location.angleOfView(hist.location(), last.location()).radians()
-            * Math.abs(hist.distance() - last.distance());
-        }
-        last = hist;
-      }
-      return (2 - statistics().of(enemy).accuracy()) + Math.pow(statistics().of(enemy).taken(), 2)
-        * (patternStr * enemy.energy() * Math.pow(enemy.distance(), 2));
+    public Double evaluate(Enemy enemy) {
+      return strengthMap().get(enemy.name());
     }
   };
+
+  private Map<String, Double> strengthMap() {
+    String entryName = "strength";
+    if (!storage().hasValueFor(entryName)) {
+      storage().store(entryName, new HashMap<String, Double>());
+    }
+    return storage().retrieve(entryName);
+  }
 
   private BulletStatistics statistics() {
     String entryName = "statistics";
@@ -168,11 +166,11 @@ public class Nexus extends BaseBot {
       GravityPointBuilder
         .antiGravityPoint()
         .at(location())
-        .withValue(300)
+        .strong()
         .during(10)
     );
     if (++hitsByBullet == hitByBulletUntilUnlock) {
-      radar().unlock();
+      radar().unset();
       hitsByBullet = 0;
     }
   }
@@ -182,15 +180,15 @@ public class Nexus extends BaseBot {
   @When(ENEMY_SCANNED)
   public void enemyScanned(EnemyScannedEvent event) {
     if (enemies < radar().enemiesCount()) {
-      radar().unlock();
+      radar().unset();
     }
     enemies = radar().enemiesCount();
     if (event.enemy().energy() < 10) {
-      radar().lock(event.enemy());
+      radar().set(event.enemy());
     }
   }
 
-  @When(TARGET_UNLOCKED)
+  @When(TARGET_UNSET)
   public void resetEnemyCount() {
     enemies = 0;
   }
@@ -209,7 +207,7 @@ public class Nexus extends BaseBot {
       events().send(ADD_GRAVITY_POINT,
         antiGravityPoint()
           .at(bulletTrajectory.get(i))
-          .withValue(200)
+          .normal()
           .during(duration)
           .delay(delay++)
       );
@@ -229,7 +227,7 @@ public class Nexus extends BaseBot {
     events().send(ADD_GRAVITY_POINT,
       antiGravityPoint()
         .at(point)
-        .withValue(avoidingPower)
+        .strong()
         .during(5)
     );
   }
@@ -239,7 +237,7 @@ public class Nexus extends BaseBot {
     events().send(ADD_GRAVITY_POINT,
       antiGravityPoint()
         .at(enemy.location())
-        .withValue(avoidingPower)
+        .strong()
         .during(2)
     );
   }
@@ -250,7 +248,7 @@ public class Nexus extends BaseBot {
     events().send(ADD_GRAVITY_POINT,
       gravityPoint()
         .at(battleField.closestWallPointTo(location()))
-        .withValue(2000)
+        .strong()
         .during(10)
     );
   }
@@ -261,7 +259,7 @@ public class Nexus extends BaseBot {
     events().send(ADD_GRAVITY_POINT,
       field.center()
         .antiGravitational()
-        .withValue(field.diagonal() / 2)
+        .normal()
     );
   }
 
@@ -293,7 +291,7 @@ public class Nexus extends BaseBot {
 
     for (Point wallPoint : wallPoints) {
       events().send(ADD_GRAVITY_POINT,
-        wallPoint.antiGravitational().withValue(battleField.diagonal() / 2)
+        wallPoint.antiGravitational().strong()
       );
     }
   }
@@ -302,7 +300,12 @@ public class Nexus extends BaseBot {
   public void avoidWall(Point wallPoint) {
     events().send(ADD_GRAVITY_POINT,
       wallPoint.antiGravitational()
-        .withValue(avoidingPower)
+        .strong()
+        .during(1)
+    );
+    events().send(ADD_GRAVITY_POINT,
+      radar().battleField().center().gravitational()
+        .normal()
         .during(1)
     );
   }
@@ -313,7 +316,12 @@ public class Nexus extends BaseBot {
     addMovementPoints();
     radar().scan();
     body().move();
-    gun().aim().fireIfTargetLocked();
+    gun().aim();
+  }
+
+  @When(GUN_AIMED)
+  public void gunAimed() {
+    gun().fire();
   }
 
   private int fireSkip = 0;
@@ -321,7 +329,7 @@ public class Nexus extends BaseBot {
   @When(BULLET_NOT_FIRED)
   public void registerBulletNotFired() {
     if (++fireSkip > fireSkipToChangeTarget && !radar().isHeadToHead()) {
-      radar().unlock();
+      radar().unset();
     }
   }
 
@@ -330,22 +338,38 @@ public class Nexus extends BaseBot {
     fireSkip = 0;
   }
 
+  @When(ENEMY_SCANNED)
+  public void calculateEnemyStrength(EnemyScannedEvent event) {
+    Enemy enemy = event.enemy();
+    double patternStr = 1.0;
+    List<Enemy> history = enemyTracker.historyFor(enemy).fromOldest();
+    for (Enemy hist : history) {
+      //when enemy is stopped, the patternStr will not be increased
+      patternStr += hist.lateralVelocity();
+    }
+
+    patternStr = Math.abs(patternStr);
+
+    double strength = (2 - statistics().of(enemy).accuracy()) + Math.pow(statistics().of(enemy).taken(), 2)
+      * (patternStr * enemy.energy() * Math.pow(enemy.distance(), 2));
+
+    strengthMap().put(enemy.name(), strength);
+  }
+
   private void addEnemyPoints() {
     for (Enemy enemy : radar().knownEnemies()) {
       GravityPoint point;
-      if (enemy.equals(radar().target()) && getEnergy() > enemy.energy()) {
-        point = enemy.location().gravitational().withValue(enemy.distance());
-      } else {
-        point = enemy.location().antiGravitational().withValue(-enemy.distance());
-      }
       events().send(ADD_GRAVITY_POINT,
-        point.during(1)
+        enemy.location()
+          .antiGravitational()
+          .normal()
+          .during(1)
       );
     }
   }
 
   private void addMovementPoints() {
-    if (radar().hasLockedTarget()) {
+    if (radar().hasTargetSet()) {
       Enemy target = radar().target();
       double radius = target.distance();
       double perimeter = Math.PI * 2 * radius;
@@ -358,7 +382,7 @@ public class Nexus extends BaseBot {
       );
       events().send(ADD_GRAVITY_POINT,
         movementPoint.gravitational()
-          .withValue(1000)
+          .normal()
           .during(1)
       );
     }
@@ -374,7 +398,7 @@ public class Nexus extends BaseBot {
   @When(BULLET_MISSED)
   public void miss() {
     if (misses++ > maxMissesInARow && !radar().isHeadToHead()) {
-      radar().unlock();
+      radar().unset();
       misses = 0;
     }
   }

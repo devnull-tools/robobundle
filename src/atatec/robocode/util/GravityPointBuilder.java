@@ -29,6 +29,10 @@ import atatec.robocode.calc.Point;
 /** @author Marcelo Guimarães */
 public class GravityPointBuilder {
 
+  private static double WEAK_VALUE = 10;
+  private static double NORMAL_VALUE = 30;
+  private static double STRONG_VALUE = 60;
+
   private Point point;
   private int mod;
 
@@ -39,6 +43,18 @@ public class GravityPointBuilder {
   public GravityPointBuilder at(Point point) {
     this.point = point;
     return this;
+  }
+
+  public GravityPoint weak() {
+    return withValue(WEAK_VALUE);
+  }
+
+  public GravityPoint normal() {
+    return withValue(NORMAL_VALUE);
+  }
+
+  public GravityPoint strong() {
+    return withValue(STRONG_VALUE);
   }
 
   public GravityPoint withValue(double value) {

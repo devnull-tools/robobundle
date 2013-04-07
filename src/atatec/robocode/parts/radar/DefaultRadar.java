@@ -32,8 +32,8 @@ import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
-import atatec.robocode.event.TargetLockedEvent;
-import atatec.robocode.event.TargetUnlockedEvent;
+import atatec.robocode.event.TargetSetEvent;
+import atatec.robocode.event.TargetUnsetEvent;
 import atatec.robocode.parts.BasePart;
 import atatec.robocode.parts.DefaultConditionalCommand;
 import atatec.robocode.parts.Radar;
@@ -107,7 +107,7 @@ public class DefaultRadar extends BasePart implements Radar {
     return lastSeen;
   }
 
-  public boolean hasLockedTarget() {
+  public boolean hasTargetSet() {
     return target != null;
   }
 
@@ -115,15 +115,15 @@ public class DefaultRadar extends BasePart implements Radar {
     return Collections.unmodifiableCollection(enemies.values());
   }
 
-  public void lock(Enemy e) {
+  public void set(Enemy e) {
     this.target = e;
-    this.bot.events().send(Events.TARGET_LOCKED, new TargetLockedEvent(target));
+    this.bot.events().send(Events.TARGET_SET, new TargetSetEvent(target));
   }
 
   @Override
-  public void unlock() {
+  public void unset() {
     this.target = null;
-    this.bot.events().send(Events.TARGET_UNLOCKED, new TargetUnlockedEvent(target));
+    this.bot.events().send(Events.TARGET_UNSET, new TargetUnsetEvent(target));
   }
 
   @Override

@@ -26,6 +26,6 @@ package atatec.robocode.condition;
 /** @author Marcelo Guimarães */
 public interface Function<Arg, Result> {
 
-  Result eval(Arg argument);
+  Result evaluate(Arg argument);
 
 }

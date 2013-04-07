@@ -125,7 +125,7 @@ public class EnemyTracker {
     return new Condition() {
       @Override
       public boolean evaluate() {
-        if (bot.radar().hasLockedTarget()) {
+        if (bot.radar().hasTargetSet()) {
           Enemy target = bot.radar().target();
           return isEnemyStopped(target);
         }

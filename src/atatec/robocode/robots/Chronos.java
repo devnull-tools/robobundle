@@ -84,7 +84,7 @@ public class Chronos extends BaseBot {
     log("***********************************");
     radar().scan();
     body().move();
-    gun().aim().fireIfTargetLocked();
+    gun().aim().fireIfTargetSet();
   }
 
 }

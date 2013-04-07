@@ -53,11 +53,11 @@ public class RadarConditions {
     };
   }
 
-  public Condition hasLockedTarget() {
+  public Condition hasTargetSet() {
     return new Condition() {
       @Override
       public boolean evaluate() {
-        return radar.hasLockedTarget();
+        return radar.hasTargetSet();
       }
     };
   }

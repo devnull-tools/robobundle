@@ -49,7 +49,11 @@ public interface Enemy {
 
   Angle bearing();
 
+  Angle absoluteBearing();
+
   double velocity();
+
+  double lateralVelocity();
 
   String name();
 

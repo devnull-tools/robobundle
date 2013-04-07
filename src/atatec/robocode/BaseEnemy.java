@@ -41,4 +41,9 @@ public abstract class BaseEnemy implements Enemy {
     return position().distance();
   }
 
+  @Override
+  public double lateralVelocity() {
+    return velocity() * heading().minus(absoluteBearing()).sin();
+  }
+
 }
