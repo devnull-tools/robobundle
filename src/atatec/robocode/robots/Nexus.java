@@ -29,7 +29,6 @@ import atatec.robocode.Field;
 import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.BulletTrajectory;
-import atatec.robocode.calc.GravityPoint;
 import atatec.robocode.calc.Point;
 import atatec.robocode.condition.BotConditions;
 import atatec.robocode.condition.Function;
@@ -186,7 +185,7 @@ public class Nexus extends BaseBot {
   }
 
   @When(ENEMY_FIRE)
-  public void enemyFire(EnemyFireEvent event) {
+  public void onEnemyFire(EnemyFireEvent event) {
     Enemy enemy = event.enemy();
     log("Enemy %s probably fired a bullet at %s. Adding anti-gravity pull.",
       enemy.name(), enemy.position());
@@ -199,7 +198,7 @@ public class Nexus extends BaseBot {
       events().send(ADD_GRAVITY_POINT,
         antiGravityPoint()
           .at(bulletTrajectory.get(i))
-          .normal()
+          .strong()
           .during(duration)
           .delay(delay++)
       );
@@ -342,15 +341,14 @@ public class Nexus extends BaseBot {
 
     patternStr = Math.abs(patternStr);
 
-    double strength = (2 - statistics().of(enemy).accuracy()) + Math.pow(statistics().of(enemy).taken(), 2)
-      * (patternStr * enemy.energy() * Math.pow(enemy.distance(), 2));
+    double strength = (2 - statistics().of(enemy).accuracy()) *
+      (patternStr * enemy.energy() + statistics().of(enemy).taken());
 
     strengthMap().put(enemy.name(), strength);
   }
 
   private void addEnemyPoints() {
     for (Enemy enemy : radar().knownEnemies()) {
-      GravityPoint point;
       events().send(ADD_GRAVITY_POINT,
         enemy.location()
           .antiGravitational()
