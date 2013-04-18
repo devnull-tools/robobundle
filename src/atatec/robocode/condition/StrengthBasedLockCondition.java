@@ -26,6 +26,7 @@ package atatec.robocode.condition;
 import atatec.robocode.Bot;
 import atatec.robocode.Enemy;
 import atatec.robocode.annotation.When;
+import atatec.robocode.calc.Point;
 import atatec.robocode.event.Events;
 import atatec.robocode.util.Drawer;
 
@@ -56,9 +57,14 @@ public class StrengthBasedLockCondition implements LockCondition {
   @When(Events.DRAW)
   public void drawStrength(Drawer drawer) {
     Collection<Enemy> enemies = bot.radar().knownEnemies();
+    Point point;
     for (Enemy enemy : enemies) {
-      drawer.draw(Color.LIGHT_GRAY
-      ).string("%.4f", strengthFunction.evaluate(enemy)).at(enemy.location());
+      point = enemy.location().right(25);
+      if (!bot.radar().battleField().isOnField(point.right(30))) {
+        point = enemy.location().left(60);
+      }
+      drawer.draw(Color.RED
+      ).string("%.3f", strengthFunction.evaluate(enemy)).at(point);
     }
   }
 

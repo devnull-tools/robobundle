@@ -25,6 +25,7 @@ package atatec.robocode.util;
 
 import atatec.robocode.util.drawing.CircleDrawer;
 import atatec.robocode.util.drawing.CrossDrawer;
+import atatec.robocode.util.drawing.LineDrawer;
 import atatec.robocode.util.drawing.MarkerDrawer;
 import atatec.robocode.util.drawing.StringDrawer;
 
@@ -71,6 +72,10 @@ public class Drawer {
 
     public CircleDrawer circle() {
       return new CircleDrawer(g);
+    }
+
+    public LineDrawer line() {
+      return new LineDrawer(g);
     }
 
     public CrossDrawer cross() {

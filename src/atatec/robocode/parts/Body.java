@@ -48,5 +48,5 @@ public interface Body extends Part {
 
   ConditionalCommand<MovingSystem> forMoving();
 
-  void moveTo(Point point, double distance);
+  void moveTo(Point point, double amount);
 }

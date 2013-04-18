@@ -23,6 +23,7 @@
 
 package atatec.robocode.parts;
 
+import atatec.robocode.Localizable;
 import atatec.robocode.calc.Angle;
 
 import java.awt.Color;
@@ -37,5 +38,13 @@ public interface Part {
   Angle heading();
 
   void setColor(Color color);
+
+  boolean isAtLeft(Localizable target);
+
+  boolean isAtRight(Localizable target);
+
+  boolean isInFront(Localizable target);
+
+  boolean isInBack(Localizable target);
 
 }

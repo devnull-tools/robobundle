@@ -25,6 +25,7 @@ package atatec.robocode.parts.movement;
 
 import atatec.robocode.Bot;
 import atatec.robocode.annotation.When;
+import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.GravityPoint;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.TemporaryGravityPoint;
@@ -115,6 +116,11 @@ public class GravitationalMovingSystem implements MovingSystem {
   public void drawForcePoint(Drawer drawer) {
     if (forcePoint != null) {
       drawer.draw(Color.MAGENTA).circle().at(forcePoint);
+      drawer.draw(Color.RED).marker().at(forcePoint);
+
+      Point location = bot.location();
+      Angle angle = location.bearingTo(forcePoint).angle();
+      drawer.draw(Color.MAGENTA).line().from(location).to(location.move(angle, 50));
     }
   }
 

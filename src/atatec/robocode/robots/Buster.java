@@ -21,48 +21,43 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode;
+package atatec.robocode.robots;
 
-import atatec.robocode.calc.Angle;
+import atatec.robocode.BaseBot;
+import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Point;
-import atatec.robocode.calc.Position;
+import atatec.robocode.event.Events;
+import atatec.robocode.util.Drawer;
 
-/**
- * Interface that defines an target bot.
- *
- * @author Marcelo Guimarães
- */
-public interface Enemy extends Localizable {
+import java.awt.Color;
+import java.awt.event.MouseEvent;
 
-  /**
-   * Returns the target's position on the {@link Field battlefield}
-   *
-   * @return the target's position on the battlefield
-   */
-  Position position();
+/** @author Marcelo Guimarães */
+public class Buster extends BaseBot {
 
-  double distance();
+  private Point p;
 
-  double energy();
+  @Override
+  protected void configure() {
 
-  Angle heading();
+  }
 
-  Angle bearing();
+  @Override
+  public void onMouseClicked(MouseEvent e) {
+    p = new Point(
+      e.getX(),
+      e.getY()
+    );
+    log("Clicked on %s", p);
+    body().moveTo(p, 20);
+  }
 
-  Angle absoluteBearing();
-
-  double velocity();
-
-  double lateralVelocity();
-
-  String name();
-
-  Point location();
-
-  boolean isMoving();
-
-  boolean isStopped();
-
-  long when();
+  @When(Events.PAINT)
+  public void paint(Drawer drawer) {
+    if (p != null) {
+      drawer.draw(Color.WHITE).circle().at(p);
+      drawer.draw(Color.RED).cross().at(p);
+    }
+  }
 
 }

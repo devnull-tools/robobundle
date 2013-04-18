@@ -23,10 +23,20 @@
 
 package atatec.robocode.parts;
 
+import atatec.robocode.BaseBot;
+import atatec.robocode.Localizable;
 import atatec.robocode.calc.Angle;
+import atatec.robocode.calc.Point;
+import atatec.robocode.calc.ViewPoint;
 
 /** @author Marcelo Guimarães */
 public abstract class BasePart implements Part {
+
+  protected final BaseBot bot;
+
+  protected BasePart(BaseBot bot) {
+    this.bot = bot;
+  }
 
   @Override
   public void turn(Angle angle) {
@@ -40,5 +50,29 @@ public abstract class BasePart implements Part {
   protected abstract void turnRight(Angle angle);
 
   protected abstract void turnLeft(Angle angle);
+
+  @Override
+  public boolean isAtLeft(Localizable target) {
+    ViewPoint viewPoint = new ViewPoint(heading(), bot.location());
+    Point viewedPoint = viewPoint.transform(target.location());
+    return viewedPoint.x() < 0;
+  }
+
+  @Override
+  public boolean isAtRight(Localizable target) {
+    return !isAtLeft(target);
+  }
+
+  @Override
+  public boolean isInFront(Localizable target) {
+    return !isInBack(target);
+  }
+
+  @Override
+  public boolean isInBack(Localizable target) {
+    ViewPoint viewPoint = new ViewPoint(heading(), bot.location());
+    Point viewedPoint = viewPoint.transform(target.location());
+    return viewedPoint.y() < 0;
+  }
 
 }

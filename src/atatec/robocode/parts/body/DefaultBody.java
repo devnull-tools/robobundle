@@ -40,10 +40,8 @@ public class DefaultBody extends BasePart implements Body {
 
   private final DefaultConditionalCommand<MovingSystem> movingSystem;
 
-  private final BaseBot bot;
-
   public DefaultBody(BaseBot bot) {
-    this.bot = bot;
+    super(bot);
     this.movingSystem = new DefaultConditionalCommand<MovingSystem>(bot);
   }
 
@@ -94,19 +92,19 @@ public class DefaultBody extends BasePart implements Body {
   }
 
   @Override
-  public void moveTo(Point point, double distance) {
-    Position position = bot.location().bearingTo(point);
-    Angle angle = position.angle().minus(bot.body().heading()).relative();
-    bot.log("Angle: %s", angle);
-    if (angle.radians() > Math.PI / 2) {
+  public void moveTo(Point point, double amount) {
+    Point location = bot.location();
+    Point head = location.move(heading(), location.distanceTo(point));
+    Angle angle = location.angleOfView(head, point);
+    if (isAtLeft(point)) {
+      angle = angle.inverse();
+    }
+    if (isInBack(point)) {
       angle = Angle.PI.minus(angle).inverse();
-      distance = -distance;
-    } else if (angle.radians() < -Math.PI / 2) {
-      angle = Angle.PI.plus(angle).inverse();
-      distance = -distance;
+      amount = -amount;
     }
     turn(angle);
-    move(distance);
+    move(amount);
   }
 
   @Override

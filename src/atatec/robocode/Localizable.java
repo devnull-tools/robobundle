@@ -23,46 +23,11 @@
 
 package atatec.robocode;
 
-import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
-import atatec.robocode.calc.Position;
 
-/**
- * Interface that defines an target bot.
- *
- * @author Marcelo Guimarães
- */
-public interface Enemy extends Localizable {
-
-  /**
-   * Returns the target's position on the {@link Field battlefield}
-   *
-   * @return the target's position on the battlefield
-   */
-  Position position();
-
-  double distance();
-
-  double energy();
-
-  Angle heading();
-
-  Angle bearing();
-
-  Angle absoluteBearing();
-
-  double velocity();
-
-  double lateralVelocity();
-
-  String name();
+/** @author Marcelo Guimarães */
+public interface Localizable {
 
   Point location();
-
-  boolean isMoving();
-
-  boolean isStopped();
-
-  long when();
 
 }

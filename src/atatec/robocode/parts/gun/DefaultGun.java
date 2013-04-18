@@ -43,14 +43,12 @@ import java.awt.Color;
 /** @author Marcelo Guimarães */
 public class DefaultGun extends BasePart implements Gun {
 
-  private final BaseBot bot;
-
   private final DefaultConditionalCommand<AimingSystem> aimingSystem;
 
   private final DefaultConditionalCommand<FiringSystem> firingSystem;
 
   public DefaultGun(BaseBot bot) {
-    this.bot = bot;
+    super(bot);
     this.aimingSystem = new DefaultConditionalCommand<AimingSystem>(bot);
     this.firingSystem = new DefaultConditionalCommand<FiringSystem>(bot);
   }

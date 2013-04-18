@@ -52,8 +52,6 @@ public class DefaultRadar extends BasePart implements Radar {
 
   private final DefaultConditionalCommand<ScanningSystem> scanningSystem;
 
-  private final BaseBot bot;
-
   private Enemy target;
 
   private Enemy lastSeen;
@@ -61,7 +59,7 @@ public class DefaultRadar extends BasePart implements Radar {
   private Map<String, Enemy> enemies = new HashMap<String, Enemy>();
 
   public DefaultRadar(BaseBot bot) {
-    this.bot = bot;
+    super(bot);
     this.scanningSystem = new DefaultConditionalCommand<ScanningSystem>(bot);
     this.scanningSystem.use(new DefaultScanningSystem());
   }

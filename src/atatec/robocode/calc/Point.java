@@ -23,6 +23,7 @@
 
 package atatec.robocode.calc;
 
+import atatec.robocode.Localizable;
 import atatec.robocode.util.GravityPointBuilder;
 
 import static atatec.robocode.calc.BotMath.areEquals;
@@ -37,7 +38,7 @@ import static java.lang.Math.sqrt;
  *
  * @author Marcelo Guimarães
  */
-public class Point {
+public class Point implements Localizable {
 
   /** Holds the (0,0) point. */
   public static final Point ORIGIN = new Point(0, 0);
@@ -161,6 +162,27 @@ public class Point {
     return distance(this, other);
   }
 
+  /**
+   * Moves this point using the given angle and value
+   *
+   * @param angle the angle to head
+   * @param value the value to move
+   *
+   * @return the moved point
+   */
+  public Point move(Angle angle, double value) {
+    return this.plus(new Point(value * angle.sin(), value * angle.cos()));
+  }
+
+  @Override
+  public Point location() {
+    return this;
+  }
+
+  /**
+   * Calculates the angle that covers the two given points using this point as the
+   * reference
+   */
   public Angle angleOfView(Point p2, Point p3) {
     Angle angle;
     double a = distance(this, p2);

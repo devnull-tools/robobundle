@@ -40,7 +40,7 @@ import atatec.robocode.parts.Storage;
  * @author Marcelo Guimarães
  * @see atatec.robocode.annotation.When
  */
-public interface Bot {
+public interface Bot extends Localizable {
 
   /**
    * Returns a coordinate representing this robot location in the battlefield.

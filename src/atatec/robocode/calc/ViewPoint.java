@@ -21,48 +21,29 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode;
+package atatec.robocode.calc;
 
-import atatec.robocode.calc.Angle;
-import atatec.robocode.calc.Point;
-import atatec.robocode.calc.Position;
+/** @author Marcelo Guimarães */
+public class ViewPoint {
 
-/**
- * Interface that defines an target bot.
- *
- * @author Marcelo Guimarães
- */
-public interface Enemy extends Localizable {
+  private final Angle angle;
+  private final Point origin;
 
-  /**
-   * Returns the target's position on the {@link Field battlefield}
-   *
-   * @return the target's position on the battlefield
-   */
-  Position position();
+  public ViewPoint(Angle angle, Point origin) {
+    this.angle = angle;
+    this.origin = origin;
+  }
 
-  double distance();
-
-  double energy();
-
-  Angle heading();
-
-  Angle bearing();
-
-  Angle absoluteBearing();
-
-  double velocity();
-
-  double lateralVelocity();
-
-  String name();
-
-  Point location();
-
-  boolean isMoving();
-
-  boolean isStopped();
-
-  long when();
+  public Point transform(Point point) {
+    // move the point
+    Point result = point.minus(origin);
+    double x = result.x();
+    double y = result.y();
+    // rotate the point
+    return new Point(
+      x * angle.cos() - y * angle.sin(),
+      x * angle.sin() + y * angle.cos()
+    );
+  }
 
 }

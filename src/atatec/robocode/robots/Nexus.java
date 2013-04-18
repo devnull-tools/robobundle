@@ -86,8 +86,6 @@ public class Nexus extends BaseBot {
 
   private int maxMissesInARow = 5;
 
-  private double avoidingPower = 250;
-
   private int movementLength = 5;
 
   private EnemyTracker enemyTracker = new EnemyTracker(this, 150);
@@ -209,18 +207,15 @@ public class Nexus extends BaseBot {
   public void hitRobot(HitRobotEvent event) {
     log("Hit robot at %s", event.getBearingRadians());
     Enemy enemy = radar().enemy(event.getName());
-    Point point;
     if (enemy != null) { // use information from radar
-      point = enemy.location();
-    } else {
-      point = location();
+      Point point = enemy.location();
+      events().send(ADD_GRAVITY_POINT,
+        antiGravityPoint()
+          .at(point)
+          .strong()
+          .during(5)
+      );
     }
-    events().send(ADD_GRAVITY_POINT,
-      antiGravityPoint()
-        .at(point)
-        .strong()
-        .during(5)
-    );
   }
 
   @When(NEAR_TO_ENEMY)
@@ -336,13 +331,13 @@ public class Nexus extends BaseBot {
     List<Enemy> history = enemyTracker.historyFor(enemy).fromOldest();
     for (Enemy hist : history) {
       //when enemy is stopped, the patternStr will not be increased
-      patternStr += hist.lateralVelocity();
+      patternStr += hist.lateralVelocity() / 100;
     }
 
     patternStr = Math.abs(patternStr);
 
     double strength = (2 - statistics().of(enemy).accuracy()) *
-      (patternStr * enemy.energy() + statistics().of(enemy).taken());
+      (patternStr * (enemy.energy() + statistics().of(enemy).taken() * 2));
 
     strengthMap().put(enemy.name(), strength);
   }
@@ -372,7 +367,7 @@ public class Nexus extends BaseBot {
       );
       events().send(ADD_GRAVITY_POINT,
         movementPoint.gravitational()
-          .normal()
+          .weak()
           .during(1)
       );
     }
