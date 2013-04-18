@@ -223,7 +223,7 @@ public class Nexus extends BaseBot {
     events().send(ADD_GRAVITY_POINT,
       antiGravityPoint()
         .at(enemy.location())
-        .strong()
+        .strongest()
         .during(2)
     );
   }
@@ -233,8 +233,8 @@ public class Nexus extends BaseBot {
     Field battleField = radar().battleField();
     events().send(ADD_GRAVITY_POINT,
       gravityPoint()
-        .at(battleField.closestWallPointTo(location()))
-        .strong()
+        .at(battleField.center())
+        .strongest()
         .during(10)
     );
   }
@@ -286,12 +286,12 @@ public class Nexus extends BaseBot {
   public void onNearToWall(Point wallPoint) {
     events().send(ADD_GRAVITY_POINT,
       wallPoint.antiGravitational()
-        .withValue(1000)
+        .strongest()
         .during(1)
     );
     events().send(ADD_GRAVITY_POINT,
       radar().battleField().center().gravitational()
-        .withValue(1000)
+        .strongest()
         .during(1)
     );
   }
@@ -367,7 +367,7 @@ public class Nexus extends BaseBot {
       );
       events().send(ADD_GRAVITY_POINT,
         movementPoint.gravitational()
-          .weak()
+          .normal()
           .during(1)
       );
     }

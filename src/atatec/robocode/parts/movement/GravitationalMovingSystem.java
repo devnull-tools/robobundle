@@ -25,7 +25,6 @@ package atatec.robocode.parts.movement;
 
 import atatec.robocode.Bot;
 import atatec.robocode.annotation.When;
-import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.GravityPoint;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.TemporaryGravityPoint;
@@ -52,6 +51,7 @@ public class GravitationalMovingSystem implements MovingSystem {
   private Collection<TemporaryGravityPoint> temporaryPoints = new HashSet<TemporaryGravityPoint>(100);
   private Point forcePoint;
   private double lowEnforcing;
+  private boolean drawTemporaryPoints;
 
   public GravitationalMovingSystem(Bot bot) {
     this.bot = bot;
@@ -73,6 +73,11 @@ public class GravitationalMovingSystem implements MovingSystem {
   public GravitationalMovingSystem add(TemporaryGravityPoint point) {
     bot.log("Adding temp gravity point: %s", point);
     temporaryPoints.add(point);
+    return this;
+  }
+
+  public GravitationalMovingSystem drawTemporaryPoints() {
+    drawTemporaryPoints = true;
     return this;
   }
 
@@ -117,18 +122,16 @@ public class GravitationalMovingSystem implements MovingSystem {
     if (forcePoint != null) {
       drawer.draw(Color.MAGENTA).circle().at(forcePoint);
       drawer.draw(Color.RED).marker().at(forcePoint);
-
-      Point location = bot.location();
-      Angle angle = location.bearingTo(forcePoint).angle();
-      drawer.draw(Color.MAGENTA).line().from(location).to(location.move(angle, 50));
     }
   }
 
   @When(Events.DRAW)
   public void drawTemporaryGravityPoints(Drawer drawer) {
-    for (TemporaryGravityPoint temporaryPoint : temporaryPoints) {
-      if (!temporaryPoint.expired() && !temporaryPoint.delayed()) {
-        drawer.draw(Color.ORANGE).cross().at(temporaryPoint.point());
+    if (drawTemporaryPoints) {
+      for (TemporaryGravityPoint temporaryPoint : temporaryPoints) {
+        if (!temporaryPoint.expired() && !temporaryPoint.delayed()) {
+          drawer.draw(Color.ORANGE).cross().at(temporaryPoint.point());
+        }
       }
     }
   }

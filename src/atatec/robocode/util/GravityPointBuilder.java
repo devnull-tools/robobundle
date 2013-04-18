@@ -29,9 +29,11 @@ import atatec.robocode.calc.Point;
 /** @author Marcelo Guimarães */
 public class GravityPointBuilder {
 
+  private static double WEAKEST_VALUE = 1;
   private static double WEAK_VALUE = 10;
   private static double NORMAL_VALUE = 30;
   private static double STRONG_VALUE = 60;
+  private static double STRONGEST_VALUE = 1000;
 
   private Point point;
   private int mod;
@@ -55,6 +57,10 @@ public class GravityPointBuilder {
 
   public GravityPoint strong() {
     return withValue(STRONG_VALUE);
+  }
+
+  public GravityPoint strongest() {
+    return withValue(STRONGEST_VALUE);
   }
 
   public GravityPoint withValue(double value) {
