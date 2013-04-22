@@ -21,48 +21,56 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.condition;
+package atatec.robocode.parts.firing;
 
 import atatec.robocode.Bot;
 import atatec.robocode.Enemy;
-import atatec.robocode.annotation.When;
-import atatec.robocode.calc.Point;
-import atatec.robocode.event.Events;
-import atatec.robocode.util.Drawer;
+import atatec.robocode.parts.FiringSystem;
+import atatec.robocode.plugin.BulletStatistics;
 
-import java.awt.Color;
-import java.util.Collection;
+import static robocode.Rules.MAX_BULLET_POWER;
+import static robocode.Rules.MIN_BULLET_POWER;
 
 /** @author Marcelo Guimarães */
-public class StrengthBasedLockCondition implements LockCondition {
+public class AccuracyBasedFiringSystem implements FiringSystem {
+
+  private static final double MEDIUM_BULLET_POWER = (MAX_BULLET_POWER + MIN_BULLET_POWER) / 2;
 
   private final Bot bot;
-  private final Function<Enemy, Double> strengthFunction;
 
-  public StrengthBasedLockCondition(Bot bot, Function<Enemy, Double> strengthFunction) {
+  private double accuracyToFireMax = 0.75;
+  private double accuracyToFireMin = 0.2;
+
+  public AccuracyBasedFiringSystem(Bot bot) {
     this.bot = bot;
-    this.strengthFunction = strengthFunction;
   }
 
-  @Override
-  public boolean canLock(Enemy enemy) {
-    double lastSeenStr = strengthFunction.evaluate(enemy);
-    double lockedStr = strengthFunction.evaluate(bot.radar().target());
-    return lastSeenStr < lockedStr;
+  public AccuracyBasedFiringSystem fireMaxAt(double accuracy) {
+    accuracyToFireMax = accuracy;
+    return this;
   }
 
-  @When(Events.DRAW)
-  public void drawStrength(Drawer drawer) {
-    Collection<Enemy> enemies = bot.radar().knownEnemies();
-    Point point;
-    for (Enemy enemy : enemies) {
-      point = enemy.location().right(25);
-      if (!bot.radar().battleField().isOnField(point.right(30))) {
-        point = enemy.location().left(60);
+  public AccuracyBasedFiringSystem fireMinAt(double accuracy) {
+    accuracyToFireMin = accuracy;
+    return this;
+  }
+
+  public double firePower() {
+    if (bot.radar().hasTargetSet()) {
+      Enemy enemy = bot.radar().target();
+      BulletStatistics statistics = bot.storage().retrieve("statistics");
+      double accuracy = statistics.of(enemy).accuracy();
+      if (accuracy >= accuracyToFireMax) {
+        return MAX_BULLET_POWER;
+      } else if (accuracy < accuracyToFireMin) {
+        return (MEDIUM_BULLET_POWER + MIN_BULLET_POWER) / 2;
       }
-      drawer.draw(Color.RED
-      ).string("%.3f", strengthFunction.evaluate(enemy)).at(point);
     }
+    return MEDIUM_BULLET_POWER;
+  }
+
+  public void execute() {
+    bot.gun().fire(firePower());
   }
 
 }

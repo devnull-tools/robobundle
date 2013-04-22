@@ -36,7 +36,7 @@ import atatec.robocode.condition.StrengthBasedLockCondition;
 import atatec.robocode.event.EnemyFireEvent;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
-import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
+import atatec.robocode.parts.firing.AccuracyBasedFiringSystem;
 import atatec.robocode.parts.movement.GravitationalMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 import atatec.robocode.plugin.Avoider;
@@ -92,20 +92,14 @@ public class Nexus extends BaseBot {
 
   private BotConditions conditions = new BotConditions(this);
 
+  private Map<String, Double> strengthMap = new HashMap<String, Double>();
+
   private Function<Enemy, Double> enemyStrength = new Function<Enemy, Double>() {
     @Override
     public Double evaluate(Enemy enemy) {
-      return strengthMap().get(enemy.name());
+      return strengthMap.get(enemy.name());
     }
   };
-
-  private Map<String, Double> strengthMap() {
-    String entryName = "strength";
-    if (!storage().hasValueFor(entryName)) {
-      storage().store(entryName, new HashMap<String, Double>());
-    }
-    return storage().retrieve(entryName);
-  }
 
   private BulletStatistics statistics() {
     String entryName = "statistics";
@@ -124,9 +118,7 @@ public class Nexus extends BaseBot {
       .use(new PredictionAimingSystem(this));
 
     gun().forFiring()
-      .use(new EnergyBasedFiringSystem(this)
-        .fireMaxAt(80)
-        .fireMinAt(30));
+      .use(new AccuracyBasedFiringSystem(this));
 
     radar().forScanning()
       .use(new EnemyLockScanningSystem(this))
@@ -336,10 +328,11 @@ public class Nexus extends BaseBot {
 
     patternStr = Math.abs(patternStr);
 
-    double strength = (2 - statistics().of(enemy).accuracy()) *
-      (patternStr * (enemy.energy() + statistics().of(enemy).taken() * 2));
+    double strength = (1 - statistics().of(enemy).accuracy()) *
+      (patternStr * (enemy.energy() + statistics().of(enemy).taken() * 2)
+        + Math.sqrt(enemy.distance()));
 
-    strengthMap().put(enemy.name(), strength);
+    strengthMap.put(enemy.name(), strength);
   }
 
   private void addEnemyPoints() {
@@ -367,7 +360,7 @@ public class Nexus extends BaseBot {
       );
       events().send(ADD_GRAVITY_POINT,
         movementPoint.gravitational()
-          .normal()
+          .weak()
           .during(1)
       );
     }

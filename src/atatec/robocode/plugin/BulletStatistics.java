@@ -66,7 +66,9 @@ public class BulletStatistics {
   @When(Events.BULLET_FIRED)
   public void registerBulletFired(BulletFiredEvent event) {
     if (bot.radar().hasTargetSet()) {
-      get(event.bullet().getName()).fires++;
+      String name = bot.radar().target().name();
+      get(name).fires++;
+      bullets.put(event.bullet(), name);
     }
   }
 
