@@ -28,54 +28,25 @@ import atatec.robocode.event.BulletFiredEvent;
 import atatec.robocode.event.DefaultEventRegistry;
 import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.EventRegistry;
-import atatec.robocode.parts.Body;
-import atatec.robocode.parts.DefaultStorage;
-import atatec.robocode.parts.Gun;
-import atatec.robocode.parts.Radar;
-import atatec.robocode.parts.Storage;
+import atatec.robocode.parts.*;
 import atatec.robocode.parts.body.DefaultBody;
 import atatec.robocode.parts.gun.DefaultGun;
 import atatec.robocode.parts.radar.DefaultRadar;
 import atatec.robocode.util.Drawer;
-import robocode.AdvancedRobot;
-import robocode.BattleEndedEvent;
-import robocode.Bullet;
-import robocode.BulletHitBulletEvent;
-import robocode.BulletHitEvent;
-import robocode.BulletMissedEvent;
-import robocode.DeathEvent;
-import robocode.HitByBulletEvent;
-import robocode.HitRobotEvent;
-import robocode.HitWallEvent;
-import robocode.RobotDeathEvent;
-import robocode.RoundEndedEvent;
-import robocode.ScannedRobotEvent;
-import robocode.WinEvent;
+import robocode.*;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static atatec.robocode.event.Events.BATTLE_ENDED;
-import static atatec.robocode.event.Events.BULLET_FIRED;
-import static atatec.robocode.event.Events.BULLET_HIT;
-import static atatec.robocode.event.Events.BULLET_HIT_BULLET;
-import static atatec.robocode.event.Events.BULLET_MISSED;
-import static atatec.robocode.event.Events.DEATH;
-import static atatec.robocode.event.Events.DRAW;
-import static atatec.robocode.event.Events.ENEMY_SCANNED;
-import static atatec.robocode.event.Events.HIT_BY_BULLET;
-import static atatec.robocode.event.Events.HIT_ROBOT;
-import static atatec.robocode.event.Events.HIT_WALL;
-import static atatec.robocode.event.Events.NEXT_TURN;
-import static atatec.robocode.event.Events.PAINT;
-import static atatec.robocode.event.Events.ROBOT_DEATH;
-import static atatec.robocode.event.Events.ROUND_ENDED;
-import static atatec.robocode.event.Events.ROUND_STARTED;
-import static atatec.robocode.event.Events.WIN;
+import static atatec.robocode.event.Events.*;
 
 /**
  * A base class that provides a default abstraction to creating first class robots.
+ *
+ * All robot behaviour should be off the superclasses and attached to the parts (
+ * {@link Gun}, {@link Body} and {@link Radar}) and the events dispatched by this
+ * class can be listener from every attached part or component.
  *
  * @author Marcelo Guimarães
  */
@@ -211,7 +182,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   }
 
   @Override
-  public final void log(Object message, Object... params) {
+  public void log(Object message, Object... params) {
     out.printf(message.toString(), params);
     out.println();
   }

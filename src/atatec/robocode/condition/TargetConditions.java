@@ -26,13 +26,18 @@ package atatec.robocode.condition;
 import atatec.robocode.Enemy;
 import atatec.robocode.parts.Radar;
 
+import static atatec.robocode.condition.Conditions.not;
+
 /** @author Marcelo Guimarães */
 public class TargetConditions {
 
   private final Radar radar;
+  private double closerDistance;
 
   public TargetConditions(Radar radar) {
+    double diagonal = radar.battleField().diagonal();
     this.radar = radar;
+    this.closerDistance = diagonal / 4;
   }
 
   public Condition isMoving() {
@@ -51,6 +56,14 @@ public class TargetConditions {
         return enemy.isStopped();
       }
     };
+  }
+
+  public Condition isClose() {
+    return isAtMost(closerDistance);
+  }
+
+  public Condition isDistant() {
+    return not(isClose());
   }
 
   public Condition isAtLeastAt(final double distance) {
