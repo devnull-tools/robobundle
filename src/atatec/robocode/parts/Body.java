@@ -27,26 +27,80 @@ import atatec.robocode.ConditionalCommand;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 
-/** @author Marcelo Guimarães */
+/**
+ * Interface that defines a robot body.
+ * <p/>
+ * The body may use a {@link MovingSystem} to tell how the
+ * robot should move. The behaviour of any system can be changed at runtime
+ * based on giving {@link atatec.robocode.condition.Condition conditions}.
+ *
+ * @author Marcelo Guimarães
+ */
 public interface Body extends Part {
 
+  /**
+   * Turns the body to the given angle
+   *
+   * @param angle the angle that the body should face after turning
+   * @return a reference to this object
+   */
   Body turnTo(Angle angle);
 
+  /**
+   * Turns the body to face the given point
+   *
+   * @param point the point that the body should face after turning
+   * @return a reference to this object
+   */
   Body turnTo(Point point);
 
-  void moveTo(Point point);
-
+  /**
+   * Moves the robot
+   *
+   * @param distance the distance to move
+   */
   void move(double distance);
 
+  /**
+   * Moves the robot in an angular movement
+   *
+   * @param distance the distance to move
+   * @param angle    the angle to turn
+   */
   void moveAndTurn(double distance, Angle angle);
 
+  /**
+   * Moves the robot using an active {@link MovingSystem}
+   */
   void move();
 
+  /**
+   * Moves the robot to a given point in the battlefield.
+   *
+   * @param point  the point that the body should be located after moving
+   * @param amount the amount to move
+   */
+  void moveTo(Point point, double amount);
+
+  /**
+   * Gets the robot's energy
+   *
+   * @return the robot's energy
+   */
   double energy();
 
+  /**
+   * Gets the robot's velocity
+   *
+   * @return the robot's velocity
+   */
   double velocity();
 
+  /**
+   * Gets the register for the robot's {@link MovingSystem}
+   *
+   * @return the register for the robot's {@link MovingSystem}
+   */
   ConditionalCommand<MovingSystem> forMoving();
 
-  void moveTo(Point point, double amount);
 }

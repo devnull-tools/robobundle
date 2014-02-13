@@ -23,8 +23,10 @@
 
 package atatec.robocode.parts;
 
+import atatec.robocode.Command;
+
 /** @author Marcelo Guimarães */
-public interface FiringSystem extends SystemPart {
+public interface FiringSystem extends Command {
 
   double firePower();
 

@@ -87,11 +87,6 @@ public class DefaultBody extends BasePart implements Body {
   }
 
   @Override
-  public void moveTo(Point point) {
-    moveTo(point, bot.location().bearingTo(point).distance());
-  }
-
-  @Override
   public void moveTo(Point point, double amount) {
     Point location = bot.location();
     Point head = location.move(heading(), location.distanceTo(point));

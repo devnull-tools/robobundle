@@ -151,7 +151,7 @@ public class Nexus extends BaseBot {
   @When(HIT_BY_BULLET)
   public void hitByBullet() {
     if (++hitsByBullet == hitByBulletUntilUnlock) {
-      radar().unset();
+      radar().unsetTarget();
       hitsByBullet = 0;
     }
   }
@@ -161,11 +161,11 @@ public class Nexus extends BaseBot {
   @When(ENEMY_SCANNED)
   public void enemyScanned(EnemyScannedEvent event) {
     if (enemies < radar().enemiesCount()) {
-      radar().unset();
+      radar().unsetTarget();
     }
     enemies = radar().enemiesCount();
     if (event.enemy().energy() < 10) {
-      radar().set(event.enemy());
+      radar().setTarget(event.enemy());
     }
   }
 
@@ -307,7 +307,7 @@ public class Nexus extends BaseBot {
   @When(BULLET_NOT_FIRED)
   public void registerBulletNotFired() {
     if (++fireSkip > fireSkipToChangeTarget && !radar().isHeadToHead()) {
-      radar().unset();
+      radar().unsetTarget();
     }
   }
 
@@ -376,7 +376,7 @@ public class Nexus extends BaseBot {
   @When(BULLET_MISSED)
   public void miss() {
     if (misses++ > maxMissesInARow && !radar().isHeadToHead()) {
-      radar().unset();
+      radar().unsetTarget();
       misses = 0;
     }
   }

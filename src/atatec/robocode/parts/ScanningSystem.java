@@ -23,7 +23,9 @@
 
 package atatec.robocode.parts;
 
+import atatec.robocode.Command;
+
 /** @author Marcelo Guimarães */
-public interface ScanningSystem extends SystemPart {
+public interface ScanningSystem extends Command {
 
 }

@@ -47,9 +47,9 @@ public class DefaultConditionalCommand<E extends Command> implements Conditional
   }
 
   @Override
-  public ConditionSelector<ConditionalCommand<E>> use(E systemPart) {
-    this.current = systemPart;
-    this.bot.plug(systemPart);
+  public ConditionSelector<ConditionalCommand<E>> use(E command) {
+    this.current = command;
+    this.bot.plug(command);
     return new ConditionSelector<ConditionalCommand<E>>() {
 
       public ConditionalCommand<E> when(Condition condition) {

@@ -29,33 +29,106 @@ import atatec.robocode.Field;
 
 import java.util.Collection;
 
-/** @author Marcelo Guimarães */
+/**
+ * Interface that defines a robot radar.
+ * <p/>
+ * A radar may use a {@link ScanningSystem} to manipulate
+ * the radar movement.
+ *
+ * @author Marcelo Guimarães
+ */
 public interface Radar extends Part {
 
+  /**
+   * Gets the current target. Note that the current target may
+   * not be a locked target.
+   *
+   * @return the current target
+   */
   Enemy target();
 
-  void set(Enemy enemy);
+  /**
+   * Sets an enemy as the current target. If the radar
+   * already has a target, it will be replaced by the
+   * new one.
+   *
+   * @param enemy the enemy to set as target.
+   */
+  void setTarget(Enemy enemy);
 
-  void unset();
+  /**
+   * Removes the current target
+   */
+  void unsetTarget();
 
+  /**
+   * Gets the last scanned enemy. The enemy returned may
+   * not be the current target.
+   *
+   * @return the last scanned enemy.
+   */
   Enemy lastSeenEnemy();
 
+  /**
+   * Checks if the radar has a target set
+   *
+   * @return <code>true</code> if the radar has a target set
+   */
   boolean hasTargetSet();
 
+  /**
+   * Retrieves the scanned enemies. Note that some of them may have
+   * out of date informations.
+   *
+   * @return the scanned enemies.
+   */
   Collection<Enemy> knownEnemies();
 
+  /**
+   * Gets the register for the radar's {@link ScanningSystem}
+   *
+   * @return the register for the radar's {@link ScanningSystem}
+   */
   ConditionalCommand<ScanningSystem> forScanning();
 
+  /**
+   * Uses an active {@link ScanningSystem} to move the radar
+   */
   void scan();
 
+  /**
+   * Count the number of enemies in the battle field. This number
+   * does not depends on scanned robots.
+   *
+   * @return the number of enemies in the battle field.
+   */
   int enemiesCount();
 
+  /**
+   * Checks if the battle is a head to head.
+   *
+   * @return <code>true</code> if the battle field has only one enemy
+   */
   boolean isHeadToHead();
 
+  /**
+   * Returns the current battle field
+   *
+   * @return the current battle field
+   */
   Field battleField();
 
+  /**
+   * Returns the game time of the current round
+   */
   long time();
 
+  /**
+   * Returns the last information about an enemy
+   *
+   * @param name enemy's name
+   * @return the last information about the enemy
+   */
   Enemy enemy(String name);
 
 }

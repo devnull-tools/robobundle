@@ -76,7 +76,7 @@ public class EnemyLockScanningSystem implements ScanningSystem {
     bot.log("Enemy spotted at %s", enemy.position());
     if (canLock(enemy)) {
       bot.log("Locking %s", enemy.name());
-      bot.radar().set(enemy);
+      bot.radar().setTarget(enemy);
       changeTarget = false;
     }
     if (!scanBattleField) {
@@ -98,7 +98,7 @@ public class EnemyLockScanningSystem implements ScanningSystem {
   public void changeTarget() {
     changeTarget = true;
     if (bot.radar().hasTargetSet()) {
-      bot.radar().unset();
+      bot.radar().unsetTarget();
     }
   }
 

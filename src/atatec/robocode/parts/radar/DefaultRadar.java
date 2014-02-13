@@ -113,13 +113,13 @@ public class DefaultRadar extends BasePart implements Radar {
     return Collections.unmodifiableCollection(enemies.values());
   }
 
-  public void set(Enemy e) {
+  public void setTarget(Enemy e) {
     this.target = e;
     this.bot.events().send(Events.TARGET_SET, new TargetSetEvent(target));
   }
 
   @Override
-  public void unset() {
+  public void unsetTarget() {
     this.target = null;
     this.bot.events().send(Events.TARGET_UNSET, new TargetUnsetEvent(target));
   }

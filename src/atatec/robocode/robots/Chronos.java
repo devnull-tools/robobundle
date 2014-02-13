@@ -68,11 +68,6 @@ public class Chronos extends BaseBot {
       .use(new FollowEnemyMovingSystem(this))
       .inOtherCases();
 
-    plug(new Dodger(this));
-
-    plug(new EnemyScannerInfo(this)
-      .showAttributes());
-
     plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()
       .use(new Color(253, 151, 31)).forMedium()
