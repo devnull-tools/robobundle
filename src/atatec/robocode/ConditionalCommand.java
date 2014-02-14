@@ -25,11 +25,29 @@ package atatec.robocode;
 
 import atatec.robocode.condition.ConditionSelector;
 
-/** @author Marcelo Guimarães */
+/**
+ * Interface that defines a command holds other commands
+ * and executes a single one based on some conditions.
+ *
+ * @author Marcelo Guimarães
+ */
 public interface ConditionalCommand<E extends Command> extends Command {
 
+  /**
+   * Maps a condition to a command.
+   *
+   * @param command the command to add.
+   * @return an instance for selecting a condition to map.
+   */
   ConditionSelector<ConditionalCommand<E>> use(E command);
 
+  /**
+   * Returns the current activated command based on the
+   * already mapped ones.
+   *
+   * @return the command that will be executed if {@link #execute()}
+   *         is called.
+   */
   E activated();
 
 }

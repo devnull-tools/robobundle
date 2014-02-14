@@ -23,9 +23,16 @@
 
 package atatec.robocode;
 
-/** @author Marcelo Guimarães */
+/**
+ * An interface that defines an executable command.
+ *
+ * @author Marcelo Guimarães
+ */
 public interface Command {
 
+  /**
+   * Executes the command represented by the object.
+   */
   void execute();
 
 }

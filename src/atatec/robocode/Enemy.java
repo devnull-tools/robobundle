@@ -28,41 +28,79 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 
 /**
- * Interface that defines an target bot.
+ * Interface that defines an enemy bot.
  *
  * @author Marcelo Guimarães
  */
 public interface Enemy extends Localizable {
 
   /**
-   * Returns the target's position on the {@link Field battlefield}
-   *
    * @return the target's position on the battlefield
    */
   Position position();
 
+  /**
+   * @return the distance to the enemy
+   */
   double distance();
 
+  /**
+   * @return the target energy
+   */
   double energy();
 
+  /**
+   * @return the heading of the enemy
+   */
   Angle heading();
 
+  /**
+   * @return the bearing to the enemy
+   */
   Angle bearing();
 
+  /**
+   * @return the bearing plus the body heading
+   */
   Angle absoluteBearing();
 
+  /**
+   * @return the velocity of the enemy
+   */
   double velocity();
 
+  /**
+   * @return the lateral velocity of the enemy
+   */
   double lateralVelocity();
 
+  /**
+   * @return the enemy name
+   */
   String name();
 
+  /**
+   * @return the enemy location
+   */
   Point location();
 
+  /**
+   * Checks if the enemy is moving based on it velocity
+   *
+   * @return <code>true</code> if the enemy is moving
+   */
   boolean isMoving();
 
+  /**
+   * Checks if the enemy is stopped based on it velocity
+   *
+   * @return <code>true</code> if the enemy is stopped
+   */
   boolean isStopped();
 
+  /**
+   * @return the turn when this enemy was scanned
+   */
   long when();
 
 }
