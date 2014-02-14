@@ -185,7 +185,7 @@ public class Nexus extends BaseBot {
     int delay = 0;
     int speed = (int) Math.floor(event.bulletSpeed() / 4);
     for (int i = speed * 3; i < bulletTrajectory.size(); i += speed) {
-      events().send(ADD_GRAVITY_POINT,
+      dispatch(ADD_GRAVITY_POINT,
         antiGravityPoint()
           .at(bulletTrajectory.get(i))
           .strong()
@@ -201,7 +201,7 @@ public class Nexus extends BaseBot {
     Enemy enemy = radar().enemy(event.getName());
     if (enemy != null) { // use information from radar
       Point point = enemy.location();
-      events().send(ADD_GRAVITY_POINT,
+      dispatch(ADD_GRAVITY_POINT,
         antiGravityPoint()
           .at(point)
           .strong()
@@ -212,7 +212,7 @@ public class Nexus extends BaseBot {
 
   @When(NEAR_TO_ENEMY)
   public void avoidEnemy(Enemy enemy) {
-    events().send(ADD_GRAVITY_POINT,
+    dispatch(ADD_GRAVITY_POINT,
       antiGravityPoint()
         .at(enemy.location())
         .strongest()
@@ -223,7 +223,7 @@ public class Nexus extends BaseBot {
   @When(HIT_WALL)
   public void hitWall(HitWallEvent event) {
     Field battleField = radar().battleField();
-    events().send(ADD_GRAVITY_POINT,
+    dispatch(ADD_GRAVITY_POINT,
       gravityPoint()
         .at(battleField.center())
         .strongest()
@@ -234,7 +234,7 @@ public class Nexus extends BaseBot {
   @When(ROUND_STARTED)
   public void addCenterPoint() {
     Field field = radar().battleField();
-    events().send(ADD_GRAVITY_POINT,
+    dispatch(ADD_GRAVITY_POINT,
       field.center()
         .antiGravitational()
         .normal()
@@ -268,7 +268,7 @@ public class Nexus extends BaseBot {
     }
 
     for (Point wallPoint : wallPoints) {
-      events().send(ADD_GRAVITY_POINT,
+      dispatch(ADD_GRAVITY_POINT,
         wallPoint.antiGravitational().strong()
       );
     }
@@ -276,12 +276,12 @@ public class Nexus extends BaseBot {
 
   @When(NEAR_TO_WALL)
   public void onNearToWall(Point wallPoint) {
-    events().send(ADD_GRAVITY_POINT,
+    dispatch(ADD_GRAVITY_POINT,
       wallPoint.antiGravitational()
         .strongest()
         .during(1)
     );
-    events().send(ADD_GRAVITY_POINT,
+    dispatch(ADD_GRAVITY_POINT,
       radar().battleField().center().gravitational()
         .strongest()
         .during(1)
@@ -337,7 +337,7 @@ public class Nexus extends BaseBot {
 
   private void addEnemyPoints() {
     for (Enemy enemy : radar().knownEnemies()) {
-      events().send(ADD_GRAVITY_POINT,
+      dispatch(ADD_GRAVITY_POINT,
         enemy.location()
           .antiGravitational()
           .normal()
@@ -358,7 +358,7 @@ public class Nexus extends BaseBot {
         target.location().x() + (radius * t.sin()),
         target.location().y() + (radius * t.cos())
       );
-      events().send(ADD_GRAVITY_POINT,
+      dispatch(ADD_GRAVITY_POINT,
         movementPoint.gravitational()
           .weak()
           .during(1)

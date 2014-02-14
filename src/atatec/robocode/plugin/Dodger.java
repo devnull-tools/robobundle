@@ -59,7 +59,7 @@ public class Dodger {
     double bulletPower = lastSeen.energy() - enemy.energy();
     //assumes a bullet fired based on the energy differences
     if (bulletPower >= Rules.MIN_BULLET_POWER && bulletPower <= Rules.MAX_BULLET_POWER) {
-      bot.events().send(
+      bot.dispatch(
         Events.ENEMY_FIRE, new EnemyFireEvent(enemy, bulletPower)
       );
     }

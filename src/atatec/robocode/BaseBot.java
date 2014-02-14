@@ -103,14 +103,14 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     this.body = createBody();
     this.radar = createRadar();
 
-    events().register(body);
-    events().register(gun);
-    events().register(radar);
-    events().register(this);
+    eventRegistry.register(body);
+    eventRegistry.register(gun);
+    eventRegistry.register(radar);
+    eventRegistry.register(this);
 
     configure();
 
-    events().send(ROUND_STARTED);
+    eventRegistry.send(ROUND_STARTED);
 
     onRoundStarted();
   }
@@ -126,7 +126,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   protected void onRoundStarted() {
     while (!roundEnded) {
       onNextTurn();
-      events().send(NEXT_TURN);
+      dispatch(NEXT_TURN);
       execute();
     }
   }
@@ -164,11 +164,6 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   @Override
   public final Radar radar() {
     return radar;
-  }
-
-  @Override
-  public final EventRegistry events() {
-    return eventRegistry;
   }
 
   @Override
@@ -267,6 +262,11 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   public final <E> E plug(E plugin) {
     eventRegistry.register(plugin);
     return plugin;
+  }
+
+  @Override
+  public void dispatch(String eventName, Object... args) {
+    eventRegistry.send(eventName, args);
   }
 
 }

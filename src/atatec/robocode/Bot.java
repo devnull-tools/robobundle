@@ -93,20 +93,20 @@ public interface Bot extends Localizable {
   void log(Throwable throwable);
 
   /**
-   * Plugs a component that will listen to events through methods annotated with {@link
-   * atatec.robocode.annotation.When}
+   * Plugs a component that will listen to events through methods annotated
+   * with {@link atatec.robocode.annotation.When}
    *
    * @return the given plugin
-   *
-   * @see #events()
+   * @see #dispatch(String, Object...)
    */
   <E> E plug(E plugin);
 
   /**
-   * Returns the event registry for registering listeners and sending events.
+   * Sends an event to the listeners
    *
-   * @return the event registry
+   * @param eventName the event name
+   * @param args      the event parameters
    */
-  EventRegistry events();
+  void dispatch(String eventName, Object... args);
 
 }
