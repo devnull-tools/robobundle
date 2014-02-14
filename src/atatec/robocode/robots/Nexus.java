@@ -39,38 +39,15 @@ import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.AccuracyBasedFiringSystem;
 import atatec.robocode.parts.movement.GravitationalMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
-import atatec.robocode.plugin.Avoider;
-import atatec.robocode.plugin.BulletPaint;
-import atatec.robocode.plugin.BulletStatistics;
-import atatec.robocode.plugin.Dodger;
-import atatec.robocode.plugin.EnemyScannerInfo;
-import atatec.robocode.plugin.EnemyTracker;
+import atatec.robocode.plugin.*;
 import robocode.HitRobotEvent;
 import robocode.HitWallEvent;
 
-import java.awt.Color;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import static atatec.robocode.event.Events.BULLET_FIRED;
-import static atatec.robocode.event.Events.BULLET_HIT;
-import static atatec.robocode.event.Events.BULLET_HIT_BULLET;
-import static atatec.robocode.event.Events.BULLET_MISSED;
-import static atatec.robocode.event.Events.BULLET_NOT_FIRED;
-import static atatec.robocode.event.Events.ENEMY_FIRE;
-import static atatec.robocode.event.Events.ENEMY_SCANNED;
-import static atatec.robocode.event.Events.GUN_AIMED;
-import static atatec.robocode.event.Events.HIT_BY_BULLET;
-import static atatec.robocode.event.Events.HIT_ROBOT;
-import static atatec.robocode.event.Events.HIT_WALL;
-import static atatec.robocode.event.Events.NEAR_TO_ENEMY;
-import static atatec.robocode.event.Events.NEAR_TO_WALL;
-import static atatec.robocode.event.Events.ROUND_STARTED;
-import static atatec.robocode.event.Events.TARGET_UNSET;
-import static atatec.robocode.parts.movement.GravitationalMovingSystem.ADD_GRAVITY_POINT;
+import static atatec.robocode.event.Events.*;
 import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 
@@ -101,6 +78,8 @@ public class Nexus extends BaseBot {
     }
   };
 
+  private GravitationalMovingSystem gravitationalMovingSystem = new GravitationalMovingSystem(this);
+
   private BulletStatistics statistics() {
     String entryName = "statistics";
     if (!storage().hasValueFor(entryName)) {
@@ -130,7 +109,7 @@ public class Nexus extends BaseBot {
       )
       .inOtherCases();
 
-    body().forMoving().use(new GravitationalMovingSystem(this));
+    body().forMoving().use(gravitationalMovingSystem);
 
     plug(new Dodger(this));
     plug(new Avoider(this)
@@ -185,7 +164,7 @@ public class Nexus extends BaseBot {
     int delay = 0;
     int speed = (int) Math.floor(event.bulletSpeed() / 4);
     for (int i = speed * 3; i < bulletTrajectory.size(); i += speed) {
-      broadcast(ADD_GRAVITY_POINT,
+      gravitationalMovingSystem.add(
         antiGravityPoint()
           .at(bulletTrajectory.get(i))
           .strong()
@@ -201,7 +180,7 @@ public class Nexus extends BaseBot {
     Enemy enemy = radar().enemy(event.getName());
     if (enemy != null) { // use information from radar
       Point point = enemy.location();
-      broadcast(ADD_GRAVITY_POINT,
+      gravitationalMovingSystem.add(
         antiGravityPoint()
           .at(point)
           .strong()
@@ -212,7 +191,7 @@ public class Nexus extends BaseBot {
 
   @When(NEAR_TO_ENEMY)
   public void avoidEnemy(Enemy enemy) {
-    broadcast(ADD_GRAVITY_POINT,
+    gravitationalMovingSystem.add(
       antiGravityPoint()
         .at(enemy.location())
         .strongest()
@@ -223,7 +202,7 @@ public class Nexus extends BaseBot {
   @When(HIT_WALL)
   public void hitWall(HitWallEvent event) {
     Field battleField = radar().battleField();
-    broadcast(ADD_GRAVITY_POINT,
+    gravitationalMovingSystem.add(
       gravityPoint()
         .at(battleField.center())
         .strongest()
@@ -234,7 +213,7 @@ public class Nexus extends BaseBot {
   @When(ROUND_STARTED)
   public void addCenterPoint() {
     Field field = radar().battleField();
-    broadcast(ADD_GRAVITY_POINT,
+    gravitationalMovingSystem.add(
       field.center()
         .antiGravitational()
         .normal()
@@ -268,7 +247,7 @@ public class Nexus extends BaseBot {
     }
 
     for (Point wallPoint : wallPoints) {
-      broadcast(ADD_GRAVITY_POINT,
+      gravitationalMovingSystem.add(
         wallPoint.antiGravitational().strong()
       );
     }
@@ -276,12 +255,12 @@ public class Nexus extends BaseBot {
 
   @When(NEAR_TO_WALL)
   public void onNearToWall(Point wallPoint) {
-    broadcast(ADD_GRAVITY_POINT,
+    gravitationalMovingSystem.add(
       wallPoint.antiGravitational()
         .strongest()
         .during(1)
     );
-    broadcast(ADD_GRAVITY_POINT,
+    gravitationalMovingSystem.add(
       radar().battleField().center().gravitational()
         .strongest()
         .during(1)
@@ -337,7 +316,7 @@ public class Nexus extends BaseBot {
 
   private void addEnemyPoints() {
     for (Enemy enemy : radar().knownEnemies()) {
-      broadcast(ADD_GRAVITY_POINT,
+      gravitationalMovingSystem.add(
         enemy.location()
           .antiGravitational()
           .normal()
@@ -358,7 +337,7 @@ public class Nexus extends BaseBot {
         target.location().x() + (radius * t.sin()),
         target.location().y() + (radius * t.cos())
       );
-      broadcast(ADD_GRAVITY_POINT,
+      gravitationalMovingSystem.add(
         movementPoint.gravitational()
           .weak()
           .during(1)

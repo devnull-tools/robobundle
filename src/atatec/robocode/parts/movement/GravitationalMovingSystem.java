@@ -44,7 +44,6 @@ import static java.lang.Math.random;
 public class GravitationalMovingSystem implements MovingSystem {
 
   public static final String LOW_ENFORCING = "GravitationalMovingSystem.LOW_ENFORCING";
-  public static final String ADD_GRAVITY_POINT = "GravitationalMovingSystem.ADD_GRAVITY_POINT";
 
   private final Bot bot;
   private Collection<GravityPoint> fixedPoints = new HashSet<GravityPoint>(100);
@@ -62,14 +61,12 @@ public class GravitationalMovingSystem implements MovingSystem {
     return this;
   }
 
-  @When(ADD_GRAVITY_POINT)
   public GravitationalMovingSystem add(GravityPoint point) {
     bot.log("Adding gravity point: %s", point);
     fixedPoints.add(point);
     return this;
   }
 
-  @When(ADD_GRAVITY_POINT)
   public GravitationalMovingSystem add(TemporaryGravityPoint point) {
     bot.log("Adding temp gravity point: %s", point);
     temporaryPoints.add(point);
