@@ -23,15 +23,45 @@
 
 package atatec.robocode.parts;
 
-/** @author Marcelo Guimarães */
+/**
+ * Represents a storage for values that must be retain
+ * across the battles
+ *
+ * @author Marcelo Guimarães
+ */
 public interface Storage {
 
+  /**
+   * Retrieves the value mapped by the given key
+   *
+   * @param name the key
+   * @return the value mapped by the given key
+   */
   <E> E retrieve(String name);
 
+  /**
+   * Maps a value to a given key and stores it
+   *
+   * @param name  the key associated with the value
+   * @param value the value to store
+   */
   void store(String name, Object value);
 
+  /**
+   * Removes the mapped value
+   *
+   * @param name
+   */
   void remove(String name);
 
+  /**
+   * Checks if the storage has a value mapped to a
+   * given key
+   *
+   * @param name the key to search
+   * @return <code>true</code> if there is a value
+   *         mapped for the given key
+   */
   boolean hasValueFor(String name);
 
 }
