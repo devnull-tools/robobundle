@@ -126,7 +126,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   protected void onRoundStarted() {
     while (!roundEnded) {
       onNextTurn();
-      dispatch(NEXT_TURN);
+      broadcast(NEXT_TURN);
       execute();
     }
   }
@@ -265,7 +265,7 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   }
 
   @Override
-  public void dispatch(String eventName, Object... args) {
+  public void broadcast(String eventName, Object... args) {
     eventRegistry.send(eventName, args);
   }
 

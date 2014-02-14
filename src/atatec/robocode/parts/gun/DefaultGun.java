@@ -66,7 +66,7 @@ public class DefaultGun extends BasePart implements Gun {
   public Gun aim() {
     try {
       aimingSystem.execute();
-      bot.dispatch(Events.GUN_AIMED);
+      bot.broadcast(Events.GUN_AIMED);
     } catch (SystemException e) {
       bot.log(e);
     }

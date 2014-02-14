@@ -106,7 +106,7 @@ public class GravitationalMovingSystem implements MovingSystem {
     bot.log("Location: %s", location);
     bot.log("Forced Location: %s", forcePoint);
     if (isLowEnforcing()) {
-      bot.dispatch(LOW_ENFORCING, forcePoint);
+      bot.broadcast(LOW_ENFORCING, forcePoint);
       forcePoint = null;
       return;
     }

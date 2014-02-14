@@ -115,13 +115,13 @@ public class DefaultRadar extends BasePart implements Radar {
 
   public void setTarget(Enemy e) {
     this.target = e;
-    this.bot.dispatch(Events.TARGET_SET, new TargetSetEvent(target));
+    this.bot.broadcast(Events.TARGET_SET, new TargetSetEvent(target));
   }
 
   @Override
   public void unsetTarget() {
     this.target = null;
-    this.bot.dispatch(Events.TARGET_UNSET, new TargetUnsetEvent(target));
+    this.bot.broadcast(Events.TARGET_UNSET, new TargetUnsetEvent(target));
   }
 
   @Override

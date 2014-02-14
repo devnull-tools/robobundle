@@ -57,7 +57,7 @@ public class Avoider {
   public void checkWalls() {
     wallPoint = bot.radar().battleField().closestWallPointTo(bot.location());
     if (isBotNearTo(wallPoint)) {
-      bot.dispatch(Events.NEAR_TO_WALL, wallPoint);
+      bot.broadcast(Events.NEAR_TO_WALL, wallPoint);
     }
   }
 
@@ -67,7 +67,7 @@ public class Avoider {
     closestEnemies.clear();
     for (Enemy enemy : enemies) {
       if (isBotNearTo(enemy.location())) {
-        bot.dispatch(Events.NEAR_TO_ENEMY, enemy);
+        bot.broadcast(Events.NEAR_TO_ENEMY, enemy);
         closestEnemies.add(enemy);
       }
     }

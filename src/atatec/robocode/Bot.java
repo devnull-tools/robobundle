@@ -24,7 +24,6 @@
 package atatec.robocode;
 
 import atatec.robocode.calc.Point;
-import atatec.robocode.event.EventRegistry;
 import atatec.robocode.parts.Body;
 import atatec.robocode.parts.Gun;
 import atatec.robocode.parts.Radar;
@@ -97,7 +96,7 @@ public interface Bot extends Localizable {
    * with {@link atatec.robocode.annotation.When}
    *
    * @return the given plugin
-   * @see #dispatch(String, Object...)
+   * @see #broadcast(String, Object...)
    */
   <E> E plug(E plugin);
 
@@ -107,6 +106,6 @@ public interface Bot extends Localizable {
    * @param eventName the event name
    * @param args      the event parameters
    */
-  void dispatch(String eventName, Object... args);
+  void broadcast(String eventName, Object... args);
 
 }
