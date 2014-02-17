@@ -226,22 +226,22 @@ public class Nexus extends BaseBot {
     Set<Point> wallPoints = new HashSet<Point>(1000);
 
     // bottom wall points
-    Point point = battleField.downLeft();
+    Point point = battleField.bottomLeft();
     for (int i = 0; i < battleField.width(); i += wallGPointsDistance) {
       wallPoints.add(point.right(i));
     }
     // right wall points
-    point = battleField.downRight();
+    point = battleField.bottomRight();
     for (int i = 0; i < battleField.height(); i += wallGPointsDistance) {
       wallPoints.add(point.up(i));
     }
     // upper wall points
-    point = battleField.upLeft();
+    point = battleField.topLeft();
     for (int i = 0; i < battleField.width(); i += wallGPointsDistance) {
       wallPoints.add(point.right(i));
     }
     // left wall points
-    point = battleField.downLeft();
+    point = battleField.bottomLeft();
     for (int i = 0; i < battleField.height(); i += wallGPointsDistance) {
       wallPoints.add(point.up(i));
     }

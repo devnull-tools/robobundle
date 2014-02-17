@@ -55,7 +55,7 @@ public class Avoider {
 
   @When(Events.NEXT_TURN)
   public void checkWalls() {
-    wallPoint = bot.radar().battleField().closestWallPointTo(bot.location());
+    wallPoint = bot.radar().battleField().closestBorderPoint(bot.location());
     if (isBotNearTo(wallPoint)) {
       bot.broadcast(Events.NEAR_TO_WALL, wallPoint);
     }

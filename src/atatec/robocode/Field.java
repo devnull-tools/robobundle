@@ -25,28 +25,82 @@ package atatec.robocode;
 
 import atatec.robocode.calc.Point;
 
-/** @author Marcelo Guimarães */
+/**
+ * Interface that defines a field.
+ *
+ * @author Marcelo Guimarães
+ */
 public interface Field {
+
+  /**
+   * @return the field height
+   */
   double height();
 
+  /**
+   * @return the field width
+   */
   double width();
 
+  /**
+   * @return the center of the field
+   */
   Point center();
 
-  Point downRight();
+  /**
+   * @return the point at the bottom right corner of the field
+   */
+  Point bottomRight();
 
-  Point upRight();
+  /**
+   * @return the point at the top right corner of the field
+   */
+  Point topRight();
 
-  Point upLeft();
+  /**
+   * @return the point at the top left corner of the field
+   */
+  Point topLeft();
 
-  Point downLeft();
+  /**
+   * @return the point at the bottom left corner of the field
+   */
+  Point bottomLeft();
 
+  /**
+   * Returns the size of the diagonal. This is the maximum distance
+   * between two point in the field.
+   *
+   * @return the size of the field diagonal
+   */
   double diagonal();
 
+  /**
+   * Checks if the given point is in the field
+   *
+   * @param p the point to check
+   * @return <code>true</code> if the field contains the given point
+   */
   boolean isOnField(Point p);
 
-  Point closestWallPointTo(Point p);
+  /**
+   * Returns the closest point in the border to the given point.
+   * Usefull when check for an incoming wall.
+   *
+   * @param p
+   * @return
+   */
+  Point closestBorderPoint(Point p);
 
+  /**
+   * Returns the closest point to the given one that
+   * belongs to the field. If the given point also
+   * belongs to the field, returns it.
+   *
+   * @param p the point to check
+   * @return the closest point to <code>p</code> that
+   *         belongs to the field
+   */
   Point normalize(Point p);
 
 }

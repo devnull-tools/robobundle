@@ -35,9 +35,9 @@ public class BattleField implements Field {
 
   private final double botSize = 18.0;
 
-  public BattleField(Robot robot) {
-    height = robot.getBattleFieldHeight();
-    width = robot.getBattleFieldWidth();
+  public BattleField(double width, double height) {
+    this.height = height;
+    this.width = width;
   }
 
   @Override
@@ -56,28 +56,28 @@ public class BattleField implements Field {
   }
 
   @Override
-  public Point downRight() {
+  public Point bottomRight() {
     return new Point(width, 0);
   }
 
   @Override
-  public Point upRight() {
+  public Point topRight() {
     return new Point(width, height);
   }
 
   @Override
-  public Point upLeft() {
+  public Point topLeft() {
     return new Point(0, height);
   }
 
   @Override
-  public Point downLeft() {
+  public Point bottomLeft() {
     return new Point(botSize, botSize);
   }
 
   @Override
   public double diagonal() {
-    return downLeft().bearingTo(upRight()).distance();
+    return bottomLeft().bearingTo(topRight()).distance();
   }
 
   @Override
@@ -99,7 +99,7 @@ public class BattleField implements Field {
   }
 
   @Override
-  public Point closestWallPointTo(Point point) {
+  public Point closestBorderPoint(Point point) {
     Point p = normalize(point);
     Point a, b;
     if (p.x() < width / 2) {

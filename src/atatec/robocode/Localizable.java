@@ -25,9 +25,18 @@ package atatec.robocode;
 
 import atatec.robocode.calc.Point;
 
-/** @author Marcelo Guimarães */
+/**
+ * Interface that defines any object localizable in the battle field.
+ *
+ * @author Marcelo Guimarães
+ */
 public interface Localizable {
 
+  /**
+   * Gets the object location on the battle field.
+   *
+   * @return the object location on the battle field.
+   */
   Point location();
 
 }

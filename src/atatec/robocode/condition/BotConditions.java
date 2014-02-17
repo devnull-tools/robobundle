@@ -58,7 +58,7 @@ public class BotConditions {
     return new Condition() {
       @Override
       public boolean evaluate() {
-        Point wall = bot.radar().battleField().closestWallPointTo(bot.location());
+        Point wall = bot.radar().battleField().closestBorderPoint(bot.location());
         return wall.bearingTo(bot.location()).distance() <= distance;
       }
     };

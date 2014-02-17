@@ -40,9 +40,6 @@ import static java.lang.Math.sqrt;
  */
 public class Point implements Localizable {
 
-  /** Holds the (0,0) point. */
-  public static final Point ORIGIN = new Point(0, 0);
-
   private final double x, y;
 
   /**
@@ -78,7 +75,6 @@ public class Point implements Localizable {
    * Returns a new point to the left of this.
    *
    * @param amount the distance to this point
-   *
    * @return a new point to the left of this.
    */
   public Point left(double amount) {
@@ -89,7 +85,6 @@ public class Point implements Localizable {
    * Returns a new point to the right of this.
    *
    * @param amount the distance to this point
-   *
    * @return a new point to the right of this.
    */
   public Point right(double amount) {
@@ -100,7 +95,6 @@ public class Point implements Localizable {
    * Returns a new point above this.
    *
    * @param amount the distance to this point
-   *
    * @return a new point above this.
    */
   public Point up(double amount) {
@@ -111,7 +105,6 @@ public class Point implements Localizable {
    * Returns a new point bellow this.
    *
    * @param amount the distance to this point
-   *
    * @return a new point bellow this.
    */
   public Point down(double amount) {
@@ -122,7 +115,6 @@ public class Point implements Localizable {
    * Sums this point's coordinates with another point's coordinates.
    *
    * @param other the other point
-   *
    * @return a point (x + other.x, y + other.y)
    */
   public Point plus(Point other) {
@@ -133,7 +125,6 @@ public class Point implements Localizable {
    * Subtracts this point's coordinates with another point's coordinates.
    *
    * @param other the other point
-   *
    * @return a point (x - other.x, y - other.y)
    */
   public Point minus(Point other) {
@@ -144,7 +135,6 @@ public class Point implements Localizable {
    * Computes the bearing to another point.
    *
    * @param other the other point to compute the bearing
-   *
    * @return the bearing to the given point
    */
   public Position bearingTo(Point other) {
@@ -155,7 +145,6 @@ public class Point implements Localizable {
    * Calculates the distance from this point to the given point
    *
    * @param other the point to calculate the distance
-   *
    * @return the distance between this point and the given one.
    */
   public double distanceTo(Point other) {
@@ -167,7 +156,6 @@ public class Point implements Localizable {
    *
    * @param angle the angle to head
    * @param value the value to move
-   *
    * @return the moved point
    */
   public Point move(Angle angle, double value) {
