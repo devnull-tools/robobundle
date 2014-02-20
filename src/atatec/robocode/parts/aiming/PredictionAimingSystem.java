@@ -33,6 +33,8 @@ import atatec.robocode.parts.AimingSystem;
 import atatec.robocode.util.Drawer;
 import robocode.Rules;
 
+import static atatec.robocode.calc.Angle.cos;
+import static atatec.robocode.calc.Angle.sin;
 import static atatec.robocode.event.Events.DRAW;
 import static java.awt.Color.RED;
 
@@ -59,8 +61,8 @@ public class PredictionAimingSystem implements AimingSystem {
       predictedLocation = enemy.location();
       while ((++deltaTime) * bulletSpeed < botLocation.bearingTo(predictedLocation).distance()) {
         predictedLocation = predictedLocation.plus(new Point(
-          enemyHeading.sin() * enemyVelocity,
-          enemyHeading.cos() * enemyVelocity
+          sin(enemyHeading) * enemyVelocity,
+          cos(enemyHeading) * enemyVelocity
         ));
         // check bounds
         if (!battleField.isOnField(predictedLocation)) {

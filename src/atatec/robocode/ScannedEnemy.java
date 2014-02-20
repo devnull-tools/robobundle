@@ -28,6 +28,9 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 import robocode.ScannedRobotEvent;
 
+import static atatec.robocode.calc.Angle.cos;
+import static atatec.robocode.calc.Angle.sin;
+
 /**
  * @author Marcelo Guimarães
  */
@@ -57,8 +60,8 @@ public final class ScannedEnemy implements Enemy {
     this.name = event.getName();
     absoluteBearing = bot.body().heading().plus(bearing);
     Point botLocation = bot.location();
-    double enemyX = botLocation.x() + distance * absoluteBearing.sin();
-    double enemyY = botLocation.y() + distance * absoluteBearing.cos();
+    double enemyX = botLocation.x() + distance * sin(absoluteBearing);
+    double enemyY = botLocation.y() + distance * cos(absoluteBearing);
     this.location = new Point(enemyX, enemyY);
     this.time = event.getTime();
   }
@@ -125,7 +128,7 @@ public final class ScannedEnemy implements Enemy {
 
   @Override
   public double lateralVelocity() {
-    return velocity() * heading().minus(absoluteBearing()).sin();
+    return velocity() * sin(heading().minus(absoluteBearing()));
   }
 
 }

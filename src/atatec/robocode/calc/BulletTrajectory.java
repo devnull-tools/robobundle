@@ -28,6 +28,9 @@ import atatec.robocode.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import static atatec.robocode.calc.Angle.cos;
+import static atatec.robocode.calc.Angle.sin;
+
 /** @author Marcelo Guimarães */
 public class BulletTrajectory {
 
@@ -56,8 +59,8 @@ public class BulletTrajectory {
     Point point = from;
     while (battleField.isOnField(point)) {
       point = new Point(
-        point.x() + distanceBetweenPoints * bearing.angle().absolute().sin(),
-        point.y() + distanceBetweenPoints * bearing.angle().absolute().cos()
+        point.x() + distanceBetweenPoints * sin(bearing.angle().absolute()),
+        point.y() + distanceBetweenPoints * cos(bearing.angle().absolute())
       );
       points.add(point);
     }

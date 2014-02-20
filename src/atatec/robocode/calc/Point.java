@@ -26,6 +26,8 @@ package atatec.robocode.calc;
 import atatec.robocode.Localizable;
 import atatec.robocode.util.GravityPointBuilder;
 
+import static atatec.robocode.calc.Angle.cos;
+import static atatec.robocode.calc.Angle.sin;
 import static atatec.robocode.calc.BotMath.areEquals;
 import static atatec.robocode.calc.BotMath.toBigecimal;
 import static java.lang.Math.pow;
@@ -159,7 +161,7 @@ public class Point implements Localizable {
    * @return the moved point
    */
   public Point move(Angle angle, double value) {
-    return this.plus(new Point(value * angle.sin(), value * angle.cos()));
+    return this.plus(new Point(value * sin(angle), value * cos(angle)));
   }
 
   @Override

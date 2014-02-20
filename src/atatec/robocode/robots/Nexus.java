@@ -47,6 +47,8 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+import static atatec.robocode.calc.Angle.cos;
+import static atatec.robocode.calc.Angle.sin;
 import static atatec.robocode.event.Events.*;
 import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
@@ -326,11 +328,11 @@ public class Nexus extends BaseBot {
       double radius = target.distance();
       double perimeter = Math.PI * 2 * radius;
       int numberOfPoints = (int) (perimeter / 5);
-      double angleStep = Angle.inRadians(radar().time() >> 4).cos() * (Math.PI * 2) / numberOfPoints;
+      double angleStep = cos(Angle.inRadians(radar().time() >> 4)) * (Math.PI * 2) / numberOfPoints;
       Angle t = target.location().bearingTo(this.location()).angle().plus(angleStep * movementLength);
       Point movementPoint = new Point(
-        target.location().x() + (radius * t.sin()),
-        target.location().y() + (radius * t.cos())
+        target.location().x() + (radius * sin(t)),
+        target.location().y() + (radius * cos(t))
       );
       gravitationalMovingSystem.add(
         movementPoint.gravitational()

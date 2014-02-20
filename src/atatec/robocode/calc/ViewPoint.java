@@ -23,6 +23,9 @@
 
 package atatec.robocode.calc;
 
+import static atatec.robocode.calc.Angle.cos;
+import static atatec.robocode.calc.Angle.sin;
+
 /** @author Marcelo Guimarães */
 public class ViewPoint {
 
@@ -41,8 +44,8 @@ public class ViewPoint {
     double y = result.y();
     // rotate the point
     return new Point(
-      x * angle.cos() - y * angle.sin(),
-      x * angle.sin() + y * angle.cos()
+      x * cos(angle) - y * sin(angle),
+      x * sin(angle) + y * cos(angle)
     );
   }
 

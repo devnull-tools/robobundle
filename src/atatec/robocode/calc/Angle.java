@@ -79,16 +79,16 @@ public class Angle {
     return new Angle(-radians);
   }
 
-  public double cos() {
-    return Math.cos(radians);
+  public static double cos(Angle angle) {
+    return Math.cos(angle.radians());
   }
 
-  public double sin() {
-    return Math.sin(radians);
+  public static double sin(Angle angle) {
+    return Math.sin(angle.radians());
   }
 
-  public double tan() {
-    return Math.tan(radians);
+  public static double tan(Angle angle) {
+    return Math.tan(angle.radians());
   }
 
   public Angle toRight() {

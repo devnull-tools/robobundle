@@ -23,6 +23,9 @@
 
 package atatec.robocode.calc;
 
+import static atatec.robocode.calc.Angle.cos;
+import static atatec.robocode.calc.Angle.sin;
+
 /** @author Marcelo Guimarães */
 public class GravityPoint extends Point {
 
@@ -48,7 +51,7 @@ public class GravityPoint extends Point {
     double distance = bearing.distance();
     double force = BotMath.areEquals(distance, 0) ?
       value : value / Math.pow(distance, 2);
-    return new Point(angle.sin() * force, angle.cos() * force);
+    return new Point(sin(angle) * force, cos(angle) * force);
   }
 
   public TemporaryGravityPoint during(int time) {

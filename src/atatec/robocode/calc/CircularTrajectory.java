@@ -26,6 +26,9 @@ package atatec.robocode.calc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static atatec.robocode.calc.Angle.cos;
+import static atatec.robocode.calc.Angle.sin;
+
 /** @author Marcelo Guimarães */
 public class CircularTrajectory {
 
@@ -61,8 +64,8 @@ public class CircularTrajectory {
     double angleStep = direction * (Math.PI * 2) / numberOfPoints;
     while (--numberOfPoints > 0) {
       points.add(new Point(
-        center.x() + (radius * t.sin()),
-        center.y() + (radius * t.cos())
+        center.x() + (radius * sin(t)),
+        center.y() + (radius * cos(t))
       ));
       t = t.plus(angleStep);
     }
