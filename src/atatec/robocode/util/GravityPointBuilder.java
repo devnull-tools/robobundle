@@ -26,7 +26,9 @@ package atatec.robocode.util;
 import atatec.robocode.calc.GravityPoint;
 import atatec.robocode.calc.Point;
 
-/** @author Marcelo Guimarães */
+/**
+ * @author Marcelo Guimarães
+ */
 public class GravityPointBuilder {
 
   private static double WEAKEST_VALUE = 1;

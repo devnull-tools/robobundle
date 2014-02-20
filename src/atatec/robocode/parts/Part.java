@@ -26,7 +26,7 @@ package atatec.robocode.parts;
 import atatec.robocode.Localizable;
 import atatec.robocode.calc.Angle;
 
-import java.awt.Color;
+import java.awt.*;
 
 /** @author Marcelo Guimarães */
 public interface Part {

@@ -25,9 +25,17 @@ package atatec.robocode.parts;
 
 import atatec.robocode.Command;
 
-/** @author Marcelo Guimarães */
+/**
+ * Interface that defines a component that fires the {@link Gun}.
+ *
+ * @author Marcelo Guimarães
+ */
 public interface FiringSystem extends Command {
 
+  /**
+   * @return the fire power that will be used (it may vary depending
+   * on the battle conditions)
+   */
   double firePower();
 
 }

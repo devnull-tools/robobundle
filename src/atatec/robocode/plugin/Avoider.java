@@ -30,7 +30,7 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.event.Events;
 import atatec.robocode.util.Drawer;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 

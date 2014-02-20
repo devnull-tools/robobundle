@@ -33,7 +33,7 @@ import atatec.robocode.parts.Body;
 import atatec.robocode.parts.DefaultConditionalCommand;
 import atatec.robocode.parts.MovingSystem;
 
-import java.awt.Color;
+import java.awt.*;
 
 /** @author Marcelo Guimarães */
 public class DefaultBody extends BasePart implements Body {

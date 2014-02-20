@@ -30,25 +30,65 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.event.Events;
 import atatec.robocode.util.Drawer;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Collection;
+import java.util.Comparator;
 
-/** @author Marcelo Guimarães */
+/**
+ * @author Marcelo Guimarães
+ */
 public class StrengthBasedLockCondition implements LockCondition {
 
-  private final Bot bot;
-  private final Function<Enemy, Double> strengthFunction;
+  private enum LockMode {
+    STRONGER {
+      @Override
+      public boolean canLock(double lockedStr, double candidateStr) {
+        return candidateStr > lockedStr;
+      }
+    },
+    WEAKER {
+      @Override
+      public boolean canLock(double lockedStr, double candidateStr) {
+        return candidateStr < lockedStr;
+      }
+    };
 
-  public StrengthBasedLockCondition(Bot bot, Function<Enemy, Double> strengthFunction) {
+    public abstract boolean canLock(double lockedStr, double candidateStr);
+  }
+
+  private final Bot bot;
+  private LockMode mode = LockMode.STRONGER;
+  private Function<Enemy, Double> strengthFunction = new Function<Enemy, Double>() {
+    @Override
+    public Double evaluate(Enemy argument) {
+      return argument.energy();
+    }
+  };
+
+  public StrengthBasedLockCondition(Bot bot) {
     this.bot = bot;
+  }
+
+  public StrengthBasedLockCondition use(Function<Enemy, Double> strengthFunction) {
     this.strengthFunction = strengthFunction;
+    return this;
+  }
+
+  public StrengthBasedLockCondition lockWeaker() {
+    this.mode = LockMode.WEAKER;
+    return this;
+  }
+
+  public StrengthBasedLockCondition lockStronger() {
+    this.mode = LockMode.STRONGER;
+    return this;
   }
 
   @Override
   public boolean canLock(Enemy enemy) {
-    double lastSeenStr = strengthFunction.evaluate(enemy);
-    double lockedStr = strengthFunction.evaluate(bot.radar().target());
-    return lastSeenStr < lockedStr;
+    double candidateEnemyStr = strengthFunction.evaluate(enemy);
+    double lockedEnemyStr = strengthFunction.evaluate(bot.radar().target());
+    return mode.canLock(lockedEnemyStr, candidateEnemyStr);
   }
 
   @When(Events.DRAW)

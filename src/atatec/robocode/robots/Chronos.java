@@ -33,10 +33,8 @@ import atatec.robocode.parts.movement.EnemyCircleMovingSystem;
 import atatec.robocode.parts.movement.FollowEnemyMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 import atatec.robocode.plugin.BulletPaint;
-import atatec.robocode.plugin.Dodger;
-import atatec.robocode.plugin.EnemyScannerInfo;
 
-import java.awt.Color;
+import java.awt.*;
 
 /** @author Marcelo Guimarães */
 public class Chronos extends BaseBot {

@@ -28,12 +28,11 @@ import atatec.robocode.annotation.When;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-/** @author Marcelo Guimarães */
+/**
+ * @author Marcelo Guimarães
+ */
 public class DefaultEventRegistry implements EventRegistry {
 
   private final Bot bot;
@@ -74,10 +73,10 @@ public class DefaultEventRegistry implements EventRegistry {
 
   private class Mapping {
 
-    private final List<ListenerMapping> listeners;
+    private final Set<ListenerMapping> listeners;
 
     private Mapping() {
-      this.listeners = new LinkedList<ListenerMapping>();
+      this.listeners = new LinkedHashSet<ListenerMapping>();
     }
 
     public void add(Object listener, Method method) {
@@ -131,6 +130,25 @@ public class DefaultEventRegistry implements EventRegistry {
       }
     }
 
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      ListenerMapping that = (ListenerMapping) o;
+
+      if (!listener.equals(that.listener)) return false;
+      if (!method.equals(that.method)) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = method.hashCode();
+      result = 31 * result + listener.hashCode();
+      return result;
+    }
   }
 
 }

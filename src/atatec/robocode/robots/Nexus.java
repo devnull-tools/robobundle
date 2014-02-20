@@ -51,7 +51,9 @@ import static atatec.robocode.event.Events.*;
 import static atatec.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static atatec.robocode.util.GravityPointBuilder.gravityPoint;
 
-/** @author Marcelo Guimarães */
+/**
+ * @author Marcelo Guimarães
+ */
 public class Nexus extends BaseBot {
 
   private int wallGPointsDistance = 40;
@@ -80,14 +82,6 @@ public class Nexus extends BaseBot {
 
   private GravitationalMovingSystem gravitationalMovingSystem = new GravitationalMovingSystem(this);
 
-  private BulletStatistics statistics() {
-    String entryName = "statistics";
-    if (!storage().hasValueFor(entryName)) {
-      storage().store(entryName, new BulletStatistics(this));
-    }
-    return storage().retrieve(entryName);
-  }
-
   protected void configure() {
     body().setColor(new Color(39, 40, 34));
     gun().setColor(new Color(249, 38, 114));
@@ -105,7 +99,9 @@ public class Nexus extends BaseBot {
 
       .use(new EnemyLockScanningSystem(this)
         .scanBattleField()
-        .addLockCondition(plug(new StrengthBasedLockCondition(this, enemyStrength)))
+        .addLockCondition(new StrengthBasedLockCondition(this)
+          .use(enemyStrength)
+          .lockWeaker())
       )
       .inOtherCases();
 
@@ -117,7 +113,6 @@ public class Nexus extends BaseBot {
 
     plug(new EnemyScannerInfo(this));
     plug(enemyTracker);
-    plug(statistics());
 
     plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()
@@ -307,8 +302,8 @@ public class Nexus extends BaseBot {
 
     patternStr = Math.abs(patternStr);
 
-    double strength = (1 - statistics().of(enemy).accuracy()) *
-      (patternStr * (enemy.energy() + statistics().of(enemy).taken() * 2)
+    double strength = (1 - statistics().forEnemy(enemy).accuracy()) *
+      (patternStr * (enemy.energy() + statistics().forEnemy(enemy).taken() * 2)
         + Math.sqrt(enemy.distance()));
 
     strengthMap.put(enemy.name(), strength);

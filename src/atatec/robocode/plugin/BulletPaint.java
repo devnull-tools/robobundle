@@ -29,7 +29,7 @@ import atatec.robocode.event.BulletFiredEvent;
 import atatec.robocode.event.Events;
 import robocode.Rules;
 
-import java.awt.Color;
+import java.awt.*;
 
 import static robocode.Rules.MAX_BULLET_POWER;
 import static robocode.Rules.MIN_BULLET_POWER;

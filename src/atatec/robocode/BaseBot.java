@@ -32,6 +32,7 @@ import atatec.robocode.parts.*;
 import atatec.robocode.parts.body.DefaultBody;
 import atatec.robocode.parts.gun.DefaultGun;
 import atatec.robocode.parts.radar.DefaultRadar;
+import atatec.robocode.plugin.DefaultBotStatistics;
 import atatec.robocode.util.Drawer;
 import robocode.*;
 
@@ -43,7 +44,7 @@ import static atatec.robocode.event.Events.*;
 
 /**
  * A base class that provides a default abstraction to creating first class robots.
- *
+ * <p/>
  * All robot behaviour should be off the superclasses and attached to the parts (
  * {@link Gun}, {@link Body} and {@link Radar}) and the events dispatched by this
  * class can be listener from every attached part or component.
@@ -65,6 +66,11 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   private static Map<String, Storage> persistentStorage =
     new ConcurrentHashMap<String, Storage>();
 
+  /**
+   * Name used to store the bot statistics in storage
+   */
+  protected static final String STORAGE_STATISTICS = "BaseBot#statistics";
+
   protected Gun createGun() {
     return new DefaultGun(this);
   }
@@ -77,7 +83,9 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     return new DefaultRadar(this);
   }
 
-  /** Configures the bot behaviours. All configuration must be done here. */
+  /**
+   * Configures the bot behaviours. All configuration must be done here.
+   */
   protected abstract void configure();
 
   /**
@@ -107,6 +115,8 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     eventRegistry.register(gun);
     eventRegistry.register(radar);
     eventRegistry.register(this);
+
+    storage().store(STORAGE_STATISTICS, plug(new DefaultBotStatistics(this)));
 
     configure();
 
@@ -139,6 +149,16 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
    */
   protected void onNextTurn() {
 
+  }
+
+  @Override
+  public BotStatistics statistics() {
+    return storage().retrieve(STORAGE_STATISTICS);
+  }
+
+  @Override
+  public String name() {
+    return getName();
   }
 
   @Override

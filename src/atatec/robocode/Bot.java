@@ -42,6 +42,11 @@ import atatec.robocode.parts.Storage;
 public interface Bot extends Localizable {
 
   /**
+   * @return the robot's name.
+   */
+  String name();
+
+  /**
    * Returns a coordinate representing this robot location in the battlefield.
    *
    * @return a coordinate representing this robot location in the battlefield.
@@ -93,7 +98,7 @@ public interface Bot extends Localizable {
 
   /**
    * Plugs a component that will listen to events through methods annotated
-   * with {@link atatec.robocode.annotation.When}
+   * with {@link atatec.robocode.annotation.When}.
    *
    * @return the given plugin
    * @see #broadcast(String, Object...)
@@ -107,5 +112,12 @@ public interface Bot extends Localizable {
    * @param args      the event parameters
    */
   void broadcast(String eventName, Object... args);
+
+  /**
+   * Gets the statistics for this bot
+   *
+   * @return the statistics for this bot.
+   */
+  BotStatistics statistics();
 
 }

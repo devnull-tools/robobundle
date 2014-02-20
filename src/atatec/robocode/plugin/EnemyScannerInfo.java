@@ -30,9 +30,7 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.util.Drawer;
 
 import static atatec.robocode.event.Events.DRAW;
-import static java.awt.Color.GREEN;
-import static java.awt.Color.ORANGE;
-import static java.awt.Color.YELLOW;
+import static java.awt.Color.*;
 
 /** @author Marcelo Guimarães */
 public class EnemyScannerInfo {

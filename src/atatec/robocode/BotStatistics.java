@@ -21,50 +21,29 @@
  * CONNECTION  WITH  THE  SOFTWARE  OR  THE  USE OR OTHER DEALINGS IN THE SOFTWARE. *
  ************************************************************************************/
 
-package atatec.robocode.util;
+package atatec.robocode;
 
-import atatec.robocode.ConditionalCommand;
-import atatec.robocode.parts.AimingSystem;
-import atatec.robocode.parts.FiringSystem;
-import atatec.robocode.parts.MovingSystem;
+/**
+ * Interface that defines a set of statistics collected
+ * by the bot.
+ *
+ * @author Marcelo Guimarães
+ */
+public interface BotStatistics {
 
-/** @author Marcelo Guimarães */
-public class Systems {
+  /**
+   * Returns the statistics for a given enemy.
+   *
+   * @param enemy the enemy
+   * @return the statistics for the given enemy.
+   */
+  Statistics forEnemy(Enemy enemy);
 
-  private Systems() {
-  }
-
-  public static AimingSystem asAimingSystem(final ConditionalCommand<AimingSystem> system) {
-    return new AimingSystem() {
-      @Override
-      public void execute() {
-        system.execute();
-      }
-    };
-  }
-
-  public static FiringSystem asFiringSystem(final ConditionalCommand<FiringSystem> system) {
-    return new FiringSystem() {
-      @Override
-      public void execute() {
-        system.execute();
-      }
-
-      @Override
-      public double firePower() {
-        FiringSystem activated = system.activated();
-        return activated != null ? activated.firePower() : 0;
-      }
-    };
-  }
-
-  public static MovingSystem asMovingSystem(final ConditionalCommand<MovingSystem> system) {
-    return new MovingSystem() {
-      @Override
-      public void execute() {
-        system.execute();
-      }
-    };
-  }
+  /**
+   * Returns the overall statistics.
+   *
+   * @return the overall statistics.
+   */
+  Statistics overall();
 
 }

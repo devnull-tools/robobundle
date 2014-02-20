@@ -25,8 +25,8 @@ package atatec.robocode.parts;
 
 import atatec.robocode.Bot;
 import atatec.robocode.Command;
-import atatec.robocode.condition.Condition;
 import atatec.robocode.ConditionalCommand;
+import atatec.robocode.condition.Condition;
 import atatec.robocode.condition.ConditionSelector;
 import atatec.robocode.condition.Conditions;
 

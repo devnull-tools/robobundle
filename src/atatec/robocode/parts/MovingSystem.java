@@ -25,7 +25,11 @@ package atatec.robocode.parts;
 
 import atatec.robocode.Command;
 
-/** @author Marcelo Guimarães */
+/**
+ * Interface that defines a component that moves the {@link Body}.
+ *
+ * @author Marcelo Guimarães
+ */
 public interface MovingSystem extends Command {
 
 }

@@ -23,11 +23,7 @@
 
 package atatec.robocode.parts.radar;
 
-import atatec.robocode.BaseBot;
-import atatec.robocode.BattleField;
-import atatec.robocode.ConditionalCommand;
-import atatec.robocode.Enemy;
-import atatec.robocode.Field;
+import atatec.robocode.*;
 import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.event.EnemyScannedEvent;
@@ -41,7 +37,7 @@ import atatec.robocode.parts.ScanningSystem;
 import atatec.robocode.parts.scanner.DefaultScanningSystem;
 import robocode.RobotDeathEvent;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;

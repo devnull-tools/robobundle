@@ -24,7 +24,6 @@
 package atatec.robocode;
 
 import atatec.robocode.calc.Point;
-import robocode.Robot;
 
 /** @author Marcelo Guimarães */
 public class BattleField implements Field {

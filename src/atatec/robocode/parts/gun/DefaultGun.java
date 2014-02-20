@@ -31,14 +31,10 @@ import atatec.robocode.condition.Condition;
 import atatec.robocode.condition.RadarConditions;
 import atatec.robocode.event.Events;
 import atatec.robocode.exception.SystemException;
-import atatec.robocode.parts.AimingSystem;
-import atatec.robocode.parts.BasePart;
-import atatec.robocode.parts.DefaultConditionalCommand;
-import atatec.robocode.parts.FiringSystem;
-import atatec.robocode.parts.Gun;
+import atatec.robocode.parts.*;
 import robocode.util.Utils;
 
-import java.awt.Color;
+import java.awt.*;
 
 /** @author Marcelo Guimarães */
 public class DefaultGun extends BasePart implements Gun {

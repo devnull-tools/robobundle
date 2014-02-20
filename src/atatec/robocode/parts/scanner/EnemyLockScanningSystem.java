@@ -35,9 +35,7 @@ import robocode.RobotDeathEvent;
 import java.util.LinkedList;
 import java.util.List;
 
-import static atatec.robocode.event.Events.ENEMY_SCANNED;
-import static atatec.robocode.event.Events.ROBOT_DEATH;
-import static atatec.robocode.event.Events.TARGET_UNSET;
+import static atatec.robocode.event.Events.*;
 
 /** @author Marcelo Guimarães */
 public class EnemyLockScanningSystem implements ScanningSystem {

@@ -28,19 +28,21 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.calc.Position;
 import robocode.ScannedRobotEvent;
 
-/** @author Marcelo Guimarães */
-public class ScannedEnemy extends BaseEnemy {
+/**
+ * @author Marcelo Guimarães
+ */
+public final class ScannedEnemy implements Enemy {
 
-  private final String name;
-  private final Position position;
-  private final double distance;
-  private final double energy;
-  private final double velocity;
-  private final Angle heading;
-  private final Angle bearing;
-  private final Angle absoluteBearing;
-  private final Point location;
-  private final long time;
+  private String name;
+  private Position position;
+  private double distance;
+  private double energy;
+  private double velocity;
+  private Angle heading;
+  private Angle bearing;
+  private Angle absoluteBearing;
+  private Point location;
+  private long time;
 
   public ScannedEnemy(Bot bot, ScannedRobotEvent event) {
     this.position = new Position(
@@ -107,8 +109,23 @@ public class ScannedEnemy extends BaseEnemy {
   }
 
   @Override
-  public Angle absoluteBearing(){
+  public Angle absoluteBearing() {
     return absoluteBearing;
+  }
+
+  @Override
+  public boolean isMoving() {
+    return velocity() > 0;
+  }
+
+  @Override
+  public boolean isStopped() {
+    return !isMoving();
+  }
+
+  @Override
+  public double lateralVelocity() {
+    return velocity() * heading().minus(absoluteBearing()).sin();
   }
 
 }

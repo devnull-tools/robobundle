@@ -24,11 +24,12 @@
 package atatec.robocode.plugin;
 
 import atatec.robocode.Bot;
+import atatec.robocode.BotStatistics;
 import atatec.robocode.Enemy;
+import atatec.robocode.Statistics;
 import atatec.robocode.annotation.When;
 import atatec.robocode.event.BulletFiredEvent;
 import atatec.robocode.event.Events;
-import atatec.robocode.parts.Statistics;
 import robocode.Bullet;
 import robocode.BulletHitEvent;
 import robocode.BulletMissedEvent;
@@ -37,8 +38,10 @@ import robocode.HitByBulletEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author Marcelo Guimarães */
-public class BulletStatistics {
+/**
+ * @author Marcelo Guimarães
+ */
+public class DefaultBotStatistics implements BotStatistics {
 
   private final Bot bot;
 
@@ -46,10 +49,11 @@ public class BulletStatistics {
 
   private Map<Bullet, String> bullets;
 
-  public BulletStatistics(Bot bot) {
+  public DefaultBotStatistics(Bot bot) {
     this.bot = bot;
     this.statisticsMap = new HashMap<String, BulletStatistic>();
     this.bullets = new HashMap<Bullet, String>();
+    this.statisticsMap.put(bot.name(), new BulletStatistic());
   }
 
   private BulletStatistic get(String name) {
@@ -59,8 +63,14 @@ public class BulletStatistics {
     return statisticsMap.get(name);
   }
 
-  public Statistics of(Enemy enemy) {
+  @Override
+  public Statistics forEnemy(Enemy enemy) {
     return get(enemy.name());
+  }
+
+  @Override
+  public Statistics overall() {
+    return get(bot.name());
   }
 
   @When(Events.BULLET_FIRED)
@@ -68,6 +78,7 @@ public class BulletStatistics {
     if (bot.radar().hasTargetSet()) {
       String name = bot.radar().target().name();
       get(name).fires++;
+      get(bot.name()).fires++;
       bullets.put(event.bullet(), name);
     }
   }
@@ -76,17 +87,20 @@ public class BulletStatistics {
   public void registerBulletMissed(BulletMissedEvent event) {
     String name = bullets.get(event.getBullet());
     get(name).misses++;
+    get(bot.name()).misses++;
   }
 
   @When(Events.BULLET_HIT)
   public void registerBulletHit(BulletHitEvent event) {
     String name = bullets.get(event.getBullet());
     get(name).hits++;
+    get(bot.name()).hits++;
   }
 
   @When(Events.HIT_BY_BULLET)
   public void registerBulletToked(HitByBulletEvent event) {
     get(event.getName()).taken++;
+    get(bot.name()).taken++;
   }
 
   private class BulletStatistic implements Statistics {

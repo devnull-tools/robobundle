@@ -23,27 +23,39 @@
 
 package atatec.robocode;
 
-/** @author Marcelo Guimarães */
-public abstract class BaseEnemy implements Enemy {
+/**
+ * Interface that defines a set of metrics collected about
+ * the bot. The statistics may be per enemy or an overall.
+ *
+ * @author Marcelo Guimarães
+ */
+public interface Statistics {
 
-  @Override
-  public boolean isMoving() {
-    return velocity() > 0;
-  }
+  /**
+   * Measures the accuracy of the bot based on the bullets.
+   *
+   * @return the bot accuracy, in percentage
+   */
+  double accuracy();
 
-  @Override
-  public boolean isStopped() {
-    return !isMoving();
-  }
+  /**
+   * @return the amount of bullets fired
+   */
+  int fired();
 
-  @Override
-  public double distance() {
-    return position().distance();
-  }
+  /**
+   * @return the amount of bullets that hit enemies
+   */
+  int hit();
 
-  @Override
-  public double lateralVelocity() {
-    return velocity() * heading().minus(absoluteBearing()).sin();
-  }
+  /**
+   * @return the amount of bullets that miss
+   */
+  int missed();
+
+  /**
+   * @return the amount of bullets taken by the bot
+   */
+  int taken();
 
 }

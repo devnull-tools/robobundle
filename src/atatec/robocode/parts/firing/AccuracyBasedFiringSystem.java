@@ -24,14 +24,16 @@
 package atatec.robocode.parts.firing;
 
 import atatec.robocode.Bot;
+import atatec.robocode.BotStatistics;
 import atatec.robocode.Enemy;
 import atatec.robocode.parts.FiringSystem;
-import atatec.robocode.plugin.BulletStatistics;
 
 import static robocode.Rules.MAX_BULLET_POWER;
 import static robocode.Rules.MIN_BULLET_POWER;
 
-/** @author Marcelo Guimarães */
+/**
+ * @author Marcelo Guimarães
+ */
 public class AccuracyBasedFiringSystem implements FiringSystem {
 
   private static final double MEDIUM_BULLET_POWER = (MAX_BULLET_POWER + MIN_BULLET_POWER) / 2;
@@ -58,8 +60,8 @@ public class AccuracyBasedFiringSystem implements FiringSystem {
   public double firePower() {
     if (bot.radar().hasTargetSet()) {
       Enemy enemy = bot.radar().target();
-      BulletStatistics statistics = bot.storage().retrieve("statistics");
-      double accuracy = statistics.of(enemy).accuracy();
+      BotStatistics statistics = bot.statistics();
+      double accuracy = statistics.forEnemy(enemy).accuracy();
       if (accuracy >= accuracyToFireMax) {
         return MAX_BULLET_POWER;
       } else if (accuracy < accuracyToFireMin) {

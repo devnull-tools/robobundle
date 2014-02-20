@@ -23,14 +23,9 @@
 
 package atatec.robocode.util;
 
-import atatec.robocode.util.drawing.CircleDrawer;
-import atatec.robocode.util.drawing.CrossDrawer;
-import atatec.robocode.util.drawing.LineDrawer;
-import atatec.robocode.util.drawing.MarkerDrawer;
-import atatec.robocode.util.drawing.StringDrawer;
+import atatec.robocode.util.drawing.*;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.*;
 
 /** @author Marcelo Guimarães */
 public class Drawer {

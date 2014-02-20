@@ -25,7 +25,7 @@ package atatec.robocode.util.drawing;
 
 import atatec.robocode.calc.Point;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 
 /** @author Marcelo Guimarães */
 public class LineDrawer {

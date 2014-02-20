@@ -32,13 +32,7 @@ import atatec.robocode.event.EnemyScannedEvent;
 import atatec.robocode.event.Events;
 import atatec.robocode.util.Drawer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static atatec.robocode.util.Drawer.Mode.TRANSPARENT;
 import static java.awt.Color.LIGHT_GRAY;

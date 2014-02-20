@@ -25,7 +25,11 @@ package atatec.robocode.parts;
 
 import atatec.robocode.Command;
 
-/** @author Marcelo Guimarães */
+/**
+ * Interface that defines a component that moves the {@link Gun}.
+ *
+ * @author Marcelo Guimarães
+ */
 public interface AimingSystem extends Command {
 
 }

@@ -70,6 +70,12 @@ public interface Enemy extends Localizable {
   double velocity();
 
   /**
+   * Calculates the velocity in a direction perpendicular to
+   * the reference bot. If the enemy is moving in clockwise,
+   * this method will return a poitive number, if the enemy
+   * is moving in a counter-clockwise, a negative number
+   * will be returned.
+   *
    * @return the lateral velocity of the enemy
    */
   double lateralVelocity();

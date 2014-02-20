@@ -25,16 +25,16 @@ package atatec.robocode.robots;
 
 import atatec.robocode.BaseBot;
 import atatec.robocode.annotation.When;
-import atatec.robocode.plugin.BulletPaint;
-import atatec.robocode.plugin.Dodger;
 import atatec.robocode.event.EnemyFireEvent;
 import atatec.robocode.event.Events;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.EnergyBasedFiringSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
+import atatec.robocode.plugin.BulletPaint;
+import atatec.robocode.plugin.Dodger;
 import atatec.robocode.plugin.EnemyScannerInfo;
 
-import java.awt.Color;
+import java.awt.*;
 
 /** @author Marcelo Guimarães */
 public class Newton extends BaseBot {

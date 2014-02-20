@@ -23,11 +23,11 @@
 
 package atatec.robocode.parts;
 
-import atatec.robocode.condition.Condition;
 import atatec.robocode.ConditionalCommand;
 import atatec.robocode.calc.Point;
+import atatec.robocode.condition.Condition;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Interface that defines a robot gun.

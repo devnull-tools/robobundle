@@ -32,7 +32,7 @@ import atatec.robocode.event.Events;
 import atatec.robocode.parts.MovingSystem;
 import atatec.robocode.util.Drawer;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
