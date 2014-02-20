@@ -43,17 +43,22 @@ import java.util.Map;
  */
 public class DefaultBotStatistics implements BotStatistics {
 
-  private final Bot bot;
+  private Bot bot;
 
   private Map<String, BulletStatistic> statisticsMap;
 
   private Map<Bullet, String> bullets;
 
-  public DefaultBotStatistics(Bot bot) {
-    this.bot = bot;
+  public DefaultBotStatistics() {
     this.statisticsMap = new HashMap<String, BulletStatistic>();
     this.bullets = new HashMap<Bullet, String>();
-    this.statisticsMap.put(bot.name(), new BulletStatistic());
+  }
+
+  public void setBot(Bot bot) {
+    this.bot = bot;
+    if (!statisticsMap.containsKey(bot.name())) {
+      this.statisticsMap.put(bot.name(), new BulletStatistic());
+    }
   }
 
   private BulletStatistic get(String name) {
@@ -86,21 +91,43 @@ public class DefaultBotStatistics implements BotStatistics {
   @When(Events.BULLET_MISSED)
   public void registerBulletMissed(BulletMissedEvent event) {
     String name = bullets.get(event.getBullet());
-    get(name).misses++;
+    if (name != null) {
+      get(name).misses++;
+    }
     get(bot.name()).misses++;
   }
 
   @When(Events.BULLET_HIT)
   public void registerBulletHit(BulletHitEvent event) {
     String name = bullets.get(event.getBullet());
-    get(name).hits++;
+    if (name != null) {
+      get(name).hits++;
+    }
     get(bot.name()).hits++;
   }
 
   @When(Events.HIT_BY_BULLET)
   public void registerBulletToked(HitByBulletEvent event) {
-    get(event.getName()).taken++;
+    String name = event.getName();
+    if (name != null) {
+      get(name).taken++;
+    }
     get(bot.name()).taken++;
+  }
+
+  @When({Events.ROUND_ENDED, Events.ROUND_STARTED})
+  public void logStatistics() {
+    bot.log("-----------------------");
+    bot.log("Statistics:");
+    bot.log("Overall Accuracy: %.2f %%", overall().accuracy() * 100);
+    for (Map.Entry<String, BulletStatistic> entry : statisticsMap.entrySet()) {
+      if (!entry.getKey().equals(bot.name())) {
+        bot.log("Accuracy for %s: %.2f",
+          entry.getKey(), entry.getValue().accuracy() * 100
+        );
+      }
+    }
+    bot.log("-----------------------");
   }
 
   private class BulletStatistic implements Statistics {

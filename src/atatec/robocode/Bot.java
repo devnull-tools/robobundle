@@ -27,7 +27,6 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.parts.Body;
 import atatec.robocode.parts.Gun;
 import atatec.robocode.parts.Radar;
-import atatec.robocode.parts.Storage;
 
 /**
  * Interface that defines a robot.
@@ -73,13 +72,6 @@ public interface Bot extends Localizable {
    * @return the robot's radar
    */
   Radar radar();
-
-  /**
-   * Returns the robot's storage
-   *
-   * @return the robot's storage
-   */
-  Storage storage();
 
   /**
    * Logs a message in the robot's output stream

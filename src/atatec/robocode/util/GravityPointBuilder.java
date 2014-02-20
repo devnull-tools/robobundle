@@ -49,6 +49,10 @@ public class GravityPointBuilder {
     return this;
   }
 
+  public GravityPoint weakest() {
+    return withValue(WEAKEST_VALUE);
+  }
+
   public GravityPoint weak() {
     return withValue(WEAK_VALUE);
   }

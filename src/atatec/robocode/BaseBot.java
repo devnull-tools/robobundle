@@ -53,6 +53,8 @@ import static atatec.robocode.event.Events.*;
  */
 public abstract class BaseBot extends AdvancedRobot implements Bot {
 
+  private static DefaultBotStatistics statistics = new DefaultBotStatistics();
+
   private Gun gun;
 
   private Body body;
@@ -62,14 +64,6 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   private EventRegistry eventRegistry = new DefaultEventRegistry(this);
 
   private boolean roundEnded = false;
-
-  private static Map<String, Storage> persistentStorage =
-    new ConcurrentHashMap<String, Storage>();
-
-  /**
-   * Name used to store the bot statistics in storage
-   */
-  protected static final String STORAGE_STATISTICS = "BaseBot#statistics";
 
   protected Gun createGun() {
     return new DefaultGun(this);
@@ -99,13 +93,12 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
    * event is send and the {@link #onRoundStarted()} is called.
    */
   public final void run() {
+    statistics.setBot(this);
+    plug(statistics);
+
     setAdjustGunForRobotTurn(true);
     setAdjustRadarForGunTurn(true);
     setAdjustRadarForRobotTurn(true);
-
-    if (!persistentStorage.containsKey(getName())) {
-      persistentStorage.put(getName(), new DefaultStorage());
-    }
 
     this.gun = createGun();
     this.body = createBody();
@@ -115,8 +108,6 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
     eventRegistry.register(gun);
     eventRegistry.register(radar);
     eventRegistry.register(this);
-
-    storage().store(STORAGE_STATISTICS, plug(new DefaultBotStatistics(this)));
 
     configure();
 
@@ -153,17 +144,12 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
 
   @Override
   public BotStatistics statistics() {
-    return storage().retrieve(STORAGE_STATISTICS);
+    return statistics;
   }
 
   @Override
   public String name() {
     return getName();
-  }
-
-  @Override
-  public Storage storage() {
-    return persistentStorage.get(getName());
   }
 
   @Override
@@ -275,7 +261,6 @@ public abstract class BaseBot extends AdvancedRobot implements Bot {
   @Override
   public final void onBattleEnded(BattleEndedEvent event) {
     eventRegistry.send(BATTLE_ENDED);
-    persistentStorage.clear();
   }
 
   @Override
