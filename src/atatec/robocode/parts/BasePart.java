@@ -29,7 +29,9 @@ import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.Point;
 import atatec.robocode.calc.ViewPoint;
 
-/** @author Marcelo Guimarães */
+/**
+ * @author Marcelo Guimarães
+ */
 public abstract class BasePart implements Part {
 
   protected final BaseBot bot;
@@ -38,18 +40,7 @@ public abstract class BasePart implements Part {
     this.bot = bot;
   }
 
-  @Override
-  public void turn(Angle angle) {
-    if (angle.radians() < 0) {
-      turnLeft(angle.inverse());
-    } else {
-      turnRight(angle);
-    }
-  }
-
-  protected abstract void turnRight(Angle angle);
-
-  protected abstract void turnLeft(Angle angle);
+  public abstract void turn(Angle angle);
 
   @Override
   public boolean isAtLeft(Localizable target) {

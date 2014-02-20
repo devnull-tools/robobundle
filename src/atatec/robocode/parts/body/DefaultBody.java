@@ -35,7 +35,9 @@ import atatec.robocode.parts.MovingSystem;
 
 import java.awt.*;
 
-/** @author Marcelo Guimarães */
+/**
+ * @author Marcelo Guimarães
+ */
 public class DefaultBody extends BasePart implements Body {
 
   private final DefaultConditionalCommand<MovingSystem> movingSystem;
@@ -52,11 +54,8 @@ public class DefaultBody extends BasePart implements Body {
 
   @Override
   public void move(double distance) {
-    if (distance < 0) {
-      moveBack(-distance);
-    } else {
-      moveAhead(distance);
-    }
+    bot.log("Ahead: %.4f", distance);
+    bot.setAhead(distance);
   }
 
   public void move() {
@@ -113,25 +112,9 @@ public class DefaultBody extends BasePart implements Body {
   }
 
   @Override
-  protected void turnLeft(Angle angle) {
-    bot.log("Body Turn Left: %.4f", angle.degrees());
-    bot.setTurnLeftRadians(angle.radians());
-  }
-
-  @Override
-  protected void turnRight(Angle angle) {
-    bot.log("Body Turn Right: %.4f", angle.degrees());
+  public void turn(Angle angle) {
+    bot.log("Body Turn : %.4f", angle.degrees());
     bot.setTurnRightRadians(angle.radians());
-  }
-
-  protected void moveAhead(double distance) {
-    bot.log("Ahead: %.4f", distance);
-    bot.setAhead(distance);
-  }
-
-  protected void moveBack(double distance) {
-    bot.log("Back: %.4f", distance);
-    bot.setBack(distance);
   }
 
   @Override

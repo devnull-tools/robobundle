@@ -141,12 +141,7 @@ public class DefaultRadar extends BasePart implements Radar {
   }
 
   @Override
-  public void turnLeft(Angle angle) {
-    bot.setTurnRadarLeftRadians(angle.radians());
-  }
-
-  @Override
-  public void turnRight(Angle angle) {
+  public void turn(Angle angle) {
     bot.setTurnRadarRightRadians(angle.radians());
   }
 

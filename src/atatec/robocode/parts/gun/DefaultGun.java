@@ -36,7 +36,9 @@ import robocode.util.Utils;
 
 import java.awt.*;
 
-/** @author Marcelo Guimarães */
+/**
+ * @author Marcelo Guimarães
+ */
 public class DefaultGun extends BasePart implements Gun {
 
   private final DefaultConditionalCommand<AimingSystem> aimingSystem;
@@ -115,33 +117,18 @@ public class DefaultGun extends BasePart implements Gun {
     return bot.getGunCoolingRate();
   }
 
-  public void turnLeft(Angle angle) {
-    if (angle.radians() < 0) {
-      turnRight(angle.inverse());
-    } else if (angle.radians() > Math.PI) {
-      turnRight(Angle.TWO_PI.minus(angle));
-    } else if (angle.radians() >= 1E-5) {
-      bot.log("Turning gun %s left from %s", angle, heading());
-      bot.setTurnGunLeftRadians(angle.radians());
-    }
+  @Override
+  public void turn(Angle angle) {
+    bot.log("Turning gun %s from %s", angle, heading());
+    bot.setTurnGunRightRadians(angle.radians());
   }
 
-  public void turnRight(Angle angle) {
-    if (angle.radians() < 0) {
-      turnLeft(angle.inverse());
-    } else if (angle.radians() > Math.PI) {
-      turnLeft(Angle.TWO_PI.minus(angle));
-    } else if (angle.radians() >= 1E-5) {
-      bot.log("Turning gun %s right from %s", angle, heading());
-      bot.setTurnGunRightRadians(angle.radians());
-    }
-  }
-
-
+  @Override
   public ConditionalCommand<AimingSystem> forAiming() {
     return aimingSystem;
   }
 
+  @Override
   public ConditionalCommand<FiringSystem> forFiring() {
     return firingSystem;
   }
