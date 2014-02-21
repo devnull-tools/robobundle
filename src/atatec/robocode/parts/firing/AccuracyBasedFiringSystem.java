@@ -26,6 +26,7 @@ package atatec.robocode.parts.firing;
 import atatec.robocode.Bot;
 import atatec.robocode.BotStatistics;
 import atatec.robocode.Enemy;
+import atatec.robocode.Statistics;
 import atatec.robocode.parts.FiringSystem;
 
 import static robocode.Rules.MAX_BULLET_POWER;
@@ -41,7 +42,9 @@ public class AccuracyBasedFiringSystem implements FiringSystem {
   private final Bot bot;
 
   private double accuracyToFireMax = 0.75;
+  private double accuracyToFireMed = 0.4;
   private double accuracyToFireMin = 0.2;
+  private double accuracyToNotFire = 0.05;
 
   public AccuracyBasedFiringSystem(Bot bot) {
     this.bot = bot;
@@ -52,23 +55,38 @@ public class AccuracyBasedFiringSystem implements FiringSystem {
     return this;
   }
 
+  public AccuracyBasedFiringSystem fireMediumAt(double accuracy) {
+    accuracyToFireMed = accuracy;
+    return this;
+  }
+
   public AccuracyBasedFiringSystem fireMinAt(double accuracy) {
     accuracyToFireMin = accuracy;
+    return this;
+  }
+
+  public AccuracyBasedFiringSystem doNotFireAt(double accuracy) {
+    accuracyToNotFire = accuracy;
     return this;
   }
 
   public double firePower() {
     if (bot.radar().hasTargetSet()) {
       Enemy enemy = bot.radar().target();
-      BotStatistics statistics = bot.statistics();
-      double accuracy = statistics.forEnemy(enemy).accuracy();
+      Statistics statistics = bot.statistics().forEnemy(enemy);
+      double accuracy = statistics.accuracy();
+      if (statistics.fired() == 0) {
+        return MEDIUM_BULLET_POWER;
+      }
       if (accuracy >= accuracyToFireMax) {
         return MAX_BULLET_POWER;
-      } else if (accuracy < accuracyToFireMin) {
-        return (MEDIUM_BULLET_POWER + MIN_BULLET_POWER) / 2;
+      } else if (accuracy >= accuracyToFireMed) {
+        return MEDIUM_BULLET_POWER;
+      } else if (accuracy >= accuracyToFireMin) {
+        return MIN_BULLET_POWER;
       }
     }
-    return MEDIUM_BULLET_POWER;
+    return 0;
   }
 
   public void execute() {

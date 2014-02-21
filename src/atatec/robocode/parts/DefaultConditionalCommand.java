@@ -26,24 +26,42 @@ package atatec.robocode.parts;
 import atatec.robocode.Bot;
 import atatec.robocode.Command;
 import atatec.robocode.ConditionalCommand;
-import atatec.robocode.condition.Condition;
-import atatec.robocode.condition.ConditionSelector;
-import atatec.robocode.condition.Conditions;
+import atatec.robocode.condition.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** @author Marcelo Guimarães */
+/**
+ * @author Marcelo Guimarães
+ */
 public class DefaultConditionalCommand<E extends Command> implements ConditionalCommand<E> {
 
   private final Map<Condition, E> components = new LinkedHashMap<Condition, E>();
-
   private E current;
 
   private final Bot bot;
 
+  private final BotConditions conditions;
+
   public DefaultConditionalCommand(Bot bot) {
     this.bot = bot;
+    conditions = new BotConditions(bot);
+  }
+
+  protected final TargetConditions target() {
+    return conditions.target();
+  }
+
+  protected final BodyConditions body() {
+    return conditions.body();
+  }
+
+  protected final GunConditions gun() {
+    return conditions.gun();
+  }
+
+  protected final RadarConditions radar() {
+    return conditions.radar();
   }
 
   @Override

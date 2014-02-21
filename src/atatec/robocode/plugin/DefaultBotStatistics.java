@@ -115,7 +115,7 @@ public class DefaultBotStatistics implements BotStatistics {
     get(bot.name()).taken++;
   }
 
-  @When({Events.ROUND_ENDED, Events.ROUND_STARTED})
+  @When(Events.ROUND_ENDED)
   public void logStatistics() {
     bot.log("-----------------------");
     bot.log("Statistics:");

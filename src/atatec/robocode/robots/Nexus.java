@@ -23,9 +23,7 @@
 
 package atatec.robocode.robots;
 
-import atatec.robocode.BaseBot;
-import atatec.robocode.Enemy;
-import atatec.robocode.Field;
+import atatec.robocode.*;
 import atatec.robocode.annotation.When;
 import atatec.robocode.calc.Angle;
 import atatec.robocode.calc.BulletTrajectory;
@@ -33,10 +31,15 @@ import atatec.robocode.calc.Point;
 import atatec.robocode.condition.BotConditions;
 import atatec.robocode.condition.Function;
 import atatec.robocode.condition.StrengthBasedLockCondition;
+import atatec.robocode.condition.TargetConditions;
 import atatec.robocode.event.EnemyFireEvent;
 import atatec.robocode.event.EnemyScannedEvent;
+import atatec.robocode.parts.DefaultConditionalCommand;
+import atatec.robocode.parts.MovingSystem;
 import atatec.robocode.parts.aiming.PredictionAimingSystem;
 import atatec.robocode.parts.firing.AccuracyBasedFiringSystem;
+import atatec.robocode.parts.movement.EnemyCircleMovingSystem;
+import atatec.robocode.parts.movement.FollowEnemyMovingSystem;
 import atatec.robocode.parts.movement.GravitationalMovingSystem;
 import atatec.robocode.parts.scanner.EnemyLockScanningSystem;
 import atatec.robocode.plugin.*;
@@ -82,7 +85,8 @@ public class Nexus extends BaseBot {
     }
   };
 
-  private GravitationalMovingSystem gravitationalMovingSystem = new GravitationalMovingSystem(this);
+  private GravitationalMovingSystem gravitationalMovingSystem;
+  private ConditionalCommand<MovingSystem> alternativeMovingSystem;
 
   protected void configure() {
     body().setColor(new Color(39, 40, 34));
@@ -107,7 +111,18 @@ public class Nexus extends BaseBot {
       )
       .inOtherCases();
 
+    gravitationalMovingSystem = new GravitationalMovingSystem(this)
+      .lowEnforcingAt(1);
+
     body().forMoving().use(gravitationalMovingSystem);
+
+    alternativeMovingSystem = new DefaultConditionalCommand<MovingSystem>(this) {{
+      use(new EnemyCircleMovingSystem(Nexus.this))
+        .when(target().isClose());
+
+      use(new FollowEnemyMovingSystem(Nexus.this))
+        .inOtherCases();
+    }};
 
     plug(new Dodger(this));
     plug(new Avoider(this)
@@ -120,6 +135,11 @@ public class Nexus extends BaseBot {
       .use(new Color(255, 84, 84)).forStrong()
       .use(new Color(253, 151, 31)).forMedium()
       .use(new Color(54, 151, 255)).forWeak());
+  }
+
+  @When(GravitationalMovingSystem.LOW_ENFORCING)
+  public void lowEnforcing() {
+    alternativeMovingSystem.execute();
   }
 
   int hitsByBullet = 0;
@@ -323,7 +343,7 @@ public class Nexus extends BaseBot {
   }
 
   private void addMovementPoints() {
-    if (radar().hasTargetSet()) {
+    if (radar().hasTargetSet() && false) {
       Enemy target = radar().target();
       double radius = target.distance();
       double perimeter = Math.PI * 2 * radius;
