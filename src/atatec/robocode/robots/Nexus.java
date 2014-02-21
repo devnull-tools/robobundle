@@ -287,7 +287,6 @@ public class Nexus extends BaseBot {
   protected void onNextTurn() {
     log("***********************************");
     addEnemyPoints();
-    addMovementPoints();
     radar().scan();
     body().move();
     gun().aim();
@@ -337,26 +336,6 @@ public class Nexus extends BaseBot {
         enemy.location()
           .antiGravitational()
           .normal()
-          .during(1)
-      );
-    }
-  }
-
-  private void addMovementPoints() {
-    if (radar().hasTargetSet() && false) {
-      Enemy target = radar().target();
-      double radius = target.distance();
-      double perimeter = Math.PI * 2 * radius;
-      int numberOfPoints = (int) (perimeter / 5);
-      double angleStep = cos(Angle.inRadians(radar().time() >> 4)) * (Math.PI * 2) / numberOfPoints;
-      Angle t = target.location().bearingTo(this.location()).angle().plus(angleStep * movementLength);
-      Point movementPoint = new Point(
-        target.location().x() + (radius * sin(t)),
-        target.location().y() + (radius * cos(t))
-      );
-      gravitationalMovingSystem.add(
-        movementPoint.gravitational()
-          .weak()
           .during(1)
       );
     }
