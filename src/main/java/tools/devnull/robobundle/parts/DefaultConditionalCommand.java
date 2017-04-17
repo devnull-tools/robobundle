@@ -77,7 +77,7 @@ public class DefaultConditionalCommand<E extends Command> implements Conditional
         return DefaultConditionalCommand.this;
       }
 
-      public void inOtherCases() {
+      public void asDefault() {
         when(() -> true);
       }
 

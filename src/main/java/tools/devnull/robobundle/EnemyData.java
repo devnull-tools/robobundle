@@ -25,9 +25,21 @@ package tools.devnull.robobundle;
 
 import java.util.List;
 
-/** @author Marcelo Guimarães */
+/**
+ * @author Marcelo Guimarães
+ */
 public interface EnemyData {
 
   List<Enemy> history();
+
+  default boolean isTurning() {
+    List<Enemy> history = history();
+    if (history.size() > 1) {
+      Enemy enemyA = history.get(history.size() - 1);
+      Enemy enemyB = history.get(history.size() - 2);
+      return !enemyA.heading().equals(enemyB.heading());
+    }
+    return false;
+  }
 
 }

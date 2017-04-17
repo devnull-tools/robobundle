@@ -37,7 +37,9 @@ import java.util.*;
 import static tools.devnull.robobundle.util.Drawer.Mode.TRANSPARENT;
 import static java.awt.Color.LIGHT_GRAY;
 
-/** @author Marcelo Guimarães */
+/**
+ * @author Marcelo Guimarães
+ */
 public class EnemyTracker {
 
   private Map<String, List<Enemy>> enemyData;
@@ -56,6 +58,10 @@ public class EnemyTracker {
     this.historySize = historySize;
   }
 
+  public Condition enemyIsTurning() {
+    return () -> dataFor(bot.radar().target()).isTurning();
+  }
+
   @When(Events.ENEMY_SCANNED)
   public void registerEnemy(EnemyScannedEvent event) {
     Enemy enemy = event.enemy();
@@ -71,7 +77,7 @@ public class EnemyTracker {
 
   public EnemyData dataFor(final Enemy enemy) {
     return () -> {
-      if (!enemyData.containsKey(enemy.name())) {
+      if (enemy == null || !enemyData.containsKey(enemy.name())) {
         return Collections.emptyList();
       }
       return new ArrayList<>(enemyData.get(enemy.name()));

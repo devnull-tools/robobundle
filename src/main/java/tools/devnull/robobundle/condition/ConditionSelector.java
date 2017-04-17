@@ -28,6 +28,6 @@ public interface ConditionSelector<E> {
 
   E when(Condition condition);
 
-  void inOtherCases();
+  void asDefault();
 
 }

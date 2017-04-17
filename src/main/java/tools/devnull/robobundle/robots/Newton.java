@@ -27,7 +27,7 @@ import tools.devnull.robobundle.BaseBot;
 import tools.devnull.robobundle.annotation.When;
 import tools.devnull.robobundle.event.EnemyFireEvent;
 import tools.devnull.robobundle.event.Events;
-import tools.devnull.robobundle.parts.aiming.PredictionAimingSystem;
+import tools.devnull.robobundle.parts.aiming.LinearPredictionAimingSystem;
 import tools.devnull.robobundle.parts.firing.EnergyBasedFiringSystem;
 import tools.devnull.robobundle.parts.scanner.EnemyLockScanningSystem;
 import tools.devnull.robobundle.plugin.BulletPaint;
@@ -46,7 +46,7 @@ public class Newton extends BaseBot {
     radar().setColor(new Color(39, 40, 34));
 
     gun().forAiming()
-      .use(new PredictionAimingSystem(this));
+      .use(new LinearPredictionAimingSystem(this));
 
     gun().forFiring()
       .use(new EnergyBasedFiringSystem(this));

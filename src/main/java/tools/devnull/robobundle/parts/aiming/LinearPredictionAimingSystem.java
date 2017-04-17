@@ -39,12 +39,12 @@ import static tools.devnull.robobundle.event.Events.DRAW;
 import static java.awt.Color.RED;
 
 /** @author Marcelo Guimarães */
-public class PredictionAimingSystem implements AimingSystem {
+public class LinearPredictionAimingSystem implements AimingSystem {
 
   private final Bot bot;
   private Point predictedLocation;
 
-  public PredictionAimingSystem(Bot bot) {
+  public LinearPredictionAimingSystem(Bot bot) {
     this.bot = bot;
   }
 

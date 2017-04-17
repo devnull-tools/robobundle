@@ -27,7 +27,7 @@ import tools.devnull.robobundle.BaseBot;
 import tools.devnull.robobundle.condition.BotConditions;
 import tools.devnull.robobundle.condition.TargetConditions;
 import tools.devnull.robobundle.parts.aiming.DirectAimingSystem;
-import tools.devnull.robobundle.parts.aiming.PredictionAimingSystem;
+import tools.devnull.robobundle.parts.aiming.LinearPredictionAimingSystem;
 import tools.devnull.robobundle.parts.firing.EnergyBasedFiringSystem;
 import tools.devnull.robobundle.parts.movement.EnemyCircleMovingSystem;
 import tools.devnull.robobundle.parts.movement.FollowEnemyMovingSystem;
@@ -47,11 +47,11 @@ public class Chronos extends BaseBot {
     TargetConditions target = new BotConditions(this).target();
 
     gun().forAiming()
-      .use(new PredictionAimingSystem(this))
+      .use(new LinearPredictionAimingSystem(this))
       .when(target.isMoving())
 
       .use(new DirectAimingSystem(this))
-      .inOtherCases();
+      .asDefault();
 
     gun().forFiring()
       .use(new EnergyBasedFiringSystem(this));
@@ -64,7 +64,7 @@ public class Chronos extends BaseBot {
       .when(target.isClose())
 
       .use(new FollowEnemyMovingSystem(this))
-      .inOtherCases();
+      .asDefault();
 
     plug(new BulletPaint(this)
       .use(new Color(255, 84, 84)).forStrong()
