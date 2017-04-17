@@ -26,8 +26,6 @@ package tools.devnull.robocode.condition;
 import tools.devnull.robocode.Enemy;
 import tools.devnull.robocode.parts.Radar;
 
-import static tools.devnull.robocode.condition.Conditions.not;
-
 /** @author Marcelo Guimarães */
 public class TargetConditions {
 
@@ -60,10 +58,6 @@ public class TargetConditions {
 
   public Condition isClose() {
     return isAtMost(closerDistance);
-  }
-
-  public Condition isDistant() {
-    return not(isClose());
   }
 
   public Condition isAtLeastAt(final double distance) {

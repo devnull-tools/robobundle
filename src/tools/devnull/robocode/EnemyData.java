@@ -26,10 +26,8 @@ package tools.devnull.robocode;
 import java.util.List;
 
 /** @author Marcelo Guimarães */
-public interface EnemyHistory {
+public interface EnemyData {
 
-  List<Enemy> fromLatest();
-
-  List<Enemy> fromOldest();
+  List<Enemy> history();
 
 }

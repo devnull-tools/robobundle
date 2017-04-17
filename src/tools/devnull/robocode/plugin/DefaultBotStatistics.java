@@ -50,8 +50,8 @@ public class DefaultBotStatistics implements BotStatistics {
   private Map<Bullet, String> bullets;
 
   public DefaultBotStatistics() {
-    this.statisticsMap = new HashMap<String, BulletStatistic>();
-    this.bullets = new HashMap<Bullet, String>();
+    this.statisticsMap = new HashMap<>();
+    this.bullets = new HashMap<>();
   }
 
   public void setBot(Bot bot) {

@@ -72,7 +72,7 @@ public interface Enemy extends Localizable {
   /**
    * Calculates the velocity in a direction perpendicular to
    * the reference bot. If the enemy is moving in clockwise,
-   * this method will return a poitive number, if the enemy
+   * this method will return a positive number, if the enemy
    * is moving in a counter-clockwise, a negative number
    * will be returned.
    *

@@ -32,6 +32,7 @@ import tools.devnull.robocode.util.Drawer;
 
 import java.awt.*;
 import java.util.Collection;
+import java.util.function.Function;
 
 /**
  * @author Marcelo Guimarães
@@ -57,12 +58,7 @@ public class StrengthBasedLockCondition implements LockCondition {
 
   private final Bot bot;
   private LockMode mode = LockMode.STRONGER;
-  private Function<Enemy, Double> strengthFunction = new Function<Enemy, Double>() {
-    @Override
-    public Double evaluate(Enemy argument) {
-      return argument.energy();
-    }
-  };
+  private Function<Enemy, Double> strengthFunction = Enemy::energy;
 
   public StrengthBasedLockCondition(Bot bot) {
     this.bot = bot;
@@ -85,8 +81,8 @@ public class StrengthBasedLockCondition implements LockCondition {
 
   @Override
   public boolean canLock(Enemy enemy) {
-    double candidateEnemyStr = strengthFunction.evaluate(enemy);
-    double lockedEnemyStr = strengthFunction.evaluate(bot.radar().target());
+    double candidateEnemyStr = strengthFunction.apply(enemy);
+    double lockedEnemyStr = strengthFunction.apply(bot.radar().target());
     return mode.canLock(lockedEnemyStr, candidateEnemyStr);
   }
 
@@ -100,7 +96,7 @@ public class StrengthBasedLockCondition implements LockCondition {
         point = enemy.location().left(60);
       }
       drawer.draw(Color.RED
-      ).string("%.3f", strengthFunction.evaluate(enemy)).at(point);
+      ).string("%.3f", strengthFunction.apply(enemy)).at(point);
     }
   }
 

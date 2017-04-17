@@ -26,6 +26,19 @@ package tools.devnull.robocode.condition;
 /** @author Marcelo Guimarães */
 public interface Condition {
 
-  public boolean evaluate();
+  boolean evaluate();
+
+  default Condition negate() {
+    return () -> !evaluate();
+  }
+
+  default robocode.Condition wrap() {
+    return new robocode.Condition() {
+      @Override
+      public boolean test() {
+        return evaluate();
+      }
+    };
+  }
 
 }

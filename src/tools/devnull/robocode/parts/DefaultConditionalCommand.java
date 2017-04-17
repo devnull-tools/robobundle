@@ -78,7 +78,7 @@ public class DefaultConditionalCommand<E extends Command> implements Conditional
       }
 
       public void inOtherCases() {
-        when(Conditions.ALWAYS);
+        when(() -> true);
       }
 
     };

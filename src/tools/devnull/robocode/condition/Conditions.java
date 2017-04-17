@@ -26,88 +26,36 @@ package tools.devnull.robocode.condition;
 /** @author Marcelo Guimarães */
 public class Conditions {
 
-  public static final Condition ALWAYS = new Condition() {
-
-    @Override
-    public boolean evaluate() {
+  public static Condition all(Condition... conditions) {
+    return () -> {
+      for (Condition condition : conditions) {
+        if (!condition.evaluate()) {
+          return false;
+        }
+      }
       return true;
-    }
-  };
+    };
+  }
 
-  public static final Condition NEVER = new Condition() {
+  public static Condition none(Condition... conditions) {
+    return () -> {
+      for (Condition condition : conditions) {
+        if (condition.evaluate()) {
+          return false;
+        }
+      }
+      return true;
+    };
+  }
 
-    @Override
-    public boolean evaluate() {
+  public static Condition any(Condition... conditions) {
+    return () -> {
+      for (Condition condition : conditions) {
+        if (condition.evaluate()) {
+          return true;
+        }
+      }
       return false;
-    }
-  };
-
-  public static Condition all(final Condition... conditions) {
-    return new Condition() {
-      @Override
-      public boolean evaluate() {
-        for (Condition condition : conditions) {
-          if (!condition.evaluate()) {
-            return false;
-          }
-        }
-        return true;
-      }
-    };
-  }
-
-  public static Condition none(final Condition... conditions) {
-    return new Condition() {
-      @Override
-      public boolean evaluate() {
-        for (Condition condition : conditions) {
-          if (condition.evaluate()) {
-            return false;
-          }
-        }
-        return true;
-      }
-    };
-  }
-
-  public static Condition any(final Condition... conditions) {
-    return new Condition() {
-      @Override
-      public boolean evaluate() {
-        for (Condition condition : conditions) {
-          if (condition.evaluate()) {
-            return true;
-          }
-        }
-        return false;
-      }
-    };
-  }
-
-  public static Condition not(final Condition condition) {
-    return new Condition() {
-      @Override
-      public boolean evaluate() {
-        return !condition.evaluate();
-      }
-    };
-  }
-
-  public static Condition adapt(final robocode.Condition robocodeCondition) {
-    return new Condition() {
-      @Override
-      public boolean evaluate() {
-        return robocodeCondition.test();
-      }
-    };
-  }
-
-  public static robocode.Condition adapt(final Condition condition) {
-    return new robocode.Condition() {
-      @Override
-      public boolean test() {
-        return condition.evaluate();
-      }
     };
   }
 

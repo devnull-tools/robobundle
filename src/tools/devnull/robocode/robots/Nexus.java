@@ -23,6 +23,8 @@
 
 package tools.devnull.robocode.robots;
 
+import robocode.HitRobotEvent;
+import robocode.HitWallEvent;
 import tools.devnull.robocode.BaseBot;
 import tools.devnull.robocode.Enemy;
 import tools.devnull.robocode.Field;
@@ -30,7 +32,6 @@ import tools.devnull.robocode.annotation.When;
 import tools.devnull.robocode.calc.BulletTrajectory;
 import tools.devnull.robocode.calc.Point;
 import tools.devnull.robocode.condition.BotConditions;
-import tools.devnull.robocode.condition.Function;
 import tools.devnull.robocode.condition.StrengthBasedLockCondition;
 import tools.devnull.robocode.event.EnemyFireEvent;
 import tools.devnull.robocode.event.EnemyScannedEvent;
@@ -38,15 +39,35 @@ import tools.devnull.robocode.parts.aiming.PredictionAimingSystem;
 import tools.devnull.robocode.parts.firing.AccuracyBasedFiringSystem;
 import tools.devnull.robocode.parts.movement.GravitationalMovingSystem;
 import tools.devnull.robocode.parts.scanner.EnemyLockScanningSystem;
-import tools.devnull.robocode.plugin.*;
-import robocode.HitRobotEvent;
-import robocode.HitWallEvent;
+import tools.devnull.robocode.plugin.Avoider;
+import tools.devnull.robocode.plugin.BulletPaint;
+import tools.devnull.robocode.plugin.Dodger;
+import tools.devnull.robocode.plugin.EnemyScannerInfo;
+import tools.devnull.robocode.plugin.EnemyTracker;
 
 import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
-import static tools.devnull.robocode.event.Events.*;
+import static tools.devnull.robocode.event.Events.BULLET_FIRED;
+import static tools.devnull.robocode.event.Events.BULLET_HIT;
+import static tools.devnull.robocode.event.Events.BULLET_HIT_BULLET;
+import static tools.devnull.robocode.event.Events.BULLET_MISSED;
+import static tools.devnull.robocode.event.Events.BULLET_NOT_FIRED;
+import static tools.devnull.robocode.event.Events.ENEMY_FIRE;
+import static tools.devnull.robocode.event.Events.ENEMY_SCANNED;
+import static tools.devnull.robocode.event.Events.GUN_AIMED;
+import static tools.devnull.robocode.event.Events.HIT_BY_BULLET;
+import static tools.devnull.robocode.event.Events.HIT_ROBOT;
+import static tools.devnull.robocode.event.Events.HIT_WALL;
+import static tools.devnull.robocode.event.Events.NEAR_TO_ENEMY;
+import static tools.devnull.robocode.event.Events.NEAR_TO_WALL;
+import static tools.devnull.robocode.event.Events.ROUND_STARTED;
+import static tools.devnull.robocode.event.Events.TARGET_UNSET;
 import static tools.devnull.robocode.util.GravityPointBuilder.antiGravityPoint;
 import static tools.devnull.robocode.util.GravityPointBuilder.gravityPoint;
 
@@ -70,12 +91,7 @@ public class Nexus extends BaseBot {
 
   private Map<String, Double> strengthMap = new HashMap<String, Double>();
 
-  private Function<Enemy, Double> enemyStrength = new Function<Enemy, Double>() {
-    @Override
-    public Double evaluate(Enemy enemy) {
-      return strengthMap.get(enemy.name());
-    }
-  };
+  private Function<Enemy, Double> enemyStrength = enemy -> strengthMap.get(enemy.name());
 
   private GravitationalMovingSystem gravitationalMovingSystem;
 
@@ -291,7 +307,7 @@ public class Nexus extends BaseBot {
   public void calculateEnemyStrength(EnemyScannedEvent event) {
     Enemy enemy = event.enemy();
     double patternStr = 1.0;
-    List<Enemy> history = enemyTracker.historyFor(enemy).fromOldest();
+    List<Enemy> history = enemyTracker.dataFor(enemy).history();
     for (Enemy hist : history) {
       //when enemy is stopped, the patternStr will not be increased
       patternStr += hist.lateralVelocity() / 100;
